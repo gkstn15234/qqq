@@ -1,0 +1,18 @@
+# Cloudflare Pages 설정
+[build]
+command = "hugo --minify --gc"
+publish = "public"
+
+[build.environment]
+HUGO_VERSION = "0.147.9"
+HUGO_ENV = "production"
+HUGO_ENVIRONMENT = "production"
+NODE_VERSION = "18"
+
+# 캐시 설정
+[cache]
+paths = ["resources"]
+
+# 빌드 제외 파일
+[build.exclude]
+files = [".git/**", "node_modules/**", ".github/**"]
