@@ -144,11 +144,11 @@
                         </div>
                     </div>
 
-                    <!-- 최신 웰니스 뉴스 위젯 -->
+                    <!-- 최신 뉴스 위젯 -->
                     <div class="sidebar-widget">
-                        <h4 class="widget-title">최신 웰니스 뉴스</h4>
+                        <h4 class="widget-title">최신 뉴스</h4>
                         <div class="widget-content">
-                            {{ range first 4 (where .Site.RegularPages.ByDate.Reverse ".Section" "car") }}
+                            {{ range first 4 (where .Site.RegularPages.ByDate.Reverse ".Section" "in" (slice "automotive" "economy")) }}
                             {{ if ne .Permalink $.Permalink }}
                             <article class="sidebar-news-item">
                                 <div class="sidebar-news-thumb">
@@ -172,11 +172,11 @@
                         </div>
                     </div>
 
-                    <!-- 경제 분석 위젯 -->
+                    <!-- 인기 뉴스 위젯 -->
                     <div class="sidebar-widget">
-                        <h4 class="widget-title">경제 분석</h4>
+                        <h4 class="widget-title">인기 뉴스</h4>
                         <div class="widget-content">
-                            {{ range first 4 (where .Site.RegularPages.ByDate.Reverse ".Section" "economy") }}
+                            {{ range first 4 (shuffle (where .Site.RegularPages.ByDate.Reverse ".Section" "in" (slice "automotive" "economy"))) }}
                             {{ if ne .Permalink $.Permalink }}
                             <article class="sidebar-news-item">
                                 <div class="sidebar-news-thumb">

@@ -33,44 +33,78 @@ jobs:
           
       - name: Install Python dependencies
         run: |
-          pip install requests beautifulsoup4 openai unidecode
+          pip install -r requirements.txt
           
       - name: Create content directory
         run: |
           mkdir -p content
           
-      - name: Run AI scraper
+      - name: Test email configuration
+        env:
+          SENDER_EMAIL: ${{ secrets.SENDER_EMAIL }}
+          SENDER_PASSWORD: ${{ secrets.SENDER_PASSWORD }}
+          RECIPIENT_EMAIL: ${{ secrets.RECIPIENT_EMAIL }}
+        run: |
+          echo "📧 Testing email configuration..."
+          if [ -z "$SENDER_EMAIL" ] || [ -z "$SENDER_PASSWORD" ] || [ -z "$RECIPIENT_EMAIL" ]; then
+            echo "⚠️ Email configuration incomplete - email reports will be skipped"
+          else
+            echo "✅ Email configuration detected"
+          fi
+          
+      - name: Run AI scraper with email reporting
         env:
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          SENDER_EMAIL: ${{ secrets.SENDER_EMAIL }}
+          SENDER_PASSWORD: ${{ secrets.SENDER_PASSWORD }}
+          RECIPIENT_EMAIL: ${{ secrets.RECIPIENT_EMAIL }}
+          OPENAI_MODEL: 'gpt-4o-mini'
+          SITEMAP_URL: ${{ github.event.inputs.sitemap_url || 'https://www.reportera.co.kr/news-sitemap.xml' }}
         run: |
-          echo "🚀 Starting AI-powered scraper"
+          echo "🚀 Starting AI-powered scraper with email reporting"
+          echo "📥 Sitemap: $SITEMAP_URL"
+          echo "📧 Email reports: $([ -n "$SENDER_EMAIL" ] && echo 'Enabled' || echo 'Disabled')"
           python ai_scraper.py
           
-      - name: Check for new content
-        id: check_changes
+      - name: Send error report email (if scraper failed)
+        if: failure()
+        env:
+          SENDER_EMAIL: ${{ secrets.SENDER_EMAIL }}
+          SENDER_PASSWORD: ${{ secrets.SENDER_PASSWORD }}
+          RECIPIENT_EMAIL: ${{ secrets.RECIPIENT_EMAIL }}
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          OPENAI_MODEL: 'gpt-4o-mini'
         run: |
-          git add .
-          if git diff --staged --quiet; then
-            echo "has_changes=false" >> $GITHUB_OUTPUT
-            echo "No new content found"
-          else
-            echo "has_changes=true" >> $GITHUB_OUTPUT
-            echo "New content detected"
-          fi
+          echo "❌ Scraper failed - sending error report email"
+          python send_email.py error "GitHub Actions 워크플로우 실행 실패"
           
       - name: Commit and push changes
-        if: steps.check_changes.outputs.has_changes == 'true'
+        if: success()
+        env:
+          PAT_TOKEN: ${{ secrets.PAT_TOKEN }}
         run: |
-          git config --local user.email "hangil9910@gmail.com"
-          git config --local user.name "gkstn15234"
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
           
-          # 스크래핑된 파일 수 계산
-          NEW_FILES=$(git diff --staged --name-only | grep -E '\.md$' | wc -l)
-          
-          git commit -m "🤖 Auto-scraped $NEW_FILES new articles $(date '+%Y-%m-%d %H:%M')"
-          git push
+          # 변경사항이 있는지 확인
+          if [ -n "$(git status --porcelain)" ]; then
+            echo "📝 Changes detected - committing..."
+            git add content/
+            git add processed_articles.db
+            git commit -m "🤖 Auto-generated content $(date '+%Y-%m-%d %H:%M:%S')"
+            
+            # PAT 토큰이 있으면 사용, 없으면 기본 토큰 사용
+            if [ -n "$PAT_TOKEN" ]; then
+              git remote set-url origin https://x-access-token:${PAT_TOKEN}@github.com/${{ github.repository }}.git
+            fi
+            
+            git push
+            echo "✅ Changes pushed successfully"
+          else
+            echo "ℹ️ No changes to commit"
+          fi
           
       - name: Notify completion
         if: steps.check_changes.outputs.has_changes == 'true'

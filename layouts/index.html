@@ -1,7 +1,7 @@
 {{ define "main" }}
 <main class="main-content">
     <div class="container">
-        {{ $allArticles := shuffle (where .Site.RegularPages.ByDate.Reverse ".Section" "in" (slice "automotive" "economy" "technology")) }}
+        {{ $allArticles := shuffle .Site.RegularPages.ByDate.Reverse }}
         
         <!-- 메인 헤드라인 섹션 -->
         <div class="row mb-4">
@@ -49,27 +49,27 @@
                     {{ $featuredArticles := first 6 (after 1 $allArticles) }}
                     {{ range $featuredArticles }}
                     <div class="col-lg-4 col-md-6 mb-4">
-                        <div class="card h-100 border-0 shadow-sm">
-                                                         <div class="card-img-top position-relative">
-                                 {{ if .Params.images }}
-                                 <img src="{{ index .Params.images 0 }}" alt="{{ .Title }}" class="img-fluid w-100 h-100 object-fit-cover">
-                                 {{ else }}
-                                 <div class="no-image-card d-flex align-items-center justify-content-center">
-                                     <i class="fas fa-{{ if eq .Section "car" }}star{{ else if eq .Section "economy" }}chart-line{{ else }}newspaper{{ end }} fa-2x text-muted"></i>
-                                 </div>
-                                 {{ end }}
-                                 <span class="badge bg-{{ if eq .Section "car" }}danger{{ else if eq .Section "economy" }}warning{{ else }}secondary{{ end }} position-absolute top-0 start-0 m-2">{{ .Section | title }}</span>
-                             </div>
-                            <div class="card-body d-flex flex-column">
-                                <h5 class="card-title">
-                                    <a href="{{ .RelPermalink }}" class="text-decoration-none text-dark">{{ .Title | truncate 60 }}</a>
-                                </h5>
-                                <p class="card-text text-muted mb-3">{{ .Summary | plainify | truncate 100 }}</p>
-                                <div class="mt-auto">
-                                    <small class="text-muted">{{ .Date.Format "01월 02일" }}</small>
+                        <a href="{{ .RelPermalink }}" class="text-decoration-none">
+                            <div class="card h-100 border-0 shadow-sm card-clickable">
+                                <div class="card-img-top position-relative">
+                                    {{ if .Params.images }}
+                                    <img src="{{ index .Params.images 0 }}" alt="{{ .Title }}" class="img-fluid w-100" style="height: 200px; object-fit: cover;" loading="lazy">
+                                    {{ else }}
+                                    <div class="no-image-card d-flex align-items-center justify-content-center" style="height: 200px;">
+                                        <i class="fas fa-{{ if eq .Section "automotive" }}car{{ else if eq .Section "economy" }}chart-line{{ else }}newspaper{{ end }} fa-2x text-muted"></i>
+                                    </div>
+                                    {{ end }}
+                                    <span class="badge bg-{{ if eq .Section "automotive" }}danger{{ else if eq .Section "economy" }}warning{{ else }}secondary{{ end }} position-absolute top-0 start-0 m-2">{{ .Section | title }}</span>
+                                </div>
+                                <div class="card-body d-flex flex-column">
+                                    <h5 class="card-title text-dark">{{ .Title | truncate 60 }}</h5>
+                                    <p class="card-text text-muted mb-3">{{ .Summary | plainify | truncate 100 }}</p>
+                                    <div class="mt-auto">
+                                        <small class="text-muted">{{ .Date.Format "01월 02일" }}</small>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
+                        </a>
                     </div>
                     {{ end }}
                 </div>
@@ -83,55 +83,54 @@
                  
                  <!-- 모바일 카드 뷰 -->
                  <div class="row d-md-none">
-                     {{ $latestArticles := first 10 (shuffle (where .Site.RegularPages.ByDate.Reverse ".Section" "in" (slice "automotive" "economy" "technology"))) }}
+                     {{ $latestArticles := first 10 (shuffle .Site.RegularPages.ByDate.Reverse) }}
                      {{ range $latestArticles }}
                      <div class="col-12 col-sm-6 mb-3">
-                         <div class="card h-100 border-0 shadow-sm">
-                             <div class="card-img-top position-relative">
-                                 {{ if .Params.images }}
-                                 <img src="{{ index .Params.images 0 }}" alt="{{ .Title }}" class="img-fluid w-100 h-100 object-fit-cover">
-                                 {{ else }}
-                                 <div class="no-image-card d-flex align-items-center justify-content-center">
-                                     <i class="fas fa-{{ if eq .Section "car" }}star{{ else if eq .Section "economy" }}chart-line{{ else }}newspaper{{ end }} fa-2x text-muted"></i>
+                         <a href="{{ .RelPermalink }}" class="text-decoration-none">
+                             <div class="card h-100 border-0 shadow-sm card-clickable">
+                                 <div class="card-img-top position-relative">
+                                     {{ if .Params.images }}
+                                     <img src="{{ index .Params.images 0 }}" alt="{{ .Title }}" class="img-fluid w-100" style="height: 180px; object-fit: cover;" loading="lazy">
+                                     {{ else }}
+                                     <div class="no-image-card d-flex align-items-center justify-content-center" style="height: 180px;">
+                                         <i class="fas fa-{{ if eq .Section "automotive" }}car{{ else if eq .Section "economy" }}chart-line{{ else }}newspaper{{ end }} fa-2x text-muted"></i>
+                                     </div>
+                                     {{ end }}
+                                     <span class="badge bg-{{ if eq .Section "automotive" }}danger{{ else if eq .Section "economy" }}warning{{ else }}secondary{{ end }} position-absolute top-0 start-0 m-2">{{ .Section | title }}</span>
                                  </div>
-                                 {{ end }}
-                                 <span class="badge bg-{{ if eq .Section "car" }}danger{{ else if eq .Section "economy" }}warning{{ else }}secondary{{ end }} position-absolute top-0 start-0 m-2">{{ .Section | title }}</span>
-                             </div>
-                             <div class="card-body d-flex flex-column">
-                                 <h5 class="card-title">
-                                     <a href="{{ .RelPermalink }}" class="text-decoration-none text-dark">{{ .Title | truncate 60 }}</a>
-                                 </h5>
+                                 <div class="card-body d-flex flex-column">
+                                     <h5 class="card-title text-dark">{{ .Title | truncate 60 }}</h5>
                                  <p class="card-text text-muted mb-3">{{ .Summary | plainify | truncate 80 }}</p>
                                  <div class="mt-auto">
                                      <small class="text-muted">{{ .Date.Format "01월 02일" }}</small>
                                  </div>
+                                 </div>
                              </div>
-                         </div>
+                         </a>
                      </div>
                      {{ end }}
                  </div>
                  
                  <!-- PC 리스트 뷰 -->
                  <div class="list-group d-none d-md-block">
-                     {{ $latestArticles := first 10 (shuffle (where .Site.RegularPages.ByDate.Reverse ".Section" "in" (slice "automotive" "economy" "technology"))) }}
+                     {{ $latestArticles := first 10 (shuffle .Site.RegularPages.ByDate.Reverse) }}
                      {{ range $latestArticles }}
-                     <div class="list-group-item list-group-item-action border-0 border-bottom">
-                         <div class="row align-items-center">
-                             <div class="col-md-4">
-                                 <div class="latest-news-thumbnail-pc">
-                                     {{ if .Params.images }}
-                                     <img src="{{ index .Params.images 0 }}" alt="{{ .Title }}" class="img-fluid w-100 h-100 object-fit-cover rounded">
-                                     {{ else }}
-                                     <div class="no-image-latest-pc d-flex align-items-center justify-content-center">
-                                         <i class="fas fa-{{ if eq .Section "car" }}star{{ else if eq .Section "economy" }}chart-line{{ else }}newspaper{{ end }} fa-3x text-{{ if eq .Section "car" }}danger{{ else if eq .Section "economy" }}warning{{ else }}secondary{{ end }}"></i>
+                     <a href="{{ .RelPermalink }}" class="text-decoration-none">
+                         <div class="list-group-item list-group-item-action border-0 border-bottom list-clickable">
+                             <div class="row align-items-center">
+                                 <div class="col-md-4">
+                                     <div class="latest-news-thumbnail-pc">
+                                         {{ if .Params.images }}
+                                         <img src="{{ index .Params.images 0 }}" alt="{{ .Title }}" class="img-fluid w-100" style="height: 120px; object-fit: cover;" loading="lazy">
+                                         {{ else }}
+                                         <div class="no-image-latest-pc d-flex align-items-center justify-content-center" style="height: 120px;">
+                                             <i class="fas fa-{{ if eq .Section "automotive" }}car{{ else if eq .Section "economy" }}chart-line{{ else }}newspaper{{ end }} fa-3x text-{{ if eq .Section "automotive" }}danger{{ else if eq .Section "economy" }}warning{{ else }}secondary{{ end }}"></i>
+                                         </div>
+                                         {{ end }}
                                      </div>
-                                     {{ end }}
                                  </div>
-                             </div>
-                             <div class="col-md-6">
-                                 <h6 class="mb-1">
-                                     <a href="{{ .RelPermalink }}" class="text-decoration-none text-dark">{{ .Title }}</a>
-                                 </h6>
+                                 <div class="col-md-6">
+                                     <h6 class="mb-1 text-dark">{{ .Title }}</h6>
                                  <p class="mb-1 text-muted">{{ .Summary | plainify | truncate 120 }}</p>
                              </div>
                              <div class="col-md-2 text-end">
@@ -140,7 +139,7 @@
                                  <span class="badge bg-{{ if eq .Section "car" }}danger{{ else if eq .Section "economy" }}warning{{ else }}secondary{{ end }}">{{ .Section | title }}</span>
                              </div>
                          </div>
-                     </div>
+                     </a>
                      {{ end }}
                  </div>
              </div>

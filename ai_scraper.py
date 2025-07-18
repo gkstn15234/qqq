@@ -46,21 +46,25 @@ def init_processed_db():
     return db_path
 
 def is_article_processed(url, title, article_hash):
-    """기사가 이미 처리되었는지 DB에서 확인"""
+    """기사가 이미 처리되었는지 DB에서 확인 (강화된 URL 체크)"""
     db_path = 'processed_articles.db'
     conn = sqlite3.connect(db_path)
     cursor = conn.cursor()
     
-    # URL 또는 해시로 확인
-    cursor.execute('''
-        SELECT COUNT(*) FROM processed_articles 
-        WHERE url = ? OR hash = ?
-    ''', (url, article_hash))
+    # 1. URL 직접 체크 (가장 확실한 방법)
+    cursor.execute('SELECT COUNT(*) FROM processed_articles WHERE url = ?', (url,))
+    url_count = cursor.fetchone()[0]
     
-    count = cursor.fetchone()[0]
+    if url_count > 0:
+        conn.close()
+        return True
+    
+    # 2. 해시 기반 체크 (제목+URL 조합)
+    cursor.execute('SELECT COUNT(*) FROM processed_articles WHERE hash = ?', (article_hash,))
+    hash_count = cursor.fetchone()[0]
+    
     conn.close()
-    
-    return count > 0
+    return hash_count > 0
 
 def mark_article_processed(url, title, article_hash):
     """기사를 처리됨으로 DB에 기록"""
@@ -138,15 +142,12 @@ def categorize_article(title, content, tags):
     # 키워드 매칭 점수 계산
     car_score = sum(1 for keyword in car_keywords if keyword in title_lower or keyword in content_lower or keyword in all_tags)
     economy_score = sum(1 for keyword in economy_keywords if keyword in title_lower or keyword in content_lower or keyword in all_tags)
-    tech_score = sum(1 for keyword in tech_keywords if keyword in title_lower or keyword in content_lower or keyword in all_tags)
     
-    # 가장 높은 점수의 카테고리 선택
-    if car_score >= max(economy_score, tech_score):
+    # automotive 또는 economy 카테고리만 사용
+    if car_score >= economy_score:
         return 'automotive'
-    elif economy_score >= tech_score:
-        return 'economy'
     else:
-        return 'technology'
+        return 'economy'
 
 def get_article_hash(title, url):
     """기사의 고유 해시 생성 (중복 방지용)"""
@@ -154,7 +155,7 @@ def get_article_hash(title, url):
     return hashlib.md5(content.encode()).hexdigest()[:8]
 
 def check_existing_articles(output_dir, article_hash, title, url):
-    """강화된 기사 중복 체크 (서브디렉토리 포함)"""
+    """강화된 기사 중복 체크 (서브디렉토리 포함) - URL 우선"""
     if not os.path.exists(output_dir):
         return False
     
@@ -170,24 +171,28 @@ def check_existing_articles(output_dir, article_hash, title, url):
                     with open(filepath, 'r', encoding='utf-8') as f:
                         content = f.read()
                         
-                        # 1. 해시 기반 체크 (기존)
+                        # 1. URL 기반 체크 (최우선 - 가장 확실)
+                        if f'source_url: "{url}"' in content:
+                            return True
+                        
+                        # 2. 해시 기반 체크
                         if f"hash: {article_hash}" in content:
                             return True
                         
-                        # 2. URL 기반 체크 (강화)
-                        if f"source_url: \"{url}\"" in content:
-                            return True
-                        
-                        # 3. 제목 유사도 체크 (추가)
+                        # 3. 제목 유사도 체크 (보완적)
                         title_match = re.search(r'title: "([^"]+)"', content)
                         if title_match:
                             existing_title = title_match.group(1)
                             existing_normalized = re.sub(r'[^\w\s]', '', existing_title.lower()).strip()
                             
-                            # 제목이 90% 이상 유사하면 중복으로 판단
-                            similarity = len(set(normalized_title.split()) & set(existing_normalized.split())) / max(len(normalized_title.split()), len(existing_normalized.split()), 1)
-                            if similarity > 0.9:
-                                return True
+                            # 제목이 95% 이상 유사하면 중복으로 판단
+                            if normalized_title and existing_normalized:
+                                title_words = set(normalized_title.split())
+                                existing_words = set(existing_normalized.split())
+                                if title_words and existing_words:
+                                    similarity = len(title_words & existing_words) / len(title_words | existing_words)
+                                    if similarity > 0.95:
+                                        return True
                                 
                 except Exception:
                     continue
@@ -510,22 +515,34 @@ def shuffle_images_in_content(content, cloudflare_images):
 
 def create_markdown_file(article_data, output_dir, cloudflare_account_id=None, cloudflare_api_token=None, ai_api_key=None):
     """마크다운 파일 생성 (AI 재작성 및 이미지 처리 포함)"""
-    # 다단계 중복 체크
+    # 🛡️ 강화된 다단계 중복 체크
     article_hash = get_article_hash(article_data['title'], article_data['url'])
     
-    # 1. DB 기반 중복 체크 (빠름)
-    if is_article_processed(article_data['url'], article_data['title'], article_hash):
-        print(f"⏭️ Skipping duplicate article (DB): {article_data['title']}")
+    # 1. URL 기반 DB 체크 (최우선 - 가장 빠르고 확실)
+    db_path = 'processed_articles.db'
+    conn = sqlite3.connect(db_path)
+    cursor = conn.cursor()
+    cursor.execute('SELECT COUNT(*) FROM processed_articles WHERE url = ?', (article_data['url'],))
+    url_exists = cursor.fetchone()[0] > 0
+    conn.close()
+    
+    if url_exists:
+        print(f"⏭️ Skipping duplicate article (URL in DB): {article_data['title'][:50]}...")
         return False
     
-    # 2. 파일 기반 중복 체크 (안전장치)
+    # 2. 전체 DB 기반 중복 체크 (해시 포함)
+    if is_article_processed(article_data['url'], article_data['title'], article_hash):
+        print(f"⏭️ Skipping duplicate article (Hash in DB): {article_data['title'][:50]}...")
+        return False
+    
+    # 3. 파일 기반 중복 체크 (안전장치 - 파일시스템과 DB 불일치 대비)
     if check_existing_articles(output_dir, article_hash, article_data['title'], article_data['url']):
-        print(f"⏭️ Skipping duplicate article (File): {article_data['title']}")
-        # DB에도 기록
+        print(f"⏭️ Skipping duplicate article (Found in Files): {article_data['title'][:50]}...")
+        # DB에도 기록하여 다음번엔 더 빠르게 스킵
         mark_article_processed(article_data['url'], article_data['title'], article_hash)
         return False
     
-    print(f"🤖 Processing with AI: {article_data['title'][:50]}...")
+    print(f"🤖 Processing NEW article with AI: {article_data['title'][:50]}...")
     
     # AI로 제목 재작성 (구조 유지, 내용 변경)
     new_title = rewrite_title_with_ai(
@@ -614,14 +631,19 @@ url: "/{category}/{title_slug}/"
 """
     
     # 파일 저장
-    with open(filepath, 'w', encoding='utf-8') as f:
-        f.write(markdown_content)
-    
-    # DB에 처리 완료 기록
-    mark_article_processed(article_data['url'], article_data['title'], article_hash)
-    
-    print(f"✅ Created: {os.path.basename(filepath)}")
-    return True
+    try:
+        with open(filepath, 'w', encoding='utf-8') as f:
+            f.write(markdown_content)
+        
+        # 📝 DB에 처리 완료 기록 (파일 생성 성공 후에만)
+        mark_article_processed(article_data['url'], article_data['title'], article_hash)
+        
+        print(f"✅ Created: {category}/{os.path.basename(filepath)}")
+        return True
+        
+    except Exception as e:
+        print(f"❌ Failed to create file {filepath}: {e}")
+        return False
 
 def main():
     """메인 함수"""
@@ -682,14 +704,32 @@ def main():
                     if url.startswith('https://www.reportera.co.kr/'):
                         urls.append(url)
     
-    # 최신 20개 기사 처리 (뉴스 사이트맵이므로)
-    urls = urls[:20]
+    # 🔥 모든 기사 처리 (제한 제거)
+    print(f"🔍 Found {len(urls)} URLs in sitemap - processing ALL articles")
     
     # 출력 디렉토리
     output_dir = 'content'
     os.makedirs(output_dir, exist_ok=True)
     
-    print(f"🔍 Found {len(urls)} URLs to process")
+    # 📊 처리 전 중복 체크 통계
+    duplicate_count = 0
+    db_path = 'processed_articles.db'
+    
+    if os.path.exists(db_path):
+        conn = sqlite3.connect(db_path)
+        cursor = conn.cursor()
+        
+        for url in urls:
+            cursor.execute('SELECT COUNT(*) FROM processed_articles WHERE url = ?', (url,))
+            if cursor.fetchone()[0] > 0:
+                duplicate_count += 1
+        
+        conn.close()
+    
+    print(f"📈 Processing Statistics:")
+    print(f"   🔗 Total URLs: {len(urls)}")
+    print(f"   🔄 Already processed: {duplicate_count}")
+    print(f"   🆕 New to process: {len(urls) - duplicate_count}")
     
     # 처리 통계
     processed = 0
@@ -697,7 +737,20 @@ def main():
     failed = 0
     
     for i, url in enumerate(urls):
-        print(f"\n📄 [{i+1}/{len(urls)}] Processing: {url.split('/')[-1][:50]}...")
+        print(f"\n📄 [{i+1}/{len(urls)}] Processing: {url.split('/')[-2:]}")
+        
+        # 🛡️ URL 기반 사전 중복 체크 (빠른 스킵)
+        if os.path.exists(db_path):
+            conn = sqlite3.connect(db_path)
+            cursor = conn.cursor()
+            cursor.execute('SELECT COUNT(*) FROM processed_articles WHERE url = ?', (url,))
+            is_processed = cursor.fetchone()[0] > 0
+            conn.close()
+            
+            if is_processed:
+                print(f"⏭️ Skipping already processed URL: {url}")
+                skipped += 1
+                continue
         
         article_data = extract_content_from_url(url)
         
@@ -710,23 +763,70 @@ def main():
                 ai_api_key
             ):
                 processed += 1
+                print(f"🎯 Progress: {processed} processed, {skipped} skipped, {failed} failed")
             else:
                 skipped += 1
         else:
             failed += 1
+            print(f"❌ Failed to extract content from: {url}")
         
-        # API 제한 고려 대기
-        time.sleep(random.uniform(1, 2))
+        # API 제한 고려 대기 (처리량에 따라 조정)
+        if processed > 0 and processed % 10 == 0:
+            print(f"⏸️ Processed {processed} articles, taking a short break...")
+            time.sleep(5)  # 10개마다 5초 대기
+        else:
+            time.sleep(random.uniform(1, 2))
     
-    print(f"\n📊 Processing Summary:")
-    print(f"✅ Processed: {processed}")
-    print(f"⏭️ Skipped: {skipped}")
+    print(f"\n📊 Final Processing Summary:")
+    print(f"✅ Successfully Processed: {processed}")
+    print(f"⏭️ Skipped (Duplicates): {skipped}")
     print(f"❌ Failed: {failed}")
+    print(f"📈 Total URLs Checked: {len(urls)}")
     
     if processed > 0:
-        print(f"🎉 Successfully created {processed} AI-rewritten articles!")
+        print(f"🎉 Successfully created {processed} new AI-rewritten articles!")
+        print(f"💾 Database updated with {processed + skipped} processed URLs")
     else:
-        print("ℹ️ No new articles were created.")
+        print("ℹ️ No new articles were created - all URLs already processed or failed")
+    
+    # 📊 DB 상태 확인
+    try:
+        db_path = 'processed_articles.db'
+        conn = sqlite3.connect(db_path)
+        cursor = conn.cursor()
+        cursor.execute('SELECT COUNT(*) FROM processed_articles')
+        total_processed = cursor.fetchone()[0]
+        conn.close()
+        print(f"🗄️ Total articles in database: {total_processed}")
+    except Exception as e:
+        print(f"⚠️ Could not check database: {e}")
+    
+    # 📧 이메일 보고서 발송
+    print(f"\n📧 Sending email report...")
+    try:
+        # send_email.py의 함수 import 및 실행
+        import importlib.util
+        import sys
+        
+        # send_email.py 모듈 동적 로드
+        spec = importlib.util.spec_from_file_location("send_email", "send_email.py")
+        if spec and spec.loader:
+            send_email_module = importlib.util.module_from_spec(spec)
+            sys.modules["send_email"] = send_email_module
+            spec.loader.exec_module(send_email_module)
+            
+            # 이메일 보고서 발송
+            email_success = send_email_module.send_report_email()
+            if email_success:
+                print("✅ Email report sent successfully!")
+            else:
+                print("⚠️ Email report failed to send")
+        else:
+            print("⚠️ Could not load send_email.py module")
+            
+    except Exception as e:
+        print(f"⚠️ Email sending error: {e}")
+        print("📧 Skipping email report...")
 
 if __name__ == "__main__":
     main() 

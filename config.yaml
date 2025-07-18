@@ -18,9 +18,9 @@ params:
   address: '경상북도 경산시 진량읍 일연로 747'
   phone: '010-7539-8504'
   email: 'hangil9910@gmail.com'
-  publisher: '김한수'
-  editor: '김한수'
-  youthProtectionOfficer: '김한수'
+  publisher: '윤신애'
+  editor: '윤신애'
+  youthProtectionOfficer: '윤신애'
   
   # 언론사 등록 정보
   mediaRegistration: '경북,아55580'
@@ -39,8 +39,11 @@ params:
 menu:
   main:
     - name: '자동차'
-      url: '/car/'
+      url: '/automotive/'
       weight: 10
+    - name: '경제'
+      url: '/economy/'
+      weight: 20
 
 taxonomies:
   tag: tags

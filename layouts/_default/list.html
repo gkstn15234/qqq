@@ -1,167 +1,97 @@
 {{ define "main" }}
-{{ partial "breadcrumb.html" . }}
-
 <section class="category-page">
     <div class="container">
         <!-- Category Header -->
-        <div class="category-header">
-            <div class="row align-items-center">
-                <div class="col-lg-8">
-                    <div class="category-title-section">
-                        <h1 class="category-title">{{ .Title }}</h1>
-                        {{ if .Description }}
-                        <p class="category-description">{{ .Description }}</p>
-                        {{ end }}
-                        <div class="category-meta">
-                            <span class="article-count">총 {{ len .Pages }}개 기사</span>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-lg-4">
-                    <div class="category-stats">
-                        <div class="stat-item">
-                            <i class="fas fa-newspaper"></i>
-                            <span>{{ len .Pages }}</span>
-                            <small>기사</small>
-                        </div>
-                    </div>
-                </div>
-            </div>
+        <div class="category-header mb-4">
+            <h1 class="category-title h2 mb-2">{{ .Title }}</h1>
+            {{ if .Description }}
+            <p class="category-description text-muted">{{ .Description }}</p>
+            {{ end }}
         </div>
-
-        <!-- Featured Article -->
-        {{ if .Pages }}
-        <div class="featured-category-article">
-            {{ $featured := index .Pages 0 }}
-            <div class="row">
-                <div class="col-lg-8">
-                    <article class="category-featured">
-                        <div class="featured-image">
-                            {{ if $featured.Params.images }}
-                            <img src="{{ index $featured.Params.images 0 }}" alt="{{ $featured.Title }}" class="img-fluid">
-                            {{ else }}
-                            <div class="no-image-large">
-                                                                    <i class="fas fa-{{ if eq .Section "car" }}star{{ else if eq .Section "economy" }}chart-line{{ else }}newspaper{{ end }}"></i>
-                            </div>
-                            {{ end }}
-                        </div>
-                        <div class="featured-content">
-                            <div class="featured-meta">
-                                <span class="featured-date">{{ $featured.Date.Format "2006년 01월 02일" }}</span>
-                                <span class="featured-author">{{ $featured.Params.author }}</span>
-                            </div>
-                            <h2 class="featured-title">
-                                <a href="{{ $featured.Permalink }}">{{ $featured.Title }}</a>
-                            </h2>
-                            <p class="featured-excerpt">{{ $featured.Summary | truncate 200 }}</p>
-                            <a href="{{ $featured.Permalink }}" class="read-more-btn">자세히 보기</a>
-                        </div>
-                    </article>
-                </div>
-                <div class="col-lg-4">
-                    <!-- Recent Articles Sidebar -->
-                    <div class="recent-articles-sidebar">
-                        <h4 class="sidebar-title">최근 기사</h4>
-                        {{ range first 4 (after 1 .Pages) }}
-                        <article class="recent-article-item">
-                            <div class="recent-article-content">
-                                <h5 class="recent-title">
-                                    <a href="{{ .Permalink }}">{{ .Title | truncate 60 }}</a>
-                                </h5>
-                                <div class="recent-meta">
-                                    <span class="recent-date">{{ .Date.Format "01월 02일" }}</span>
-                                </div>
-                            </div>
-                        </article>
-                        {{ end }}
-                    </div>
-                </div>
-            </div>
-        </div>
-        {{ end }}
 
         <!-- Articles List -->
-        <div class="articles-list-section">
-            <div class="section-header">
-                <h3 class="section-title">전체 기사</h3>
-                <div class="sort-options">
-                    <span class="sort-label">정렬:</span>
-                    <select class="sort-select">
-                        <option value="latest">최신순</option>
-                        <option value="popular">인기순</option>
-                        <option value="title">제목순</option>
-                    </select>
-                </div>
-            </div>
-
-            <div class="articles-grid">
-                {{ range .Paginator.Pages }}
-                <article class="article-list-item">
-                    <div class="row">
-                        <div class="col-md-5">
-                            <div class="article-thumb">
+        <div class="articles-grid">
+            {{ range .Pages }}
+            <article class="article-item mb-4">
+                <a href="{{ .RelPermalink }}" class="text-decoration-none">
+                    <div class="row align-items-center">
+                        <!-- Thumbnail -->
+                        <div class="col-md-4 col-lg-3">
+                            <div class="article-thumbnail">
                                 {{ if .Params.images }}
-                                <img src="{{ index .Params.images 0 }}" alt="{{ .Title }}" class="img-fluid">
+                                <img src="{{ index .Params.images 0 }}" alt="{{ .Title }}" 
+                                     class="img-fluid w-100" 
+                                     style="height: 150px; object-fit: cover; border-radius: 8px;" 
+                                     loading="lazy">
                                 {{ else }}
-                                <div class="no-image">
-                                                                            <i class="fas fa-{{ if eq .Section "car" }}star{{ else if eq .Section "economy" }}chart-line{{ else }}newspaper{{ end }}"></i>
+                                <div class="no-image d-flex align-items-center justify-content-center" 
+                                     style="height: 150px; background: #f8f9fa; border-radius: 8px;">
+                                    <i class="fas fa-{{ if eq .Section "automotive" }}car{{ else if eq .Section "economy" }}chart-line{{ else }}newspaper{{ end }} fa-2x text-muted"></i>
                                 </div>
                                 {{ end }}
                             </div>
                         </div>
-                        <div class="col-md-7">
-                            <div class="article-content">
-                                <div class="article-meta">
-                                    <span class="article-date">{{ .Date.Format "2006년 01월 02일" }}</span>
-                                    <span class="article-author">{{ .Params.author }}</span>
-                                </div>
-                                <h3 class="article-title">
-                                    <a href="{{ .Permalink }}">{{ .Title }}</a>
-                                </h3>
-                                <p class="article-excerpt">{{ .Summary | truncate 150 }}</p>
-                                <div class="article-tags">
-                                    {{ if .Params.tags }}
-                                        {{ range first 3 .Params.tags }}
-                                        <span class="tag">#{{ . }}</span>
-                                        {{ end }}
-                                    {{ end }}
-                                </div>
+                        
+                        <!-- Content -->
+                        <div class="col-md-8 col-lg-9">
+                            <div class="article-content ps-md-3">
+                                <h3 class="article-title h5 mb-2 text-dark">{{ .Title }}</h3>
+                                <p class="article-excerpt text-muted mb-2">{{ .Summary | plainify | truncate 150 }}</p>
+                                <small class="text-muted">{{ .Date.Format "2006년 01월 02일" }}</small>
                             </div>
                         </div>
                     </div>
-                </article>
-                {{ end }}
-            </div>
+                </a>
+            </article>
+            {{ end }}
         </div>
-
-        <!-- Pagination -->
-        {{ if gt .Paginator.TotalPages 1 }}
-        <nav class="pagination-section">
-            <ul class="pagination justify-content-center">
-                {{ if .Paginator.HasPrev }}
-                <li class="page-item">
-                    <a class="page-link" href="{{ .Paginator.Prev.URL }}">
-                        <i class="fas fa-chevron-left"></i> 이전
-                    </a>
-                </li>
-                {{ end }}
-
-                {{ range .Paginator.Pagers }}
-                <li class="page-item {{ if eq . $.Paginator }}active{{ end }}">
-                    <a class="page-link" href="{{ .URL }}">{{ .PageNumber }}</a>
-                </li>
-                {{ end }}
-
-                {{ if .Paginator.HasNext }}
-                <li class="page-item">
-                    <a class="page-link" href="{{ .Paginator.Next.URL }}">
-                        다음 <i class="fas fa-chevron-right"></i>
-                    </a>
-                </li>
-                {{ end }}
-            </ul>
-        </nav>
+        
+        {{ if eq (len .Pages) 0 }}
+        <div class="text-center py-5">
+            <i class="fas fa-newspaper fa-3x text-muted mb-3"></i>
+            <h3 class="text-muted">아직 등록된 기사가 없습니다.</h3>
+        </div>
         {{ end }}
     </div>
 </section>
+
+<style>
+.category-page {
+    padding: 2rem 0;
+}
+
+.article-item {
+    padding: 1.5rem;
+    border: 1px solid #e9ecef;
+    border-radius: 12px;
+    transition: box-shadow 0.2s ease;
+}
+
+.article-item:hover {
+    box-shadow: 0 0.25rem 0.75rem rgba(0, 0, 0, 0.1);
+    border-color: #dee2e6;
+}
+
+.article-title {
+    line-height: 1.4;
+}
+
+.article-excerpt {
+    line-height: 1.6;
+}
+
+@media (max-width: 767.98px) {
+    .article-item {
+        padding: 1rem;
+    }
+    
+    .article-thumbnail {
+        margin-bottom: 1rem;
+    }
+    
+    .ps-md-3 {
+        padding-left: 0 !important;
+    }
+}
+</style>
 {{ end }}
