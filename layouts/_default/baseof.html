@@ -17,16 +17,56 @@
     <meta property="og:type" content="{{ if .IsPage }}article{{ else }}website{{ end }}">
     <meta property="og:url" content="{{ .Permalink }}">
     <meta property="og:site_name" content="{{ .Site.Title }}">
-    {{ if .Params.image }}
-    <meta property="og:image" content="{{ .Params.image | absURL }}">
+    {{ $image := "" }}
+    {{ if .Params.thumbnail }}
+        {{ $image = .Params.thumbnail }}
+    {{ else if .Params.image }}
+        {{ $image = .Params.image }}
+    {{ else if .Params.featured_image }}
+        {{ $image = .Params.featured_image }}
+    {{ else if .Params.images }}
+        {{ $image = index .Params.images 0 }}
+    {{ end }}
+    {{ if $image }}
+    <meta property="og:image" content="{{ $image | absURL }}">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta property="og:image:alt" content="{{ .Title }}">
+    {{ end }}
+    
+    <!-- Google Discover 최적화 -->
+    {{ if and .IsPage $image }}
+    <meta name="thumbnail" content="{{ $image | absURL }}">
+    <meta name="image" content="{{ $image | absURL }}">
+    <link rel="image_src" href="{{ $image | absURL }}">
     {{ end }}
     
     <!-- Twitter Card -->
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:title" content="{{ if .IsHome }}{{ .Site.Title }}{{ else }}{{ .Title }}{{ end }}">
     <meta name="twitter:description" content="{{ if .Description }}{{ .Description }}{{ else }}{{ .Site.Params.description }}{{ end }}">
-    {{ if .Params.image }}
-    <meta name="twitter:image" content="{{ .Params.image | absURL }}">
+    {{ if $image }}
+    <meta name="twitter:image" content="{{ $image | absURL }}">
+    <meta name="twitter:image:alt" content="{{ .Title }}">
+    {{ end }}
+    
+    <!-- Article Meta (for posts) -->
+    {{ if .IsPage }}
+    <meta property="article:published_time" content="{{ .Date.Format "2006-01-02T15:04:05-07:00" }}">
+    <meta property="article:modified_time" content="{{ .Lastmod.Format "2006-01-02T15:04:05-07:00" }}">
+    {{ if .Params.author }}
+    <meta property="article:author" content="{{ .Params.author }}">
+    {{ end }}
+    {{ if .Params.categories }}
+    {{ range .Params.categories }}
+    <meta property="article:section" content="{{ . }}">
+    {{ end }}
+    {{ end }}
+    {{ if .Params.tags }}
+    {{ range .Params.tags }}
+    <meta property="article:tag" content="{{ . }}">
+    {{ end }}
+    {{ end }}
     {{ end }}
     
     <!-- Canonical URL -->
@@ -34,6 +74,86 @@
     
     <!-- RSS Feed -->
     <link rel="alternate" type="application/rss+xml" title="{{ .Site.Title }}" href="{{ "/index.xml" | absURL }}">
+    
+    <!-- JSON-LD Structured Data -->
+    {{ if .IsPage }}
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "NewsArticle",
+        "headline": "{{ .Title }}",
+        "description": "{{ if .Description }}{{ .Description }}{{ else }}{{ .Summary | plainify | truncate 200 }}{{ end }}",
+        "url": "{{ .Permalink }}",
+        "datePublished": "{{ .Date.Format "2006-01-02T15:04:05-07:00" }}",
+        "dateModified": "{{ .Lastmod.Format "2006-01-02T15:04:05-07:00" }}",
+        "author": {
+            "@type": "Person",
+            "name": "{{ if .Params.author }}{{ .Params.author }}{{ else }}{{ .Site.Params.author }}{{ end }}"
+        },
+        "publisher": {
+            "@type": "Organization",
+            "name": "{{ .Site.Title }}",
+            "logo": {
+                "@type": "ImageObject",
+                "url": "{{ "/images/logo.png" | absURL }}",
+                "width": 300,
+                "height": 60
+            }
+        },
+        {{ if $image }}
+        "image": {
+            "@type": "ImageObject",
+            "url": "{{ $image | absURL }}",
+            "width": 1200,
+            "height": 630,
+            "caption": "{{ .Title }}"
+        },
+        "thumbnailUrl": "{{ $image | absURL }}",
+        {{ end }}
+        "mainEntityOfPage": {
+            "@type": "WebPage",
+            "@id": "{{ .Permalink }}"
+        },
+        {{ if .Params.categories }}
+        "articleSection": "{{ index .Params.categories 0 }}",
+        {{ end }}
+        {{ if .Params.tags }}
+        "keywords": "{{ delimit .Params.tags ", " }}",
+        {{ end }}
+        "isAccessibleForFree": true,
+        "hasPart": {
+            "@type": "WebPageElement",
+            "isAccessibleForFree": true,
+            "cssSelector": ".article-content"
+        }
+    }
+    </script>
+    {{ else if .IsHome }}
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "WebSite",
+        "name": "{{ .Site.Title }}",
+        "description": "{{ .Site.Params.description }}",
+        "url": "{{ .Site.BaseURL }}",
+        "publisher": {
+            "@type": "Organization",
+            "name": "{{ .Site.Title }}",
+            "logo": {
+                "@type": "ImageObject",
+                "url": "{{ "/images/logo.png" | absURL }}",
+                "width": 300,
+                "height": 60
+            }
+        },
+        "potentialAction": {
+            "@type": "SearchAction",
+            "target": "{{ .Site.BaseURL }}/search?q={search_term_string}",
+            "query-input": "required name=search_term_string"
+        }
+    }
+    </script>
+    {{ end }}
     
     <!-- Favicon -->
     <link rel="icon" type="image/x-icon" href="{{ "/images/favicon.ico" | relURL }}">

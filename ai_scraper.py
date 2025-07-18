@@ -615,11 +615,30 @@ source_url: "{article_data['url']}"
 url: "/{category}/{title_slug}/"
 """
     
-    # 첫 번째 이미지를 썸네일로
+    # 첫 번째 이미지를 썸네일로 설정 (SEO 및 소셜 미디어 최적화)
     if cloudflare_images:
-        markdown_content += f'images: ["{cloudflare_images[0]}"]\n'
+        thumbnail_image = cloudflare_images[0]
+        markdown_content += f'images: ["{thumbnail_image}"]\n'
+        markdown_content += f'thumbnail: "{thumbnail_image}"\n'
+        markdown_content += f'image: "{thumbnail_image}"\n'  # Open Graph용
+        markdown_content += f'featured_image: "{thumbnail_image}"\n'  # 테마별 호환성
+        markdown_content += f'image_width: 1200\n'  # Google Discover 최적화
+        markdown_content += f'image_height: 630\n'  # Google Discover 최적화
     elif article_data['images']:
-        markdown_content += f'images: ["{article_data["images"][0]}"]\n'
+        thumbnail_image = article_data['images'][0]
+        markdown_content += f'images: ["{thumbnail_image}"]\n'
+        markdown_content += f'thumbnail: "{thumbnail_image}"\n'
+        markdown_content += f'image: "{thumbnail_image}"\n'  # Open Graph용
+        markdown_content += f'featured_image: "{thumbnail_image}"\n'  # 테마별 호환성
+        markdown_content += f'image_width: 1200\n'  # Google Discover 최적화
+        markdown_content += f'image_height: 630\n'  # Google Discover 최적화
+    
+    # SEO 최적화 추가 필드
+    markdown_content += f'slug: "{title_slug}"\n'
+    markdown_content += f'type: "post"\n'
+    markdown_content += f'layout: "single"\n'
+    markdown_content += f'news_keywords: "{", ".join(enhanced_tags[:5])}"\n'  # Google News 최적화
+    markdown_content += f'robots: "index, follow"\n'  # 검색엔진 크롤링 허용
     
     markdown_content += f"""draft: false
 ---
