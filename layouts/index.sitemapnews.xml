@@ -3,8 +3,9 @@
         xmlns:news="http://www.google.com/schemas/sitemap-news/0.9">
     
     {{ range first 1000 (.Site.RegularPages.ByDate.Reverse) }}
-    {{ if and (not .Params.private) (ge (.Date.Unix) (sub now.Unix 259200)) }}
+    {{ if and (not .Params.private) (not .Params.draft) (ge (.Date.Unix) (sub now.Unix 259200)) }}
     <!-- Only include articles from the last 3 days for Google News -->
+    <!-- Section: {{ .Section }}, Title: {{ .Title }} -->
     <url>
         <loc>{{ .Permalink }}</loc>
         <lastmod>{{ .Lastmod.Format "2006-01-02T15:04:05-07:00" }}</lastmod>
@@ -13,9 +14,9 @@
                 <news:name>{{ .Site.Title }}</news:name>
                 <news:language>ko</news:language>
             </news:publication>
-            {{ if eq .Section "securities" }}
+            {{ if or (eq .Section "automotive") (eq .Section "securities") }}
             <news:genres>PressRelease</news:genres>
-            {{ else if or (eq .Section "economy") (eq .Section "realestate") (eq .Section "it") (eq .Section "international") }}
+            {{ else if or (eq .Section "economy") (eq .Section "technology") (eq .Section "realestate") (eq .Section "it") (eq .Section "international") }}
             <news:genres>OpEd</news:genres>
             {{ else if .Params.genre }}
             {{ if eq .Params.genre "blog" }}
@@ -25,6 +26,9 @@
             {{ else if or (eq .Params.genre "opinion") (eq .Params.genre "oped") }}
             <news:genres>OpEd</news:genres>
             {{ end }}
+            {{ else }}
+            <!-- 기본 장르 설정 -->
+            <news:genres>PressRelease</news:genres>
             {{ end }}
             <news:publication_date>{{ .Date.Format "2006-01-02T15:04:05-07:00" }}</news:publication_date>
             <news:title>{{ .Title }}</news:title>

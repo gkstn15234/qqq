@@ -1,0 +1,75 @@
+{
+  "name": "Direct AI Scraper Execution",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "hours",
+              "hoursInterval": 8
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [420, 300],
+      "id": "schedule-trigger",
+      "name": "8시간마다 실행"
+    },
+    {
+      "parameters": {
+        "command": "cd /path/to/blogai2 && python ai_scraper.py",
+        "options": {
+          "env": {
+            "OPENAI_API_KEY": "={{ $secrets.OPENAI_API_KEY }}",
+            "CLOUDFLARE_API_TOKEN": "={{ $secrets.CLOUDFLARE_API_TOKEN }}",
+            "CLOUDFLARE_ACCOUNT_ID": "={{ $secrets.CLOUDFLARE_ACCOUNT_ID }}",
+            "SITEMAP_URL": "https://www.reportera.co.kr/news-sitemap.xml"
+          }
+        }
+      },
+      "type": "n8n-nodes-base.executeCommand",
+      "typeVersion": 1,
+      "position": [640, 300],
+      "id": "run-scraper",
+      "name": "AI 스크래퍼 실행"
+    },
+    {
+      "parameters": {
+        "command": "cd /path/to/blogai2 && git add . && git commit -m 'AI auto-update: {{ $now.format('yyyy-MM-dd HH:mm') }}' && git push",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.executeCommand",
+      "typeVersion": 1,
+      "position": [860, 300],
+      "id": "git-push",
+      "name": "Git 자동 커밋/푸시"
+    }
+  ],
+  "connections": {
+    "8시간마다 실행": {
+      "main": [
+        [
+          {
+            "node": "AI 스크래퍼 실행",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI 스크래퍼 실행": {
+      "main": [
+        [
+          {
+            "node": "Git 자동 커밋/푸시",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  }
+} 

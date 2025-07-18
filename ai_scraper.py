@@ -11,6 +11,8 @@ import hashlib
 import json
 import base64
 from urllib.parse import urlparse, urljoin
+import sqlite3
+from unidecode import unidecode
 
 # AI 관련 import
 try:
@@ -23,21 +25,141 @@ def get_env_var(name, default=None):
     """환경변수 가져오기"""
     return os.environ.get(name, default)
 
+def init_processed_db():
+    """처리된 기사 추적을 위한 SQLite DB 초기화"""
+    db_path = 'processed_articles.db'
+    conn = sqlite3.connect(db_path)
+    cursor = conn.cursor()
+    
+    cursor.execute('''
+        CREATE TABLE IF NOT EXISTS processed_articles (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            url TEXT UNIQUE,
+            title TEXT,
+            hash TEXT,
+            processed_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        )
+    ''')
+    
+    conn.commit()
+    conn.close()
+    return db_path
+
+def is_article_processed(url, title, article_hash):
+    """기사가 이미 처리되었는지 DB에서 확인"""
+    db_path = 'processed_articles.db'
+    conn = sqlite3.connect(db_path)
+    cursor = conn.cursor()
+    
+    # URL 또는 해시로 확인
+    cursor.execute('''
+        SELECT COUNT(*) FROM processed_articles 
+        WHERE url = ? OR hash = ?
+    ''', (url, article_hash))
+    
+    count = cursor.fetchone()[0]
+    conn.close()
+    
+    return count > 0
+
+def mark_article_processed(url, title, article_hash):
+    """기사를 처리됨으로 DB에 기록"""
+    db_path = 'processed_articles.db'
+    conn = sqlite3.connect(db_path)
+    cursor = conn.cursor()
+    
+    try:
+        cursor.execute('''
+            INSERT OR REPLACE INTO processed_articles (url, title, hash)
+            VALUES (?, ?, ?)
+        ''', (url, title, article_hash))
+        
+        conn.commit()
+    except Exception as e:
+        print(f"⚠️ Failed to mark article as processed: {e}")
+    finally:
+        conn.close()
+
 def clean_filename(title):
     """제목을 파일명으로 사용할 수 있도록 정리"""
     filename = re.sub(r'[^\w\s-]', '', title)
     filename = re.sub(r'[-\s]+', '-', filename)
     return filename.strip('-').lower()
 
+def create_url_slug(title):
+    """제목을 URL 슬러그로 변환 (영문)"""
+    try:
+        # 한글을 영문으로 변환 (unidecode 사용)
+        slug = unidecode(title)
+        # 특수문자 제거, 공백을 하이픈으로
+        slug = re.sub(r'[^\w\s-]', '', slug)
+        slug = re.sub(r'[-\s]+', '-', slug)
+        # 소문자로 변환, 앞뒤 하이픈 제거
+        slug = slug.strip('-').lower()
+        # 너무 길면 자르기 (최대 60자)
+        if len(slug) > 60:
+            slug = slug[:60].rstrip('-')
+        return slug
+    except:
+        # unidecode 실패 시 기본 방식 사용
+        return clean_filename(title)
+
+def categorize_article(title, content, tags):
+    """기사를 카테고리별로 분류"""
+    title_lower = title.lower()
+    content_lower = content.lower()
+    all_tags = [tag.lower() for tag in tags]
+    
+    # 자동차 관련 키워드
+    car_keywords = [
+        'car', 'auto', 'vehicle', '자동차', '차량', '승용차', '트럭', '버스',
+        '현대', '기아', '삼성', '테슬라', 'tesla', 'hyundai', 'kia',
+        '전기차', 'ev', 'electric', '수소차', 'hydrogen',
+        '엔진', '모터', '배터리', '충전', '주행', '운전',
+        '폴드', 'fold', '갤럭시', 'galaxy', '스마트폰', 'smartphone'
+    ]
+    
+    # 경제 관련 키워드  
+    economy_keywords = [
+        'economy', 'economic', '경제', '금융', '투자', '주식', '코스피', '증시',
+        '달러', '원화', '환율', '금리', '인플레이션', '물가',
+        '기업', '회사', '매출', '이익', '손실', '실적',
+        '정책', '정부', '은행', '중앙은행'
+    ]
+    
+    # 기술/IT 관련 키워드
+    tech_keywords = [
+        'tech', 'technology', 'it', '기술', '소프트웨어', '하드웨어',
+        'ai', '인공지능', '머신러닝', '딥러닝', 
+        '앱', 'app', '플랫폼', 'platform', '서비스',
+        '구글', 'google', '애플', 'apple', '마이크로소프트', 'microsoft'
+    ]
+    
+    # 키워드 매칭 점수 계산
+    car_score = sum(1 for keyword in car_keywords if keyword in title_lower or keyword in content_lower or keyword in all_tags)
+    economy_score = sum(1 for keyword in economy_keywords if keyword in title_lower or keyword in content_lower or keyword in all_tags)
+    tech_score = sum(1 for keyword in tech_keywords if keyword in title_lower or keyword in content_lower or keyword in all_tags)
+    
+    # 가장 높은 점수의 카테고리 선택
+    if car_score >= max(economy_score, tech_score):
+        return 'automotive'
+    elif economy_score >= tech_score:
+        return 'economy'
+    else:
+        return 'technology'
+
 def get_article_hash(title, url):
     """기사의 고유 해시 생성 (중복 방지용)"""
     content = f"{title}{url}"
     return hashlib.md5(content.encode()).hexdigest()[:8]
 
-def check_existing_articles(output_dir, article_hash):
-    """기존 기사 중복 체크"""
+def check_existing_articles(output_dir, article_hash, title, url):
+    """강화된 기사 중복 체크"""
     if not os.path.exists(output_dir):
         return False
+    
+    # 제목 기반 유사도 체크를 위한 정규화
+    normalized_title = re.sub(r'[^\w\s]', '', title.lower()).strip()
     
     for filename in os.listdir(output_dir):
         if filename.endswith('.md'):
@@ -45,8 +167,26 @@ def check_existing_articles(output_dir, article_hash):
             try:
                 with open(filepath, 'r', encoding='utf-8') as f:
                     content = f.read()
+                    
+                    # 1. 해시 기반 체크 (기존)
                     if f"hash: {article_hash}" in content:
                         return True
+                    
+                    # 2. URL 기반 체크 (강화)
+                    if f"source_url: \"{url}\"" in content:
+                        return True
+                    
+                    # 3. 제목 유사도 체크 (추가)
+                    title_match = re.search(r'title: "([^"]+)"', content)
+                    if title_match:
+                        existing_title = title_match.group(1)
+                        existing_normalized = re.sub(r'[^\w\s]', '', existing_title.lower()).strip()
+                        
+                        # 제목이 90% 이상 유사하면 중복으로 판단
+                        similarity = len(set(normalized_title.split()) & set(existing_normalized.split())) / max(len(normalized_title.split()), len(existing_normalized.split()), 1)
+                        if similarity > 0.9:
+                            return True
+                            
             except Exception:
                 continue
     return False
@@ -312,11 +452,19 @@ def shuffle_images_in_content(content, cloudflare_images):
 
 def create_markdown_file(article_data, output_dir, cloudflare_account_id=None, cloudflare_api_token=None, ai_api_key=None):
     """마크다운 파일 생성 (AI 재작성 및 이미지 처리 포함)"""
-    # 중복 체크
+    # 다단계 중복 체크
     article_hash = get_article_hash(article_data['title'], article_data['url'])
     
-    if check_existing_articles(output_dir, article_hash):
-        print(f"⏭️ Skipping duplicate article: {article_data['title']}")
+    # 1. DB 기반 중복 체크 (빠름)
+    if is_article_processed(article_data['url'], article_data['title'], article_hash):
+        print(f"⏭️ Skipping duplicate article (DB): {article_data['title']}")
+        return False
+    
+    # 2. 파일 기반 중복 체크 (안전장치)
+    if check_existing_articles(output_dir, article_hash, article_data['title'], article_data['url']):
+        print(f"⏭️ Skipping duplicate article (File): {article_data['title']}")
+        # DB에도 기록
+        mark_article_processed(article_data['url'], article_data['title'], article_hash)
         return False
     
     print(f"🤖 Processing with AI: {article_data['title'][:50]}...")
@@ -348,15 +496,25 @@ def create_markdown_file(article_data, output_dir, cloudflare_account_id=None, c
     # 이미지를 콘텐츠에 랜덤 재배치
     final_content = shuffle_images_in_content(rewritten_content, cloudflare_images)
     
-    # 파일명 생성
-    filename = clean_filename(article_data['title'])
-    filepath = os.path.join(output_dir, f"{filename}.md")
+    # 카테고리 자동 분류
+    category = categorize_article(article_data['title'], article_data['content'], enhanced_tags)
+    
+    # URL 슬러그 생성 (영문)
+    title_slug = create_url_slug(article_data['title'])
+    
+    # 카테고리별 디렉토리 생성
+    category_dir = os.path.join(output_dir, category)
+    os.makedirs(category_dir, exist_ok=True)
+    
+    # 파일명 생성: 카테고리/제목-영문.md
+    filename = f"{title_slug}.md"
+    filepath = os.path.join(category_dir, filename)
     
     # 파일명 중복 방지
     counter = 1
     while os.path.exists(filepath):
-        base_filename = clean_filename(article_data['title'])
-        filepath = os.path.join(output_dir, f"{base_filename}-{counter}.md")
+        filename = f"{title_slug}-{counter}.md"
+        filepath = os.path.join(category_dir, filename)
         counter += 1
     
     # 현재 날짜
@@ -368,10 +526,11 @@ title: "{article_data['title']}"
 description: "{article_data['description']}"
 date: {current_date}
 author: "{article_data['author']}"
-categories: ["자동차"]
+categories: ["{category}"]
 tags: {json.dumps(enhanced_tags, ensure_ascii=False)}
 hash: {article_hash}
 source_url: "{article_data['url']}"
+url: "/{category}/{title_slug}/"
 """
     
     # 첫 번째 이미지를 썸네일로
@@ -393,6 +552,9 @@ source_url: "{article_data['url']}"
     with open(filepath, 'w', encoding='utf-8') as f:
         f.write(markdown_content)
     
+    # DB에 처리 완료 기록
+    mark_article_processed(article_data['url'], article_data['title'], article_hash)
+    
     print(f"✅ Created: {os.path.basename(filepath)}")
     return True
 
@@ -403,6 +565,9 @@ def main():
     cloudflare_account_id = get_env_var('CLOUDFLARE_ACCOUNT_ID')
     cloudflare_api_token = get_env_var('CLOUDFLARE_API_TOKEN')
     ai_api_key = get_env_var('OPENAI_API_KEY')
+    
+    # 처리된 기사 DB 초기화
+    init_processed_db()
     
     if len(sys.argv) > 1:
         sitemap_url = sys.argv[1]
@@ -456,7 +621,7 @@ def main():
     urls = urls[:20]
     
     # 출력 디렉토리
-    output_dir = 'content/car'
+    output_dir = 'content'
     os.makedirs(output_dir, exist_ok=True)
     
     print(f"🔍 Found {len(urls)} URLs to process")

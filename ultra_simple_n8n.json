@@ -1,0 +1,52 @@
+{
+  "name": "Ultra Simple AI Blog Automation",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "hours", 
+              "hoursInterval": 8
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [420, 300],
+      "id": "schedule-trigger",
+      "name": "8시간마다 실행"
+    },
+    {
+      "parameters": {
+        "command": "cd /home/user/blogai2 && python ai_scraper.py && git add . && git commit -m 'AI auto-update' && git push",
+        "options": {
+          "env": {
+            "OPENAI_API_KEY": "sk-your-openai-key-here",
+            "CLOUDFLARE_API_TOKEN": "your-cloudflare-token",
+            "CLOUDFLARE_ACCOUNT_ID": "your-account-id"
+          }
+        }
+      },
+      "type": "n8n-nodes-base.executeCommand",
+      "typeVersion": 1,
+      "position": [640, 300],
+      "id": "run-all",
+      "name": "스크래핑 + Git 푸시"
+    }
+  ],
+  "connections": {
+    "8시간마다 실행": {
+      "main": [
+        [
+          {
+            "node": "스크래핑 + Git 푸시",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  }
+} 

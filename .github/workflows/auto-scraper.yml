@@ -30,24 +30,19 @@ jobs:
           
       - name: Install Python dependencies
         run: |
-          pip install requests beautifulsoup4 openai
+          pip install requests beautifulsoup4 openai unidecode
           
       - name: Create content directory
         run: |
-          mkdir -p content/car
-          mkdir -p content/economy
+          mkdir -p content
           
       - name: Run AI scraper
         env:
-          SITEMAP_URL: ${{ github.event.client_payload.sitemap_url || 'https://www.reportera.co.kr/news-sitemap.xml' }}
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
         run: |
           echo "🚀 Starting AI-powered scraper"
-          echo "📥 Sitemap: $SITEMAP_URL"
-          echo "🤖 AI Rewrite: ${{ secrets.OPENAI_API_KEY != '' && 'Enabled' || 'Disabled' }}"
-          echo "☁️ Cloudflare Images: ${{ secrets.CLOUDFLARE_API_TOKEN != '' && 'Enabled' || 'Disabled' }}"
           python ai_scraper.py
           
       - name: Check for new content
