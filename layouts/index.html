@@ -1,7 +1,7 @@
 {{ define "main" }}
 <main class="main-content">
     <div class="container">
-        {{ $allArticles := shuffle (where .Site.RegularPages.ByDate.Reverse ".Section" "in" (slice "car" "economy")) }}
+        {{ $allArticles := shuffle (where .Site.RegularPages.ByDate.Reverse ".Section" "in" (slice "car" "economy" "automotive" "technology")) }}
         
         <!-- 메인 헤드라인 섹션 -->
         <div class="row mb-4">
@@ -83,7 +83,7 @@
                  
                  <!-- 모바일 카드 뷰 -->
                  <div class="row d-md-none">
-                     {{ $latestArticles := first 10 (shuffle (where .Site.RegularPages.ByDate.Reverse ".Section" "in" (slice "car" "economy"))) }}
+                     {{ $latestArticles := first 10 (shuffle (where .Site.RegularPages.ByDate.Reverse ".Section" "in" (slice "car" "economy" "automotive" "technology"))) }}
                      {{ range $latestArticles }}
                      <div class="col-12 col-sm-6 mb-3">
                          <div class="card h-100 border-0 shadow-sm">
@@ -113,7 +113,7 @@
                  
                  <!-- PC 리스트 뷰 -->
                  <div class="list-group d-none d-md-block">
-                     {{ $latestArticles := first 10 (shuffle (where .Site.RegularPages.ByDate.Reverse ".Section" "in" (slice "car" "economy"))) }}
+                     {{ $latestArticles := first 10 (shuffle (where .Site.RegularPages.ByDate.Reverse ".Section" "in" (slice "car" "economy" "automotive" "technology"))) }}
                      {{ range $latestArticles }}
                      <div class="list-group-item list-group-item-action border-0 border-bottom">
                          <div class="row align-items-center">
