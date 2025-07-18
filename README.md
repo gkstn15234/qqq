@@ -69,7 +69,7 @@ npx wrangler pages deploy public
    ---
    title: "기사 제목"
    description: "기사 요약"
-   author: "김한수"
+   author: "윤신애"
    date: 2025-01-01T10:00:00+09:00
    tags: ["자동차", "전기차", "모빌리티"]
    categories: ["car"] # 또는 "economy"
@@ -138,5 +138,5 @@ npm run build
 - 이메일: hangil9910@gmail.com
 - 전화: 010-7539-8504
 - 주소: 경상북도 경산시 진량읍 일연로 747
-- 발행인/편집인: 김한수
+- 발행인/편집인: 윤신애
 - 언론사 등록번호: 경북,아55580 
