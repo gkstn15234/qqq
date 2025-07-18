@@ -240,21 +240,25 @@ def rewrite_with_ai(original_content, title, api_key, api_type="openai"):
             client = OpenAI(api_key=api_key)
             
             prompt = f"""
-다음 기사를 완전히 새로운 관점에서 재작성해주세요. 
-원본의 핵심 정보는 유지하되, 문체와 구성을 완전히 바꿔주세요.
-SEO에 최적화된 자연스러운 한국어로 작성해주세요.
+다음 기사를 완전히 새로운 스타일로 재해석하여 창작해주세요.
+원본의 핵심 사실과 데이터만 유지하고, 나머지는 모두 새롭게 작성해주세요.
 
 제목: {title}
 
 원본 기사:
 {original_content}
 
-재작성 요구사항:
-1. 문단 구성을 완전히 새롭게 배치
-2. 표현 방식을 다르게 변경
-3. 핵심 사실은 정확히 유지
-4. 자연스럽고 읽기 쉬운 문체
-5. 마크다운 형식으로 출력
+창작 요구사항:
+1. 제목을 더 매력적이고 흥미롭게 재작성
+2. 도입부를 완전히 새로운 각도에서 시작
+3. 문단 구조와 흐름을 독창적으로 재구성  
+4. 표현 방식과 문체를 완전히 변경
+5. 핵심 사실과 수치는 정확히 유지
+6. SEO 친화적이고 독자의 관심을 끄는 문체
+7. 마크다운 형식으로 출력
+8. 감정적 몰입과 스토리텔링 요소 추가
+
+마치 다른 기자가 같은 사건을 취재해서 완전히 다른 시각으로 쓴 것처럼 작성해주세요.
 """
             
             response = client.chat.completions.create(
@@ -321,6 +325,57 @@ def generate_ai_tags(title, content, existing_tags, api_key, api_type="openai"):
     
     return existing_tags
 
+def rewrite_title_with_ai(original_title, content, api_key, api_type="openai"):
+    """AI를 사용하여 제목 재작성 (구조 유지, 내용 변경)"""
+    if not api_key:
+        print("⚠️ No AI API key provided, keeping original title")
+        return original_title
+    
+    try:
+        if api_type == "openai" and HAS_OPENAI:
+            client = OpenAI(api_key=api_key)
+            
+            prompt = f"""
+본문 내용을 참고하여 제목을 새롭게 재작성해주세요.
+
+원본 제목: {original_title}
+
+본문 내용 (요약):
+{content[:1000]}...
+
+재작성 요구사항:
+1. 원본 제목의 구조와 길이를 최대한 유지
+2. 본문의 핵심 내용을 반영한 새로운 제목
+3. 더 흥미롭고 클릭하고 싶게 만들기
+4. SEO에 최적화된 키워드 포함
+5. 한국어 뉴스 제목 스타일 유지
+6. 따옴표나 특수문자 활용 가능
+
+새로운 제목만 출력해주세요:
+"""
+            
+            response = client.chat.completions.create(
+                model="gpt-4o-mini",
+                messages=[
+                    {"role": "system", "content": "당신은 뉴스 제목 작성 전문가입니다. 흥미롭고 클릭률이 높은 제목을 만드는 전문가입니다."},
+                    {"role": "user", "content": prompt}
+                ],
+                max_tokens=100,
+                temperature=0.8
+            )
+            
+            new_title = response.choices[0].message.content.strip()
+            # 앞뒤 따옴표 제거
+            new_title = new_title.strip('"').strip("'")
+            print(f"📝 Title rewritten: {original_title[:30]}... → {new_title[:30]}...")
+            return new_title
+            
+    except Exception as e:
+        print(f"❌ AI title rewrite failed: {e}")
+        return original_title
+    
+    return original_title
+
 def extract_content_from_url(url):
     """URL에서 기사 내용 추출 (새로운 구조 대응)"""
     try:
@@ -340,7 +395,7 @@ def extract_content_from_url(url):
         
         # 메타 정보 추출
         meta_elem = soup.find('div', class_='entry-meta')
-        author = "김한수"  # 기본값
+        author = "윤신애"  # 기본값
         if meta_elem:
             author_elem = meta_elem.find('span', class_='author-name')
             if author_elem:
@@ -427,9 +482,10 @@ def shuffle_images_in_content(content, cloudflare_images):
     
     paragraphs = content.split('\n\n')
     
-    # 이미지를 랜덤하게 섞기
+    # 이미지를 완전히 랜덤하게 섞기
     shuffled_images = cloudflare_images.copy()
     random.shuffle(shuffled_images)
+    random.shuffle(shuffled_images)  # 한 번 더 섞어서 더 랜덤하게
     
     # 문단 사이에 이미지 삽입
     result_paragraphs = []
@@ -471,16 +527,23 @@ def create_markdown_file(article_data, output_dir, cloudflare_account_id=None, c
     
     print(f"🤖 Processing with AI: {article_data['title'][:50]}...")
     
+    # AI로 제목 재작성 (구조 유지, 내용 변경)
+    new_title = rewrite_title_with_ai(
+        article_data['title'],
+        article_data['content'],
+        ai_api_key
+    )
+    
     # AI로 기사 재작성
     rewritten_content = rewrite_with_ai(
         article_data['content'], 
-        article_data['title'], 
+        new_title,  # 새로운 제목 사용
         ai_api_key
     )
     
     # AI로 태그 추가 생성
     enhanced_tags = generate_ai_tags(
-        article_data['title'],
+        new_title,  # 새로운 제목 사용
         article_data['content'],
         article_data['tags'],
         ai_api_key
@@ -498,11 +561,11 @@ def create_markdown_file(article_data, output_dir, cloudflare_account_id=None, c
     # 이미지를 콘텐츠에 랜덤 재배치
     final_content = shuffle_images_in_content(rewritten_content, cloudflare_images)
     
-    # 카테고리 자동 분류
-    category = categorize_article(article_data['title'], article_data['content'], enhanced_tags)
+    # 카테고리 자동 분류 (새 제목 기반)
+    category = categorize_article(new_title, article_data['content'], enhanced_tags)
     
-    # URL 슬러그 생성 (영문)
-    title_slug = create_url_slug(article_data['title'])
+    # URL 슬러그 생성 (새 제목 기반)
+    title_slug = create_url_slug(new_title)
     
     # 카테고리별 디렉토리 생성
     category_dir = os.path.join(output_dir, category)
@@ -524,7 +587,7 @@ def create_markdown_file(article_data, output_dir, cloudflare_account_id=None, c
     
     # 마크다운 생성
     markdown_content = f"""---
-title: "{article_data['title']}"
+title: "{new_title}"
 description: "{article_data['description']}"
 date: {current_date}
 author: "{article_data['author']}"
@@ -619,8 +682,8 @@ def main():
                     if url.startswith('https://www.reportera.co.kr/'):
                         urls.append(url)
     
-    # 테스트를 위해 1개 기사만 처리
-    urls = urls[:1]
+    # 최신 20개 기사 처리 (뉴스 사이트맵이므로)
+    urls = urls[:20]
     
     # 출력 디렉토리
     output_dir = 'content'
