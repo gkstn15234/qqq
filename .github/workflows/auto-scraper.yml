@@ -1,0 +1,86 @@
+name: Auto Content Scraper
+
+on:
+  # n8n 웹훅으로 트리거
+  repository_dispatch:
+    types: [scrape-content]
+  
+  # 수동 실행도 가능
+  workflow_dispatch:
+    inputs:
+      sitemap_url:
+        description: 'Sitemap URL to scrape'
+        required: false
+        default: 'https://www.reportera.co.kr/sitemap.xml'
+
+jobs:
+  scrape-and-deploy:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+          
+      - name: Install Python dependencies
+        run: |
+          pip install requests beautifulsoup4 openai
+          
+      - name: Create content directory
+        run: |
+          mkdir -p content/car
+          mkdir -p content/economy
+          
+      - name: Run AI scraper
+        env:
+          SITEMAP_URL: ${{ github.event.client_payload.sitemap_url || 'https://www.reportera.co.kr/news-sitemap.xml' }}
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+        run: |
+          echo "🚀 Starting AI-powered scraper"
+          echo "📥 Sitemap: $SITEMAP_URL"
+          echo "🤖 AI Rewrite: ${{ secrets.OPENAI_API_KEY != '' && 'Enabled' || 'Disabled' }}"
+          echo "☁️ Cloudflare Images: ${{ secrets.CLOUDFLARE_API_TOKEN != '' && 'Enabled' || 'Disabled' }}"
+          python ai_scraper.py
+          
+      - name: Check for new content
+        id: check_changes
+        run: |
+          git add .
+          if git diff --staged --quiet; then
+            echo "has_changes=false" >> $GITHUB_OUTPUT
+            echo "No new content found"
+          else
+            echo "has_changes=true" >> $GITHUB_OUTPUT
+            echo "New content detected"
+          fi
+          
+      - name: Commit and push changes
+        if: steps.check_changes.outputs.has_changes == 'true'
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          
+          # 스크래핑된 파일 수 계산
+          NEW_FILES=$(git diff --staged --name-only | grep -E '\.md$' | wc -l)
+          
+          git commit -m "🤖 Auto-scraped $NEW_FILES new articles $(date '+%Y-%m-%d %H:%M')"
+          git push
+          
+      - name: Notify completion
+        if: steps.check_changes.outputs.has_changes == 'true'
+        run: |
+          echo "✅ Content scraping completed and pushed to repository"
+          echo "🚀 Cloudflare Pages will automatically deploy the changes"
+          
+      - name: No changes notification
+        if: steps.check_changes.outputs.has_changes == 'false'
+        run: |
+          echo "ℹ️ No new content found to scrape" 
