@@ -14,7 +14,7 @@ from urllib.parse import urlparse, urljoin
 
 # AI 관련 import
 try:
-    import openai
+    from openai import OpenAI
     HAS_OPENAI = True
 except ImportError:
     HAS_OPENAI = False
@@ -95,7 +95,7 @@ def rewrite_with_ai(original_content, title, api_key, api_type="openai"):
     
     try:
         if api_type == "openai" and HAS_OPENAI:
-            openai.api_key = api_key
+            client = OpenAI(api_key=api_key)
             
             prompt = f"""
 다음 기사를 완전히 새로운 관점에서 재작성해주세요. 
@@ -115,7 +115,7 @@ SEO에 최적화된 자연스러운 한국어로 작성해주세요.
 5. 마크다운 형식으로 출력
 """
             
-            response = openai.ChatCompletion.create(
+            response = client.chat.completions.create(
                 model="gpt-4o-mini",
                 messages=[
                     {"role": "system", "content": "당신은 전문 기자입니다. 기사를 자연스럽고 매력적으로 재작성하는 전문가입니다."},
@@ -141,7 +141,7 @@ def generate_ai_tags(title, content, existing_tags, api_key, api_type="openai"):
     
     try:
         if api_type == "openai" and HAS_OPENAI:
-            openai.api_key = api_key
+            client = OpenAI(api_key=api_key)
             
             prompt = f"""
 다음 기사의 제목과 내용을 분석하여 적절한 태그 2개를 추가로 생성해주세요.
@@ -155,7 +155,7 @@ def generate_ai_tags(title, content, existing_tags, api_key, api_type="openai"):
 예: ["태그1", "태그2"]
 """
             
-            response = openai.ChatCompletion.create(
+            response = client.chat.completions.create(
                 model="gpt-4o-mini",
                 messages=[
                     {"role": "system", "content": "당신은 SEO 전문가입니다. 기사에 맞는 최적의 태그를 생성합니다."},
