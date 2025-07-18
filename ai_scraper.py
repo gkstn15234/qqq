@@ -154,41 +154,43 @@ def get_article_hash(title, url):
     return hashlib.md5(content.encode()).hexdigest()[:8]
 
 def check_existing_articles(output_dir, article_hash, title, url):
-    """강화된 기사 중복 체크"""
+    """강화된 기사 중복 체크 (서브디렉토리 포함)"""
     if not os.path.exists(output_dir):
         return False
     
     # 제목 기반 유사도 체크를 위한 정규화
     normalized_title = re.sub(r'[^\w\s]', '', title.lower()).strip()
     
-    for filename in os.listdir(output_dir):
-        if filename.endswith('.md'):
-            filepath = os.path.join(output_dir, filename)
-            try:
-                with open(filepath, 'r', encoding='utf-8') as f:
-                    content = f.read()
-                    
-                    # 1. 해시 기반 체크 (기존)
-                    if f"hash: {article_hash}" in content:
-                        return True
-                    
-                    # 2. URL 기반 체크 (강화)
-                    if f"source_url: \"{url}\"" in content:
-                        return True
-                    
-                    # 3. 제목 유사도 체크 (추가)
-                    title_match = re.search(r'title: "([^"]+)"', content)
-                    if title_match:
-                        existing_title = title_match.group(1)
-                        existing_normalized = re.sub(r'[^\w\s]', '', existing_title.lower()).strip()
+    # 루트 디렉토리와 모든 서브디렉토리 검사
+    for root, dirs, files in os.walk(output_dir):
+        for filename in files:
+            if filename.endswith('.md'):
+                filepath = os.path.join(root, filename)
+                try:
+                    with open(filepath, 'r', encoding='utf-8') as f:
+                        content = f.read()
                         
-                        # 제목이 90% 이상 유사하면 중복으로 판단
-                        similarity = len(set(normalized_title.split()) & set(existing_normalized.split())) / max(len(normalized_title.split()), len(existing_normalized.split()), 1)
-                        if similarity > 0.9:
+                        # 1. 해시 기반 체크 (기존)
+                        if f"hash: {article_hash}" in content:
                             return True
+                        
+                        # 2. URL 기반 체크 (강화)
+                        if f"source_url: \"{url}\"" in content:
+                            return True
+                        
+                        # 3. 제목 유사도 체크 (추가)
+                        title_match = re.search(r'title: "([^"]+)"', content)
+                        if title_match:
+                            existing_title = title_match.group(1)
+                            existing_normalized = re.sub(r'[^\w\s]', '', existing_title.lower()).strip()
                             
-            except Exception:
-                continue
+                            # 제목이 90% 이상 유사하면 중복으로 판단
+                            similarity = len(set(normalized_title.split()) & set(existing_normalized.split())) / max(len(normalized_title.split()), len(existing_normalized.split()), 1)
+                            if similarity > 0.9:
+                                return True
+                                
+                except Exception:
+                    continue
     return False
 
 def upload_to_cloudflare_images(image_url, api_token, account_id):
@@ -617,8 +619,8 @@ def main():
                     if url.startswith('https://www.reportera.co.kr/'):
                         urls.append(url)
     
-    # 최신 20개 기사만 처리 (뉴스 사이트맵이므로)
-    urls = urls[:20]
+    # 테스트를 위해 1개 기사만 처리
+    urls = urls[:1]
     
     # 출력 디렉토리
     output_dir = 'content'
