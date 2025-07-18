@@ -825,7 +825,6 @@ def main():
     try:
         # send_email.py의 함수 import 및 실행
         import importlib.util
-        import sys
         
         # send_email.py 모듈 동적 로드
         spec = importlib.util.spec_from_file_location("send_email", "send_email.py")
