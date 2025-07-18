@@ -198,6 +198,78 @@ def check_existing_articles(output_dir, article_hash, title, url):
                     continue
     return False
 
+def create_manual_rewrite(original_content, title):
+    """AI 실패 시 수동으로 기사 재작성"""
+    try:
+        # 원본 콘텐츠를 문단별로 분리
+        paragraphs = original_content.split('\n\n')
+        rewritten_paragraphs = []
+        
+        # 각 문단을 재구성
+        for i, paragraph in enumerate(paragraphs):
+            if not paragraph.strip():
+                continue
+                
+            sentences = paragraph.split('.')
+            if len(sentences) > 1:
+                # 문장 순서 재배치 및 접속사 추가
+                rewritten_sentences = []
+                for j, sentence in enumerate(sentences):
+                    sentence = sentence.strip()
+                    if not sentence:
+                        continue
+                    
+                    # 문장 시작을 다양하게 변경
+                    if j == 0 and i > 0:
+                        connectors = ["한편", "또한", "이와 관련해", "특히", "더불어", "아울러"]
+                        if not any(sentence.startswith(conn) for conn in connectors):
+                            sentence = f"{connectors[i % len(connectors)]} {sentence}"
+                    
+                    rewritten_sentences.append(sentence)
+                
+                if rewritten_sentences:
+                    rewritten_paragraphs.append('. '.join(rewritten_sentences) + '.')
+            else:
+                rewritten_paragraphs.append(paragraph)
+        
+        # 기본 구조로 재구성
+        rewritten_content = f"""
+## {title}
+
+{chr(10).join(rewritten_paragraphs[:3])}
+
+### 주요 내용
+
+{chr(10).join(rewritten_paragraphs[3:6]) if len(rewritten_paragraphs) > 3 else ''}
+
+### 상세 분석
+
+{chr(10).join(rewritten_paragraphs[6:]) if len(rewritten_paragraphs) > 6 else ''}
+
+이번 이슈는 업계에 중요한 시사점을 제공하고 있으며, 향후 동향에 대한 지속적인 관심이 필요해 보인다.
+"""
+        
+        return rewritten_content.strip()
+        
+    except Exception as e:
+        print(f"⚠️ Manual rewrite failed: {e}")
+        # 최소한의 기본 구조라도 생성
+        return f"""
+## {title}
+
+본 기사는 현재 업계의 주요 동향을 다루고 있습니다.
+
+### 핵심 포인트
+
+관련 업계에서는 이번 사안에 대해 높은 관심을 보이고 있으며, 다양한 의견이 제기되고 있는 상황입니다.
+
+### 향후 전망
+
+이러한 변화는 시장에 중대한 영향을 미칠 것으로 예상되며, 관련 기업들의 대응 전략이 주목받고 있습니다.
+
+*본 기사는 신뢰할 수 있는 정보를 바탕으로 작성되었습니다.*
+"""
+
 def upload_to_cloudflare_images(image_url, api_token, account_id):
     """Cloudflare Images에 이미지 업로드"""
     try:
@@ -237,14 +309,16 @@ def upload_to_cloudflare_images(image_url, api_token, account_id):
 def rewrite_with_ai(original_content, title, api_key, api_type="openai"):
     """AI를 사용하여 기사 재작성"""
     if not api_key:
-        print("⚠️ No AI API key provided, skipping rewrite")
-        return original_content
+        raise Exception("No AI API key provided - AI rewrite is mandatory")
     
-    try:
-        if api_type == "openai" and HAS_OPENAI:
-            client = OpenAI(api_key=api_key)
-            
-            prompt = f"""
+    # 최대 3번 재시도
+    for attempt in range(3):
+        try:
+            print(f"🤖 AI rewrite attempt {attempt + 1}/3...")
+            if api_type == "openai" and HAS_OPENAI:
+                client = OpenAI(api_key=api_key)
+                
+                prompt = f"""
 다음 기사를 완전히 새로운 스타일로 재해석하여 창작해주세요.
 원본의 핵심 사실과 데이터만 유지하고, 나머지는 모두 새롭게 작성해주세요.
 
@@ -265,36 +339,45 @@ def rewrite_with_ai(original_content, title, api_key, api_type="openai"):
 
 마치 다른 기자가 같은 사건을 취재해서 완전히 다른 시각으로 쓴 것처럼 작성해주세요.
 """
-            
-            response = client.chat.completions.create(
-                model="gpt-4o-mini",
-                messages=[
-                    {"role": "system", "content": "당신은 전문 기자입니다. 기사를 자연스럽고 매력적으로 재작성하는 전문가입니다."},
-                    {"role": "user", "content": prompt}
-                ],
-                max_tokens=2000,
-                temperature=0.7
-            )
-            
-            rewritten = response.choices[0].message.content.strip()
-            return rewritten
-            
-    except Exception as e:
-        print(f"❌ AI rewrite failed: {e}")
-        return original_content
+                
+                response = client.chat.completions.create(
+                    model="gpt-4o-mini",
+                    messages=[
+                        {"role": "system", "content": "당신은 전문 기자입니다. 기사를 자연스럽고 매력적으로 재작성하는 전문가입니다."},
+                        {"role": "user", "content": prompt}
+                    ],
+                    max_tokens=2000,
+                    temperature=0.7
+                )
+                
+                rewritten = response.choices[0].message.content.strip()
+                print(f"✅ AI rewrite successful on attempt {attempt + 1}")
+                return rewritten
+                
+        except Exception as e:
+            print(f"❌ AI rewrite attempt {attempt + 1} failed: {e}")
+            if attempt < 2:  # 마지막 시도가 아니면 재시도
+                time.sleep(2)  # 2초 대기 후 재시도
+                continue
+            else:
+                print("🚨 All AI rewrite attempts failed - raising exception")
+                raise Exception(f"AI rewrite failed after 3 attempts: {e}")
     
-    return original_content
+    raise Exception("AI rewrite failed - unexpected end of function")
 
 def generate_ai_tags(title, content, existing_tags, api_key, api_type="openai"):
     """AI를 사용하여 추가 태그 생성"""
     if not api_key:
-        return existing_tags
+        print("⚠️ No AI API key - using default tags")
+        return existing_tags + ["뉴스", "이슈"]
     
-    try:
-        if api_type == "openai" and HAS_OPENAI:
-            client = OpenAI(api_key=api_key)
-            
-            prompt = f"""
+    for attempt in range(3):
+        try:
+            print(f"🏷️ AI tag generation attempt {attempt + 1}/3...")
+            if api_type == "openai" and HAS_OPENAI:
+                client = OpenAI(api_key=api_key)
+                
+                prompt = f"""
 다음 기사의 제목과 내용을 분석하여 적절한 태그 2개를 추가로 생성해주세요.
 기존 태그와 중복되지 않게 하고, 한국어로 작성해주세요.
 
@@ -305,30 +388,37 @@ def generate_ai_tags(title, content, existing_tags, api_key, api_type="openai"):
 새로운 태그 2개만 JSON 배열 형태로 응답해주세요.
 예: ["태그1", "태그2"]
 """
-            
-            response = client.chat.completions.create(
-                model="gpt-4o-mini",
-                messages=[
-                    {"role": "system", "content": "당신은 SEO 전문가입니다. 기사에 맞는 최적의 태그를 생성합니다."},
-                    {"role": "user", "content": prompt}
-                ],
-                max_tokens=100,
-                temperature=0.5
-            )
-            
-            result = response.choices[0].message.content.strip()
-            # JSON 파싱 시도
-            try:
-                new_tags = json.loads(result)
-                if isinstance(new_tags, list) and len(new_tags) >= 2:
-                    return existing_tags + new_tags[:2]
-            except:
-                pass
                 
-    except Exception as e:
-        print(f"❌ AI tag generation failed: {e}")
+                response = client.chat.completions.create(
+                    model="gpt-4o-mini",
+                    messages=[
+                        {"role": "system", "content": "당신은 SEO 전문가입니다. 기사에 맞는 최적의 태그를 생성합니다."},
+                        {"role": "user", "content": prompt}
+                    ],
+                    max_tokens=100,
+                    temperature=0.5
+                )
+                
+                result = response.choices[0].message.content.strip()
+                # JSON 파싱 시도
+                try:
+                    new_tags = json.loads(result)
+                    if isinstance(new_tags, list) and len(new_tags) >= 2:
+                        print(f"✅ AI tag generation successful on attempt {attempt + 1}")
+                        return existing_tags + new_tags[:2]
+                except:
+                    pass
+                    
+        except Exception as e:
+            print(f"❌ AI tag generation attempt {attempt + 1} failed: {e}")
+            if attempt < 2:
+                time.sleep(1)
+                continue
+            else:
+                print("⚠️ All AI tag attempts failed - using default tags")
+                return existing_tags + ["뉴스", "이슈"]
     
-    return existing_tags
+    return existing_tags + ["뉴스", "이슈"]
 
 def rewrite_title_with_ai(original_title, content, api_key, api_type="openai"):
     """AI를 사용하여 제목 재작성 (구조 유지, 내용 변경)"""
@@ -336,9 +426,11 @@ def rewrite_title_with_ai(original_title, content, api_key, api_type="openai"):
         print("⚠️ No AI API key provided, keeping original title")
         return original_title
     
-    try:
-        if api_type == "openai" and HAS_OPENAI:
-            client = OpenAI(api_key=api_key)
+    for attempt in range(3):
+        try:
+            print(f"📝 AI title rewrite attempt {attempt + 1}/3...")
+            if api_type == "openai" and HAS_OPENAI:
+                client = OpenAI(api_key=api_key)
             
             prompt = f"""
 본문 내용을 참고하여 제목을 새롭게 재작성해주세요.
@@ -372,12 +464,18 @@ def rewrite_title_with_ai(original_title, content, api_key, api_type="openai"):
             new_title = response.choices[0].message.content.strip()
             # 앞뒤 따옴표 제거
             new_title = new_title.strip('"').strip("'")
+            print(f"✅ AI title rewrite successful on attempt {attempt + 1}")
             print(f"📝 Title rewritten: {original_title[:30]}... → {new_title[:30]}...")
             return new_title
             
-    except Exception as e:
-        print(f"❌ AI title rewrite failed: {e}")
-        return original_title
+        except Exception as e:
+            print(f"❌ AI title rewrite attempt {attempt + 1} failed: {e}")
+            if attempt < 2:
+                time.sleep(1)
+                continue
+            else:
+                print("⚠️ All AI title rewrite attempts failed - using original title")
+                return original_title
     
     return original_title
 
@@ -551,12 +649,22 @@ def create_markdown_file(article_data, output_dir, cloudflare_account_id=None, c
         ai_api_key
     )
     
+    # AI 제목 재작성 실패 시 기사 생성 건너뛰기
+    if not new_title or new_title == article_data['title']:
+        print(f"⚠️ AI title rewrite failed, skipping article: {article_data['title'][:50]}...")
+        return False
+    
     # AI로 기사 재작성
     rewritten_content = rewrite_with_ai(
         article_data['content'], 
         new_title,  # 새로운 제목 사용
         ai_api_key
     )
+    
+    # AI 기사 재작성 실패 시 기사 생성 건너뛰기
+    if not rewritten_content or rewritten_content == article_data['content']:
+        print(f"⚠️ AI content rewrite failed, skipping article: {new_title[:50]}...")
+        return False
     
     # AI로 태그 추가 생성
     enhanced_tags = generate_ai_tags(
