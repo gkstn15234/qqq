@@ -23,10 +23,9 @@
                     <div class="article-meta d-flex flex-wrap justify-content-between align-items-center mb-4 pb-3 border-bottom">
                         <div class="meta-left mb-2 mb-md-0">
                             <span class="author me-3">
-                                <i class="fas fa-user me-1"></i>
                                 {{ if .Params.author }}
                                 <a href="/authors/{{ .Params.author | urlize }}/" class="text-decoration-none">
-                                    {{ .Params.author }}
+                                    {{ .Params.author }} 기자
                                 </a>
                                 {{ else }}
                                 {{ .Site.Params.author }}
@@ -97,12 +96,7 @@
                     {{ if .Params.author }}
                     <div class="author-info-section mb-4 p-3 bg-light rounded">
                         <div class="row align-items-center">
-                            <div class="col-md-2 text-center mb-3 mb-md-0">
-                                <div class="author-avatar">
-                                    <i class="fas fa-user-circle fa-3x text-primary"></i>
-                                </div>
-                            </div>
-                            <div class="col-md-10">
+                            <div class="col-12">
                                 <h5 class="author-name mb-1">
                                     <a href="/authors/{{ .Params.author | urlize }}/" class="text-decoration-none">
                                         {{ .Params.author }} 기자
@@ -110,11 +104,11 @@
                                 </h5>
                                 <p class="author-bio text-muted mb-2">{{ .Site.Title }} 전문 기자</p>
                                 <div class="author-links">
-                                    <a href="/authors/{{ .Params.author | urlize }}/" class="btn btn-sm btn-outline-primary">
-                                        <i class="fas fa-user me-1"></i>기자 프로필 보기
+                                    <a href="/authors/{{ .Params.author | urlize }}/" class="btn btn-sm btn-outline-primary me-2">
+                                        기자 프로필 보기
                                     </a>
-                                    <a href="/authors/{{ .Params.author | urlize }}/" class="btn btn-sm btn-outline-secondary ms-2">
-                                        <i class="fas fa-newspaper me-1"></i>다른 기사 보기
+                                    <a href="/authors/{{ .Params.author | urlize }}/" class="btn btn-sm btn-outline-secondary">
+                                        다른 기사 보기
                                     </a>
                                 </div>
                             </div>
