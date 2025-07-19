@@ -125,16 +125,15 @@
                     <div class="widget-card mb-4">
                         <h4 class="widget-title">인기 기사</h4>
                         <div class="widget-content">
-                            {{ range first 5 (where .Site.RegularPages "Section" "in" (slice "automotive" "economy")) }}
+                            {{ range $index, $article := first 5 (where .Site.RegularPages "Section" "in" (slice "automotive" "economy")) }}
                             <article class="widget-article">
-                                <a href="{{ .RelPermalink }}" class="d-flex align-items-start text-decoration-none">
+                                <a href="{{ $article.RelPermalink }}" class="d-flex align-items-start text-decoration-none">
                                     <div class="widget-article-number me-3">
-                                        <span class="number-circle">{{ add ($.Scratch.Get "counter") 1 }}</span>
-                                        {{ $.Scratch.Set "counter" (add ($.Scratch.Get "counter") 1) }}
+                                        <span class="number-circle">{{ add $index 1 }}</span>
                                     </div>
                                     <div class="widget-article-content flex-grow-1">
-                                        <h6 class="widget-article-title mb-1">{{ .Title | truncate 50 }}</h6>
-                                        <small class="text-muted">{{ .Date.Format "01.02" }}</small>
+                                        <h6 class="widget-article-title mb-1">{{ $article.Title | truncate 50 }}</h6>
+                                        <small class="text-muted">{{ $article.Date.Format "01.02" }}</small>
                                     </div>
                                 </a>
                             </article>
@@ -191,19 +190,17 @@
                     <div class="widget-card mb-4">
                         <h4 class="widget-title">인기 기사</h4>
                         <div class="widget-content">
-                            {{ $.Scratch.Set "counter" 0 }}
-                            {{ range first 8 (where .Site.RegularPages "Section" "in" (slice "automotive" "economy")) }}
+                            {{ range $index, $article := first 8 (where .Site.RegularPages "Section" "in" (slice "automotive" "economy")) }}
                             <article class="widget-article">
-                                <a href="{{ .RelPermalink }}" class="d-flex align-items-start text-decoration-none">
+                                <a href="{{ $article.RelPermalink }}" class="d-flex align-items-start text-decoration-none">
                                     <div class="widget-article-number me-3">
-                                        <span class="number-circle">{{ add ($.Scratch.Get "counter") 1 }}</span>
-                                        {{ $.Scratch.Set "counter" (add ($.Scratch.Get "counter") 1) }}
+                                        <span class="number-circle">{{ add $index 1 }}</span>
                                     </div>
                                     <div class="widget-article-content flex-grow-1">
-                                        <h6 class="widget-article-title mb-1">{{ .Title | truncate 45 }}</h6>
+                                        <h6 class="widget-article-title mb-1">{{ $article.Title | truncate 45 }}</h6>
                                         <div class="widget-article-meta">
-                                            <span class="category-tag {{ .Section }}">{{ .Section | title }}</span>
-                                            <span class="date">{{ .Date.Format "01.02" }}</span>
+                                            <span class="category-tag {{ $article.Section }}">{{ $article.Section | title }}</span>
+                                            <span class="date">{{ $article.Date.Format "01.02" }}</span>
                                         </div>
                                     </div>
                                 </a>
