@@ -3,7 +3,7 @@ from bs4 import BeautifulSoup
 import xml.etree.ElementTree as ET
 import re
 import os
-from datetime import datetime
+from datetime import datetime, timezone, timedelta
 import time
 import random
 import sys
@@ -822,8 +822,9 @@ def create_markdown_file(article_data, output_dir, cloudflare_account_id=None, c
         filepath = os.path.join(category_dir, filename)
         counter += 1
     
-    # 현재 날짜
-    current_date = datetime.now().strftime("%Y-%m-%dT%H:%M:%S+09:00")
+    # 현재 날짜 (한국 시간대)
+    kst = timezone(timedelta(hours=9))
+    current_date = datetime.now(kst).strftime("%Y-%m-%dT%H:%M:%S+09:00")
     
     # YAML-safe description 생성
     safe_description = validate_yaml_string(article_data['description'])
