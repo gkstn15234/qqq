@@ -91,7 +91,7 @@ def clean_filename(title):
     return filename.strip('-').lower()
 
 def create_url_slug(title):
-    """제목을 URL 슬러그로 변환 (영문)"""
+    """제목을 URL 슬러그로 변환 (영문, 3~4단어로 제한)"""
     try:
         # 한글을 영문으로 변환 (unidecode 사용)
         slug = unidecode(title)
@@ -100,9 +100,20 @@ def create_url_slug(title):
         slug = re.sub(r'[-\s]+', '-', slug)
         # 소문자로 변환, 앞뒤 하이픈 제거
         slug = slug.strip('-').lower()
-        # 너무 길면 자르기 (최대 60자)
-        if len(slug) > 60:
-            slug = slug[:60].rstrip('-')
+        
+        # 3~4단어로 제한 (하이픈으로 구분된 단어 기준)
+        words = slug.split('-')
+        if len(words) > 4:
+            # 첫 4개 단어만 사용
+            slug = '-'.join(words[:4])
+        elif len(words) < 3 and len(words) > 0:
+            # 2단어 이하인 경우 그대로 유지 (너무 짧지 않도록)
+            pass
+        
+        # 최대 길이 제한 (안전장치)
+        if len(slug) > 50:
+            slug = slug[:50].rstrip('-')
+            
         return slug
     except:
         # unidecode 실패 시 기본 방식 사용
@@ -585,8 +596,52 @@ def extract_content_from_url(url):
         print(f"❌ Error extracting content from {url}: {e}")
         return None
 
-def shuffle_images_in_content(content, cloudflare_images):
-    """콘텐츠 내에 이미지를 완전히 랜덤하게 재배치"""
+def generate_contextual_alt_text(paragraph_text, title, api_key):
+    """문맥에 맞는 alt 텍스트 AI 생성"""
+    if not api_key:
+        return "기사 관련 이미지"
+    
+    try:
+        if HAS_OPENAI:
+            client = OpenAI(api_key=api_key)
+            
+            prompt = f"""
+다음 기사의 제목과 문단을 보고, 이 위치에 들어갈 이미지의 alt 텍스트를 생성해주세요.
+이미지가 본문 내용과 관련성이 높도록 의미 있는 alt 텍스트를 만들어주세요.
+
+기사 제목: {title}
+해당 문단: {paragraph_text[:200]}...
+
+요구사항:
+1. 본문 내용과 연관성 있는 alt 텍스트
+2. SEO에 도움이 되는 키워드 포함
+3. 10-15자 내외의 간결한 텍스트
+4. 자연스러운 한국어 표현
+
+alt 텍스트만 출력해주세요:
+"""
+            
+            response = client.chat.completions.create(
+                model="gpt-4o-mini",
+                messages=[
+                    {"role": "system", "content": "당신은 SEO 전문가입니다. 본문 내용과 잘 어울리는 이미지 alt 텍스트를 생성합니다."},
+                    {"role": "user", "content": prompt}
+                ],
+                max_tokens=50,
+                temperature=0.7
+            )
+            
+            alt_text = response.choices[0].message.content.strip()
+            # 따옴표 제거 및 정리
+            alt_text = alt_text.strip('"').strip("'").strip()
+            return alt_text if alt_text else "기사 관련 이미지"
+    except:
+        pass
+    
+    return "기사 관련 이미지"
+
+def shuffle_images_in_content(content, cloudflare_images, title="", ai_api_key=None):
+    """콘텐츠 내에 이미지를 완전히 랜덤하게 재배치 (AI 생성 alt 텍스트 포함)"""
     if not cloudflare_images:
         return content
     
@@ -616,23 +671,36 @@ def shuffle_images_in_content(content, cloudflare_images):
         # 현재 위치가 이미지 삽입 위치라면 이미지 추가
         if i in image_positions and image_index < len(shuffled_images):
             image_url = shuffled_images[image_index]
-            # 다양한 alt 텍스트로 랜덤 배치
-            alt_texts = [
-                "관련 이미지",
-                "기사 내용",
-                "참고 이미지", 
-                "뉴스 이미지",
-                "상세 내용",
-                "관련 사진"
-            ]
-            alt_text = random.choice(alt_texts)
+            
+            # AI로 본문 내용 기반 alt 텍스트 생성
+            if ai_api_key and i < len(paragraphs):
+                context_paragraph = paragraphs[i] if i < len(paragraphs) else paragraphs[-1]
+                alt_text = generate_contextual_alt_text(context_paragraph, title, ai_api_key)
+            else:
+                # 기본 alt 텍스트 (AI 실패 시)
+                alt_texts = [
+                    "관련 이미지",
+                    "기사 내용",
+                    "참고 이미지", 
+                    "뉴스 이미지",
+                    "상세 내용",
+                    "관련 사진"
+                ]
+                alt_text = random.choice(alt_texts)
+            
             result_paragraphs.append(f"\n![{alt_text}]({image_url})\n")
             image_index += 1
     
     # 혹시 남은 이미지가 있다면 마지막에 추가
     while image_index < len(shuffled_images):
         image_url = shuffled_images[image_index]
-        alt_text = random.choice(["추가 이미지", "관련 자료", "참고 사진"])
+        
+        if ai_api_key and len(paragraphs) > 0:
+            # 마지막 문단 기반으로 alt 텍스트 생성
+            alt_text = generate_contextual_alt_text(paragraphs[-1], title, ai_api_key)
+        else:
+            alt_text = random.choice(["추가 이미지", "관련 자료", "참고 사진"])
+        
         result_paragraphs.append(f"\n![{alt_text}]({image_url})\n")
         image_index += 1
     
@@ -729,8 +797,8 @@ def create_markdown_file(article_data, output_dir, cloudflare_account_id=None, c
                 cloudflare_images.append(cf_url)
             time.sleep(1)  # API 제한 고려
     
-    # 이미지를 콘텐츠에 랜덤 재배치
-    final_content = shuffle_images_in_content(rewritten_content, cloudflare_images)
+    # 이미지를 콘텐츠에 랜덤 재배치 (AI 생성 alt 텍스트 포함)
+    final_content = shuffle_images_in_content(rewritten_content, cloudflare_images, new_title, ai_api_key)
     
     # 카테고리 자동 분류 (새 제목 기반)
     category = categorize_article(new_title, article_data['content'], enhanced_tags)
@@ -796,9 +864,6 @@ url: "/{category}/{title_slug}/"
 ---
 
 {final_content}
-
----
-*이 기사는 AI 기술을 활용하여 재작성되었습니다.*
 """
     
     # 파일 저장

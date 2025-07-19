@@ -155,8 +155,28 @@
     </script>
     {{ end }}
     
-    <!-- Favicon -->
-    <link rel="icon" type="image/x-icon" href="{{ "/images/favicon.ico" | relURL }}">
+    <!-- 🎨 Favicon Set - 2024 Standard -->
+    <!-- Legacy Browser Support -->
+    <link rel="icon" href="{{ "/images/favicon.ico" | relURL }}" sizes="32x32">
+    
+    <!-- Modern Browser SVG -->
+    <link rel="icon" href="{{ "/images/icon.svg" | relURL }}" type="image/svg+xml">
+    
+    <!-- High-Resolution Browser Icons -->
+    <link rel="icon" type="image/png" sizes="16x16" href="{{ "/images/favicon-16x16.png" | relURL }}">
+    <link rel="icon" type="image/png" sizes="32x32" href="{{ "/images/favicon-32x32.png" | relURL }}">
+    
+    <!-- Apple Device Icons -->
+    <link rel="apple-touch-icon" href="{{ "/images/apple-touch-icon.png" | relURL }}">
+    <link rel="apple-touch-icon" sizes="180x180" href="{{ "/images/apple-touch-icon.png" | relURL }}">
+    
+    <!-- PWA Web App Manifest -->
+    <link rel="manifest" href="{{ "/site.webmanifest" | relURL }}">
+    
+    <!-- Theme Colors -->
+    <meta name="theme-color" content="#000000">
+    <meta name="msapplication-TileColor" content="#000000">
+    <meta name="msapplication-config" content="{{ "/browserconfig.xml" | relURL }}">
     
     <!-- DNS Prefetch for performance -->
     <link rel="dns-prefetch" href="//fonts.googleapis.com">

@@ -1,9 +1,76 @@
+# ==============================================
+# 🗞️ 오코노미 (okonomis.com) - 자동차 경제 전문매체
+# Google News & Google Discover 최적화 robots.txt
+# ==============================================
+
+# 모든 검색엔진 크롤러에 대한 기본 설정
 User-agent: *
 Allow: /
 
-# Sitemap URLs - Will be automatically resolved by Cloudflare Pages
-Sitemap: /sitemap.xml
-Sitemap: /index.xml
+# 🔍 Google News 전용 크롤러 설정 (Googlebot-News)
+User-agent: Googlebot-News
+Allow: /
+Allow: /automotive/
+Allow: /economy/
+Allow: /authors/
+Allow: /about/
+Allow: /contact/
+Disallow: /wp-admin/
+Disallow: /admin/
+Disallow: /private/
+Disallow: /test/
+Disallow: /drafts/
 
-# Crawl-delay for respectful crawling
-Crawl-delay: 1 
+# 🤖 Google 웹 크롤러 설정 (Googlebot)
+User-agent: Googlebot
+Allow: /
+Allow: /images/
+Allow: /css/
+Allow: /js/
+Disallow: /wp-admin/
+Disallow: /admin/
+Disallow: /private/
+
+# 🌐 Bing 크롤러 설정
+User-agent: Bingbot
+Allow: /
+Crawl-delay: 1
+
+# 📱 Google 이미지 크롤러 (구글 디스커버용)
+User-agent: Googlebot-Image
+Allow: /
+Allow: /images/
+Allow: /static/images/
+
+# 🚫 차단할 페이지/디렉토리
+Disallow: /search
+Disallow: /?s=
+Disallow: /wp-login
+Disallow: /wp-admin/
+Disallow: /admin/
+Disallow: /private/
+Disallow: /temp/
+Disallow: /backup/
+Disallow: *.pdf$
+Disallow: /404/
+
+# 📍 사이트맵 위치 (구글 뉴스 필수)
+Sitemap: https://okonomis.com/sitemap.xml
+Sitemap: https://okonomis.com/sitemap-news.xml
+Sitemap: https://okonomis.com/sitemap-general.xml
+Sitemap: https://okonomis.com/post-sitemap1.xml
+Sitemap: https://okonomis.com/sitemap-local.xml
+
+# 📊 RSS 피드 (추가 발견 지원)
+Sitemap: https://okonomis.com/index.xml
+
+# ⚡ 크롤링 최적화 설정
+# 구글은 Crawl-delay를 무시하지만 다른 검색엔진을 위해 설정
+Crawl-delay: 1
+
+# ==============================================
+# 📝 참고사항:
+# - Google News는 자동으로 뉴스 콘텐츠를 발견합니다
+# - 사이트맵을 통해 더 빠른 인덱싱이 가능합니다
+# - 구글 디스커버는 고품질 이미지를 선호합니다
+# ============================================== 

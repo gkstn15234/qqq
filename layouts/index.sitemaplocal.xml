@@ -9,10 +9,10 @@
         <changefreq>monthly</changefreq>
         <priority>0.8</priority>
         <geo:geo>
-            <!-- 휴먼빅데이터 본사 위치 (인천시 남동구 은청로 4-7 B동 332호) -->
+            <!-- 오코노미 본사 위치 (경상북도 경산시 진량읍 일연로 747) -->
             <geo:format>kml</geo:format>
-            <geo:lat>37.4540</geo:lat>
-            <geo:lng>126.6918</geo:lng>
+            <geo:lat>35.9</geo:lat>
+            <geo:lng>128.7</geo:lng>
         </geo:geo>
     </url>
     
@@ -24,8 +24,8 @@
         <priority>0.7</priority>
         <geo:geo>
             <geo:format>kml</geo:format>
-            <geo:lat>37.4540</geo:lat>
-            <geo:lng>126.6918</geo:lng>
+            <geo:lat>35.9</geo:lat>
+            <geo:lng>128.7</geo:lng>
         </geo:geo>
     </url>
     
