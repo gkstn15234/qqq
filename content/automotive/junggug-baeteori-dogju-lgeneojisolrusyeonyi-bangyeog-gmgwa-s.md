@@ -1,10 +1,6 @@
 ---
 title: "“중국 배터리 독주, LG에너지솔루션의 반격!” … GM과 손잡고 미국서 LFP 배터리 양산 돌입"
-description: "
-## 중국 배터리 독주에
-LG에너지솔루션, 미국서 맞불
-GM과 손잡고 LFP 본격 양산
-..."
+description: "중국 배터리 독주에"
 date: 2025-07-18T23:50:59+09:00
 author: "박준성 기자"
 categories: ["automotive"]

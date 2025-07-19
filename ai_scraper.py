@@ -351,6 +351,8 @@ def rewrite_with_ai(original_content, title, api_key, api_type="openai"):
                 )
                 
                 rewritten = response.choices[0].message.content.strip()
+                # YAML 안전성을 위해 YAML 구분자만 정리 (따옴표는 보존)
+                rewritten = rewritten.replace('```', '').replace('---', '—')  # YAML 구분자 문제 방지
                 print(f"✅ AI rewrite successful on attempt {attempt + 1}")
                 return rewritten
                 
@@ -462,8 +464,10 @@ def rewrite_title_with_ai(original_title, content, api_key, api_type="openai"):
             )
             
             new_title = response.choices[0].message.content.strip()
-            # 앞뒤 따옴표 제거
+            # 앞뒤 시스템 따옴표만 제거 (내용의 따옴표는 보존)
             new_title = new_title.strip('"').strip("'")
+            # YAML 구분자만 정리 (따옴표는 보존)
+            new_title = new_title.replace('---', '—').replace('```', '')
             print(f"✅ AI title rewrite successful on attempt {attempt + 1}")
             print(f"📝 Title rewritten: {original_title[:30]}... → {new_title[:30]}...")
             return new_title
@@ -561,8 +565,14 @@ def extract_content_from_url(url):
         
         content = '\n\n'.join(paragraphs)
         
-        # 요약문 생성
-        description = paragraphs[0][:150] + "..." if paragraphs else ""
+        # 요약문 생성 (YAML safe - 따옴표 보존)
+        if paragraphs:
+            description = paragraphs[0][:150] + "..."
+            # YAML 안전성을 위한 기본 정리 (따옴표는 HTML 엔티티로 보존)
+            description = description.replace('"', '&quot;').replace('\n', ' ').replace('\r', ' ')
+            description = re.sub(r'\s+', ' ', description).strip()
+        else:
+            description = ""
         
         return {
             'title': title,
@@ -610,6 +620,24 @@ def shuffle_images_in_content(content, cloudflare_images):
         image_index += 1
     
     return '\n\n'.join(result_paragraphs)
+
+def validate_yaml_string(text):
+    """YAML에서 안전한 문자열로 변환 (따옴표 보존)"""
+    if not text:
+        return ""
+    
+    # 기본 정리 (따옴표는 HTML 엔티티로 변환하여 보존)
+    safe_text = str(text).replace('"', '&quot;').replace('\n', ' ').replace('\r', ' ')
+    safe_text = safe_text.replace('---', '—').replace('```', '')
+    
+    # 연속된 공백 정리
+    safe_text = re.sub(r'\s+', ' ', safe_text).strip()
+    
+    # 길이 제한
+    if len(safe_text) > 200:
+        safe_text = safe_text[:200] + "..."
+    
+    return safe_text
 
 def create_markdown_file(article_data, output_dir, cloudflare_account_id=None, cloudflare_api_token=None, ai_api_key=None):
     """마크다운 파일 생성 (AI 재작성 및 이미지 처리 포함)"""
@@ -710,10 +738,16 @@ def create_markdown_file(article_data, output_dir, cloudflare_account_id=None, c
     # 현재 날짜
     current_date = datetime.now().strftime("%Y-%m-%dT%H:%M:%S+09:00")
     
+    # YAML-safe description 생성
+    safe_description = validate_yaml_string(article_data['description'])
+    
+    # YAML-safe title 생성  
+    safe_title = validate_yaml_string(new_title)
+    
     # 마크다운 생성
     markdown_content = f"""---
-title: "{new_title}"
-description: "{article_data['description']}"
+title: "{safe_title}"
+description: "{safe_description}"
 date: {current_date}
 author: "{article_data['author']}"
 categories: ["{category}"]
