@@ -88,11 +88,16 @@ jobs:
           git config --local user.email "action@github.com"
           git config --local user.name "GitHub Action"
           
-          # 변경사항이 있는지 확인
-          if [ -n "$(git status --porcelain)" ]; then
+          # __pycache__ 폴더 제거 (Git에 추가되지 않도록)
+          find . -name "__pycache__" -type d -exec rm -rf {} + 2>/dev/null || true
+          
+          # content/ 폴더와 데이터베이스만 추가
+          git add content/ 2>/dev/null || true
+          git add processed_articles.db 2>/dev/null || true
+          
+          # 변경사항이 있는지 확인 (staged files만)
+          if [ -n "$(git diff --cached --name-only)" ]; then
             echo "📝 Changes detected - committing..."
-            git add content/
-            git add processed_articles.db
             git commit -m "🤖 Auto-generated content $(date '+%Y-%m-%d %H:%M:%S')"
             
             # PAT 토큰이 있으면 사용, 없으면 기본 토큰 사용
