@@ -295,18 +295,18 @@ def upload_to_cloudflare_images(image_url, api_token, account_id):
         
         result = response.json()
         if result.get('success'):
-            # Cloudflare Images URL 반환 (public variant 사용)
+            # Cloudflare Images URL 반환 (기본 variant 사용)
             image_id = result['result']['id']
             cloudflare_url = f"https://imagedelivery.net/{account_id}/{image_id}/public"
             print(f"📸 Cloudflare image URL: {cloudflare_url}")
             return cloudflare_url
         else:
             print(f"❌ Cloudflare upload failed: {result}")
-            return image_url
+            return None  # 실패 시 None 반환
             
     except Exception as e:
         print(f"⚠️ Failed to upload image to Cloudflare: {e}")
-        return image_url
+        return None  # 실패 시 None 반환
 
 def rewrite_with_ai(original_content, title, api_key, api_type="openai"):
     """AI를 사용하여 기사 재작성"""
@@ -719,13 +719,14 @@ def create_markdown_file(article_data, output_dir, cloudflare_account_id=None, c
         ai_api_key
     )
     
-    # Cloudflare에 이미지 업로드
+    # Cloudflare에 이미지 업로드 (원본 이미지 사용하지 않음)
     cloudflare_images = []
     if cloudflare_api_token and cloudflare_account_id and article_data['images']:
         print(f"📸 Uploading {len(article_data['images'])} images to Cloudflare...")
         for img_url in article_data['images'][:5]:  # 최대 5개만
             cf_url = upload_to_cloudflare_images(img_url, cloudflare_api_token, cloudflare_account_id)
-            cloudflare_images.append(cf_url)
+            if cf_url:  # 성공한 경우만 추가 (원본 이미지 사용하지 않음)
+                cloudflare_images.append(cf_url)
             time.sleep(1)  # API 제한 고려
     
     # 이미지를 콘텐츠에 랜덤 재배치
@@ -774,18 +775,10 @@ source_url: "{article_data['url']}"
 url: "/{category}/{title_slug}/"
 """
     
-    # 첫 번째 이미지를 썸네일로 설정 (SEO 및 소셜 미디어 최적화)
+    # Cloudflare Images만 사용 (원본 이미지 사용하지 않음)
     if cloudflare_images:
         thumbnail_image = cloudflare_images[0]
         markdown_content += f'images: {json.dumps(cloudflare_images, ensure_ascii=False)}\n'
-        markdown_content += f'thumbnail: "{thumbnail_image}"\n'
-        markdown_content += f'image: "{thumbnail_image}"\n'  # Open Graph용
-        markdown_content += f'featured_image: "{thumbnail_image}"\n'  # 테마별 호환성
-        markdown_content += f'image_width: 1200\n'  # Google Discover 최적화
-        markdown_content += f'image_height: 630\n'  # Google Discover 최적화
-    elif article_data['images']:
-        thumbnail_image = article_data['images'][0]
-        markdown_content += f'images: {json.dumps(article_data["images"], ensure_ascii=False)}\n'
         markdown_content += f'thumbnail: "{thumbnail_image}"\n'
         markdown_content += f'image: "{thumbnail_image}"\n'  # Open Graph용
         markdown_content += f'featured_image: "{thumbnail_image}"\n'  # 테마별 호환성
