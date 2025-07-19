@@ -99,34 +99,61 @@ def get_scraping_statistics():
         }
 
 def count_published_articles():
-    """발행된 기사 수 계산"""
+    """발행된 기사 수 계산 및 목록 반환"""
     try:
+        import frontmatter
         content_dir = 'content'
         if not os.path.exists(content_dir):
-            return {'automotive': 0, 'economy': 0, 'total': 0}
+            return {'automotive': 0, 'economy': 0, 'total': 0, 'articles': []}
         
         automotive_count = 0
         economy_count = 0
+        articles = []
         
         # automotive 카테고리
         automotive_dir = os.path.join(content_dir, 'automotive')
         if os.path.exists(automotive_dir):
-            automotive_count = len([f for f in os.listdir(automotive_dir) if f.endswith('.md')])
+            for filename in os.listdir(automotive_dir):
+                if filename.endswith('.md') and filename != '_index.md':
+                    automotive_count += 1
+                    try:
+                        with open(os.path.join(automotive_dir, filename), 'r', encoding='utf-8') as f:
+                            post = frontmatter.load(f)
+                            articles.append({
+                                'title': post.metadata.get('title', filename),
+                                'url': f"https://오토코미.com/automotive/{filename.replace('.md', '')}/",
+                                'category': '자동차'
+                            })
+                    except:
+                        pass
         
         # economy 카테고리
         economy_dir = os.path.join(content_dir, 'economy')
         if os.path.exists(economy_dir):
-            economy_count = len([f for f in os.listdir(economy_dir) if f.endswith('.md')])
+            for filename in os.listdir(economy_dir):
+                if filename.endswith('.md') and filename != '_index.md':
+                    economy_count += 1
+                    try:
+                        with open(os.path.join(economy_dir, filename), 'r', encoding='utf-8') as f:
+                            post = frontmatter.load(f)
+                            articles.append({
+                                'title': post.metadata.get('title', filename),
+                                'url': f"https://오토코미.com/economy/{filename.replace('.md', '')}/",
+                                'category': '경제'
+                            })
+                    except:
+                        pass
         
         return {
             'automotive': automotive_count,
             'economy': economy_count,
-            'total': automotive_count + economy_count
+            'total': automotive_count + economy_count,
+            'articles': articles
         }
         
     except Exception as e:
         print(f"기사 수 계산 실패: {e}")
-        return {'automotive': 0, 'economy': 0, 'total': 0}
+        return {'automotive': 0, 'economy': 0, 'total': 0, 'articles': []}
 
 def get_google_news():
     """Google 뉴스 RSS에서 최신 뉴스 가져오기"""
@@ -238,19 +265,20 @@ def create_report_email_content():
   • 🚗 자동차: {article_counts['automotive']}개
   • 💰 경제: {article_counts['economy']}개
   • 📈 전체: {article_counts['total']}개
-
-🤖 **AI 모델**: {OPENAI_MODEL} ({MODEL_CONFIGS.get(OPENAI_MODEL, {}).get('description', 'Unknown')})
 """
 
-    if news_summary:
+    # 발행된 기사 목록 추가
+    if article_counts['articles']:
         body += f"""
-📰 **오늘의 뉴스 한 줄 요약**:
-{news_summary}
+📝 **발행된 기사 목록**:
 """
+        for article in article_counts['articles']:
+            # 제목에서 따옴표 제거 및 정리
+            clean_title = article['title'].strip('"').replace('&quot;', '"')
+            body += f"  • [{article['category']}] [{clean_title}]({article['url']})\n"
 
     body += f"""
 🌐 **사이트**: https://오토코미.com
-⚙️ **시스템**: GitHub Actions + n8n Automation
 
 ---
 자동 발송 시스템 by 오토코미 AI
