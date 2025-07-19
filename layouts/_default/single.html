@@ -129,7 +129,7 @@
                             <article class="widget-article">
                                 <a href="{{ .RelPermalink }}" class="d-flex align-items-start text-decoration-none">
                                     <div class="widget-article-number me-3">
-                                        <span class="number-circle">{{ add $.Scratch.Get "counter" 1 }}</span>
+                                        <span class="number-circle">{{ add ($.Scratch.Get "counter") 1 }}</span>
                                         {{ $.Scratch.Set "counter" (add ($.Scratch.Get "counter") 1) }}
                                     </div>
                                     <div class="widget-article-content flex-grow-1">
