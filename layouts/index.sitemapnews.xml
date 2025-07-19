@@ -14,9 +14,9 @@
                 <news:name>{{ .Site.Title }}</news:name>
                 <news:language>ko</news:language>
             </news:publication>
-            {{ if or (eq .Section "automotive") (eq .Section "securities") }}
+            {{ if or (eq .Section "automotive") (eq .Section "economy") (eq .Section "securities") }}
             <news:genres>PressRelease</news:genres>
-            {{ else if or (eq .Section "economy") (eq .Section "technology") (eq .Section "realestate") (eq .Section "it") (eq .Section "international") }}
+            {{ else if or (eq .Section "technology") (eq .Section "realestate") (eq .Section "it") (eq .Section "international") }}
             <news:genres>OpEd</news:genres>
             {{ else if .Params.genre }}
             {{ if eq .Params.genre "blog" }}
