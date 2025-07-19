@@ -1,7 +1,7 @@
 {{ define "main" }}
 <article class="article-single py-4">
     <div class="container">
-        <div class="row justify-content-center">
+        <div class="row">
             <div class="col-lg-8">
                 <!-- Article Header -->
                 <header class="article-header mb-4">
@@ -12,7 +12,7 @@
                             {{ if .Section }}
                             <li class="breadcrumb-item"><a href="{{ .Site.BaseURL }}{{ .Section }}/">{{ .Section | title }}</a></li>
                             {{ end }}
-                            <li class="breadcrumb-item active" aria-current="page">{{ .Title | truncate 50 }}</li>
+                            <li class="breadcrumb-item active text-truncate" aria-current="page">{{ .Title | truncate 30 }}</li>
                         </ol>
                     </nav>
 
@@ -20,15 +20,16 @@
                     <h1 class="article-title mb-3">{{ .Title }}</h1>
 
                     <!-- Meta Information -->
-                    <div class="article-meta d-flex justify-content-between align-items-center mb-4 pb-3 border-bottom">
-                        <div class="meta-left">
+                    <div class="article-meta d-flex flex-wrap justify-content-between align-items-center mb-4 pb-3 border-bottom">
+                        <div class="meta-left mb-2 mb-md-0">
                             <span class="author me-3">
                                 <i class="fas fa-user me-1"></i>
                                 {{ .Params.author | default .Site.Params.author }}
                             </span>
                             <time class="publish-date" datetime="{{ .Date.Format "2006-01-02T15:04:05" }}">
                                 <i class="far fa-calendar me-1"></i>
-                                {{ .Date.Format "2006년 01월 02일 15:04" }}
+                                <span class="d-none d-sm-inline">{{ .Date.Format "2006년 01월 02일 15:04" }}</span>
+                                <span class="d-sm-none">{{ .Date.Format "01.02 15:04" }}</span>
                             </time>
                         </div>
                         <div class="meta-right">
@@ -39,22 +40,26 @@
                     </div>
 
                     <!-- Social Share Buttons -->
-                    <div class="share-buttons mb-4">
-                        <span class="share-label me-2">공유하기:</span>
+                    <div class="share-buttons mb-4 d-flex flex-wrap gap-2">
+                        <span class="share-label me-2 d-none d-sm-inline">공유하기:</span>
                         <a href="#" onclick="window.open('https://www.facebook.com/sharer/sharer.php?u=' + encodeURIComponent(window.location.href), 'facebook-share-dialog', 'width=800,height=600'); return false;" 
-                           class="btn btn-sm btn-facebook me-2" title="페이스북으로 공유">
+                           class="btn btn-sm btn-facebook" title="페이스북으로 공유">
                             <i class="fab fa-facebook-f"></i>
+                            <span class="d-none d-sm-inline ms-1">페이스북</span>
                         </a>
                         <a href="#" onclick="window.open('https://twitter.com/intent/tweet?text=' + encodeURIComponent(document.title) + '&url=' + encodeURIComponent(window.location.href), 'twitter-share-dialog', 'width=800,height=600'); return false;" 
-                           class="btn btn-sm btn-twitter me-2" title="트위터로 공유">
+                           class="btn btn-sm btn-twitter" title="트위터로 공유">
                             <i class="fab fa-twitter"></i>
+                            <span class="d-none d-sm-inline ms-1">트위터</span>
                         </a>
                         <a href="#" onclick="window.open('http://share.naver.com/web/shareView.nhn?url=' + encodeURIComponent(window.location.href) + '&title=' + encodeURIComponent(document.title), 'naver-share-dialog', 'width=800,height=600'); return false;" 
-                           class="btn btn-sm btn-naver me-2" title="네이버로 공유">
+                           class="btn btn-sm btn-naver" title="네이버로 공유">
                             <i class="fas fa-n"></i>
+                            <span class="d-none d-sm-inline ms-1">네이버</span>
                         </a>
                         <button class="btn btn-sm btn-link-copy" onclick="navigator.clipboard.writeText(window.location.href); alert('링크가 복사되었습니다!');" title="링크 복사">
                             <i class="fas fa-link"></i>
+                            <span class="d-none d-sm-inline ms-1">링크복사</span>
                         </button>
                     </div>
                 </header>
@@ -86,40 +91,66 @@
                     {{ if .Params.tags }}
                     <div class="article-tags mb-4">
                         <i class="fas fa-tags me-2"></i>
-                        {{ range .Params.tags }}
-                        <a href="{{ $.Site.BaseURL }}tags/{{ . | urlize }}/" class="badge bg-secondary text-decoration-none me-1">{{ . }}</a>
-                        {{ end }}
+                        <div class="d-inline-flex flex-wrap gap-2">
+                            {{ range .Params.tags }}
+                            <a href="{{ $.Site.BaseURL }}tags/{{ . | urlize }}/" class="badge bg-secondary text-decoration-none">{{ . }}</a>
+                            {{ end }}
+                        </div>
                     </div>
                     {{ end }}
 
                     <!-- Share buttons at bottom -->
                     <div class="share-bottom text-center py-4 bg-light rounded">
                         <p class="mb-3">이 기사가 도움이 되셨나요? 공유해주세요!</p>
-                        <div class="share-buttons">
+                        <div class="share-buttons justify-content-center">
                             <a href="#" onclick="window.open('https://www.facebook.com/sharer/sharer.php?u=' + encodeURIComponent(window.location.href), 'facebook-share-dialog', 'width=800,height=600'); return false;" 
-                               class="btn btn-facebook me-2">
+                               class="btn btn-facebook me-2 mb-2">
                                 <i class="fab fa-facebook-f me-1"></i> 페이스북
                             </a>
                             <a href="#" onclick="window.open('https://twitter.com/intent/tweet?text=' + encodeURIComponent(document.title) + '&url=' + encodeURIComponent(window.location.href), 'twitter-share-dialog', 'width=800,height=600'); return false;" 
-                               class="btn btn-twitter me-2">
+                               class="btn btn-twitter me-2 mb-2">
                                 <i class="fab fa-twitter me-1"></i> 트위터
                             </a>
                             <a href="#" onclick="window.open('http://share.naver.com/web/shareView.nhn?url=' + encodeURIComponent(window.location.href) + '&title=' + encodeURIComponent(document.title), 'naver-share-dialog', 'width=800,height=600'); return false;" 
-                               class="btn btn-naver">
+                               class="btn btn-naver mb-2">
                                 <i class="fas fa-n me-1"></i> 네이버
                             </a>
                         </div>
                     </div>
                 </footer>
 
+                <!-- Mobile Widgets (shown only on mobile) -->
+                <div class="mobile-widgets d-lg-none mt-5">
+                    <!-- Popular Articles Widget -->
+                    <div class="widget-card mb-4">
+                        <h4 class="widget-title">인기 기사</h4>
+                        <div class="widget-content">
+                            {{ range first 5 (where .Site.RegularPages "Section" "in" (slice "automotive" "economy")) }}
+                            <article class="widget-article">
+                                <a href="{{ .RelPermalink }}" class="d-flex align-items-start text-decoration-none">
+                                    <div class="widget-article-number me-3">
+                                        <span class="number-circle">{{ add $.Scratch.Get "counter" 1 }}</span>
+                                        {{ $.Scratch.Set "counter" (add ($.Scratch.Get "counter") 1) }}
+                                    </div>
+                                    <div class="widget-article-content flex-grow-1">
+                                        <h6 class="widget-article-title mb-1">{{ .Title | truncate 50 }}</h6>
+                                        <small class="text-muted">{{ .Date.Format "01.02" }}</small>
+                                    </div>
+                                </a>
+                            </article>
+                            {{ end }}
+                        </div>
+                    </div>
+                </div>
+
                 <!-- Related Articles -->
                 {{ $related := .Site.RegularPages.Related . | first 4 }}
                 {{ if $related }}
                 <section class="related-articles mt-5">
-                    <h3 class="h4 mb-4">관련 기사</h3>
+                    <h3 class="section-title h4 mb-4">관련 기사</h3>
                     <div class="row g-3">
                         {{ range $related }}
-                        <div class="col-md-6">
+                        <div class="col-sm-6">
                             <article class="related-item">
                                 <a href="{{ .RelPermalink }}" class="text-decoration-none">
                                     <div class="card h-100 border-0 shadow-sm">
@@ -129,16 +160,16 @@
                                                 <img src="{{ index .Params.images 0 }}" 
                                                      alt="{{ .Title }}" 
                                                      class="img-fluid h-100 rounded-start"
-                                                     style="object-fit: cover;">
+                                                     style="object-fit: cover; min-height: 100px;">
                                                 {{ else }}
-                                                <div class="no-image-placeholder d-flex align-items-center justify-content-center bg-light h-100 rounded-start">
+                                                <div class="no-image-placeholder d-flex align-items-center justify-content-center bg-light h-100 rounded-start" style="min-height: 100px;">
                                                     <i class="fas fa-newspaper fa-2x text-muted"></i>
                                                 </div>
                                                 {{ end }}
                                             </div>
                                             <div class="col-8">
-                                                <div class="card-body py-2">
-                                                    <h5 class="card-title h6 mb-1">{{ .Title | truncate 50 }}</h5>
+                                                <div class="card-body py-2 px-3">
+                                                    <h5 class="card-title h6 mb-1 line-clamp-2">{{ .Title }}</h5>
                                                     <small class="text-muted">{{ .Date.Format "2006.01.02" }}</small>
                                                 </div>
                                             </div>
@@ -153,37 +184,78 @@
                 {{ end }}
             </div>
 
-            <!-- Sidebar (optional) -->
+            <!-- Desktop Sidebar -->
             <div class="col-lg-4 d-none d-lg-block">
-                <aside class="article-sidebar sticky-top" style="top: 100px;">
-                    <!-- Latest Articles -->
-                    <div class="sidebar-widget mb-4">
-                        <h4 class="widget-title h5 mb-3 pb-2 border-bottom">최신 기사</h4>
-                        <ul class="list-unstyled">
-                            {{ range first 5 (where .Site.RegularPages "Section" "in" (slice "automotive" "economy")) }}
-                            <li class="mb-3">
-                                <a href="{{ .RelPermalink }}" class="text-decoration-none">
-                                    <h6 class="mb-1">{{ .Title | truncate 50 }}</h6>
-                                    <small class="text-muted">{{ .Date.Format "2006.01.02" }}</small>
+                <aside class="article-sidebar sticky-lg-top" style="top: 80px;">
+                    <!-- Popular Articles Widget -->
+                    <div class="widget-card mb-4">
+                        <h4 class="widget-title">인기 기사</h4>
+                        <div class="widget-content">
+                            {{ $.Scratch.Set "counter" 0 }}
+                            {{ range first 8 (where .Site.RegularPages "Section" "in" (slice "automotive" "economy")) }}
+                            <article class="widget-article">
+                                <a href="{{ .RelPermalink }}" class="d-flex align-items-start text-decoration-none">
+                                    <div class="widget-article-number me-3">
+                                        <span class="number-circle">{{ add ($.Scratch.Get "counter") 1 }}</span>
+                                        {{ $.Scratch.Set "counter" (add ($.Scratch.Get "counter") 1) }}
+                                    </div>
+                                    <div class="widget-article-content flex-grow-1">
+                                        <h6 class="widget-article-title mb-1">{{ .Title | truncate 45 }}</h6>
+                                        <div class="widget-article-meta">
+                                            <span class="category-tag {{ .Section }}">{{ .Section | title }}</span>
+                                            <span class="date">{{ .Date.Format "01.02" }}</span>
+                                        </div>
+                                    </div>
                                 </a>
-                            </li>
+                            </article>
                             {{ end }}
-                        </ul>
+                        </div>
                     </div>
 
-                    <!-- Popular Tags -->
+                    <!-- Category Articles Widget -->
+                    {{ $currentSection := .Section }}
+                    {{ $categoryArticles := where (where .Site.RegularPages "Section" $currentSection) "Permalink" "ne" .Permalink }}
+                    {{ if $categoryArticles }}
+                    <div class="widget-card mb-4">
+                        <h4 class="widget-title">{{ .Section | title }} 최신 기사</h4>
+                        <div class="widget-content">
+                            {{ range first 5 $categoryArticles }}
+                            <article class="widget-list-item">
+                                <a href="{{ .RelPermalink }}" class="text-decoration-none">
+                                    <h6 class="widget-list-title">{{ .Title | truncate 50 }}</h6>
+                                    <small class="text-muted">{{ .Date.Format "2006.01.02" }}</small>
+                                </a>
+                            </article>
+                            {{ end }}
+                        </div>
+                    </div>
+                    {{ end }}
+
+                    <!-- Newsletter Widget -->
+                    <div class="widget-card widget-newsletter mb-4">
+                        <h4 class="widget-title">뉴스레터 구독</h4>
+                        <div class="widget-content text-center">
+                            <i class="fas fa-envelope fa-3x mb-3 text-primary"></i>
+                            <p class="mb-3">최신 뉴스를 이메일로 받아보세요</p>
+                            <button class="btn btn-primary w-100">구독하기</button>
+                        </div>
+                    </div>
+
+                    <!-- Popular Tags Widget -->
                     {{ if .Site.Taxonomies.tags }}
-                    <div class="sidebar-widget">
-                        <h4 class="widget-title h5 mb-3 pb-2 border-bottom">인기 태그</h4>
-                        <div class="tag-cloud">
-                            {{ range $name, $taxonomy := .Site.Taxonomies.tags }}
-                            {{ if gt (len $taxonomy) 2 }}
-                            <a href="{{ $.Site.BaseURL }}tags/{{ $name | urlize }}/" 
-                               class="badge bg-light text-dark text-decoration-none me-1 mb-1">
-                                {{ $name }} ({{ len $taxonomy }})
-                            </a>
-                            {{ end }}
-                            {{ end }}
+                    <div class="widget-card">
+                        <h4 class="widget-title">인기 태그</h4>
+                        <div class="widget-content">
+                            <div class="tag-cloud">
+                                {{ range $name, $taxonomy := .Site.Taxonomies.tags }}
+                                {{ if gt (len $taxonomy) 2 }}
+                                <a href="{{ $.Site.BaseURL }}tags/{{ $name | urlize }}/" 
+                                   class="tag-item">
+                                    {{ $name }}
+                                </a>
+                                {{ end }}
+                                {{ end }}
+                            </div>
                         </div>
                     </div>
                     {{ end }}

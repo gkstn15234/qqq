@@ -3855,21 +3855,122 @@ body * {
 
 /* Responsive adjustments */
 @media (max-width: 768px) {
+    /* Main Content Mobile */
+    .main-content {
+        padding-top: 1rem;
+    }
+    
+    /* Headline Section Mobile */
+    .headline-section {
+        margin-bottom: 2rem;
+    }
+    
     .headline-card .row {
         flex-direction: column;
     }
     
     .headline-card img,
     .headline-card .no-image-placeholder {
-        min-height: 250px !important;
+        min-height: 200px !important;
     }
     
+    .headline-card .p-4 {
+        padding: 1.5rem !important;
+    }
+    
+    .headline-card .h2 {
+        font-size: 1.5rem;
+    }
+    
+    /* Featured Section Mobile */
+    .featured-section {
+        margin-bottom: 2rem;
+    }
+    
+    .featured-section .h4 {
+        font-size: 1.25rem;
+    }
+    
+    /* Articles Grid Mobile */
+    .articles-grid {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+    }
+    
+    .article-card .card-title {
+        font-size: 1.125rem;
+    }
+    
+    .article-card .card-excerpt {
+        font-size: 0.875rem;
+    }
+    
+    /* Latest Articles Mobile */
     .article-item .row {
-        flex-direction: column;
+        flex-direction: row;
+    }
+    
+    .article-item .col-md-3 {
+        flex: 0 0 120px;
+        max-width: 120px;
+    }
+    
+    .article-item .col-md-9 {
+        flex: 1;
+        padding-left: 0.75rem;
     }
     
     .article-thumbnail {
-        margin-bottom: 1rem;
+        height: 80px !important;
+        margin-bottom: 0;
+    }
+    
+    .article-content h3 {
+        font-size: 1rem;
+    }
+    
+    .article-content p {
+        font-size: 0.875rem;
+        line-height: 1.4;
+    }
+    
+    /* Load More Buttons Mobile */
+    .load-more {
+        margin-top: 2rem;
+    }
+    
+    .load-more .btn {
+        font-size: 0.875rem;
+        padding: 0.5rem 1rem;
+    }
+}
+
+/* Small Mobile Devices */
+@media (max-width: 576px) {
+    /* Container padding */
+    .container {
+        padding: 0 0.75rem;
+    }
+    
+    /* Typography adjustments */
+    .section-title {
+        font-size: 1.5rem;
+    }
+    
+    /* Article cards on very small screens */
+    .article-card .card-content {
+        padding: 1rem;
+    }
+    
+    /* Latest articles on very small screens */
+    .article-item {
+        margin-bottom: 1.5rem !important;
+        padding-bottom: 1.5rem !important;
+    }
+    
+    .article-item .col-md-3 {
+        flex: 0 0 100px;
+        max-width: 100px;
     }
 }
 
@@ -4104,4 +4205,228 @@ body * {
 .tag-cloud a:hover {
     background-color: #2563eb;
     color: white !important;
+}
+
+/* Widget Cards */
+.widget-card {
+    background: white;
+    border-radius: 0.75rem;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+    overflow: hidden;
+    margin-bottom: 1.5rem;
+}
+
+.widget-title {
+    font-size: 1.125rem;
+    font-weight: 700;
+    padding: 1rem 1.25rem;
+    margin: 0;
+    border-bottom: 1px solid #e9ecef;
+    background: #f8f9fa;
+}
+
+.widget-content {
+    padding: 1.25rem;
+}
+
+/* Widget Articles */
+.widget-article {
+    padding: 0.75rem 0;
+    border-bottom: 1px solid #f1f3f5;
+}
+
+.widget-article:last-child {
+    border-bottom: none;
+    padding-bottom: 0;
+}
+
+.widget-article:hover {
+    background-color: #f8f9fa;
+    margin: 0 -1.25rem;
+    padding-left: 1.25rem;
+    padding-right: 1.25rem;
+}
+
+.widget-article-number {
+    flex-shrink: 0;
+}
+
+.number-circle {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    background: #2563eb;
+    color: white;
+    border-radius: 50%;
+    font-size: 0.875rem;
+    font-weight: 600;
+}
+
+.widget-article-title {
+    font-size: 0.9375rem;
+    font-weight: 500;
+    color: #212529;
+    line-height: 1.4;
+    margin-bottom: 0.25rem;
+}
+
+.widget-article:hover .widget-article-title {
+    color: #2563eb;
+}
+
+.widget-article-meta {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.8125rem;
+}
+
+.category-tag {
+    display: inline-block;
+    padding: 0.125rem 0.5rem;
+    border-radius: 0.25rem;
+    font-size: 0.75rem;
+    font-weight: 500;
+}
+
+.category-tag.automotive {
+    background: #fee2e2;
+    color: #dc2626;
+}
+
+.category-tag.economy {
+    background: #fef3c7;
+    color: #d97706;
+}
+
+/* Widget List Items */
+.widget-list-item {
+    padding: 0.75rem 0;
+    border-bottom: 1px solid #f1f3f5;
+}
+
+.widget-list-item:last-child {
+    border-bottom: none;
+}
+
+.widget-list-title {
+    font-size: 0.9375rem;
+    font-weight: 500;
+    color: #212529;
+    margin-bottom: 0.25rem;
+    line-height: 1.4;
+}
+
+.widget-list-item:hover .widget-list-title {
+    color: #2563eb;
+}
+
+/* Newsletter Widget */
+.widget-newsletter {
+    background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+    color: white;
+}
+
+.widget-newsletter .widget-title {
+    background: transparent;
+    border-bottom: 1px solid rgba(255,255,255,0.2);
+    color: white;
+}
+
+.widget-newsletter .widget-content {
+    color: white;
+}
+
+.widget-newsletter .btn-primary {
+    background: white;
+    color: #2563eb;
+    border: none;
+    font-weight: 600;
+}
+
+.widget-newsletter .btn-primary:hover {
+    background: #f3f4f6;
+}
+
+/* Tag Cloud */
+.tag-cloud {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+
+.tag-item {
+    display: inline-block;
+    padding: 0.375rem 0.875rem;
+    background: #f3f4f6;
+    color: #4b5563;
+    border-radius: 1.5rem;
+    font-size: 0.875rem;
+    font-weight: 500;
+    text-decoration: none;
+    transition: all 0.3s ease;
+}
+
+.tag-item:hover {
+    background: #2563eb;
+    color: white;
+    transform: translateY(-2px);
+}
+
+/* Line Clamp Utility */
+.line-clamp-2 {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+/* Mobile Optimizations */
+@media (max-width: 768px) {
+    /* Article Header Mobile */
+    .article-title {
+        font-size: 1.5rem;
+    }
+    
+    .article-meta {
+        font-size: 0.875rem;
+    }
+    
+    /* Share Buttons Mobile */
+    .share-buttons {
+        gap: 0.5rem;
+    }
+    
+    .btn-sm {
+        padding: 0.375rem 0.75rem;
+    }
+    
+    /* Article Content Mobile */
+    .article-content {
+        font-size: 1rem;
+    }
+    
+    .article-content h2 {
+        font-size: 1.5rem;
+    }
+    
+    .article-content h3 {
+        font-size: 1.25rem;
+    }
+    
+    /* Mobile Widgets */
+    .mobile-widgets {
+        margin-top: 3rem;
+    }
+    
+    /* Related Articles Mobile */
+    .related-item .card-body {
+        padding: 0.75rem !important;
+    }
+    
+    .related-item .h6 {
+        font-size: 0.875rem;
+    }
 }
