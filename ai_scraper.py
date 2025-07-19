@@ -306,9 +306,10 @@ def upload_to_cloudflare_images(image_url, api_token, account_id):
         
         result = response.json()
         if result.get('success'):
-            # Cloudflare Images URL 반환 (기본 variant 사용)
+            # Cloudflare Images URL 반환 (새로운 account hash 사용)
             image_id = result['result']['id']
-            cloudflare_url = f"https://imagedelivery.net/{account_id}/{image_id}/public"
+            account_hash = "BhPWbivJAhTvor9c-8lV2w"  # 새로운 account hash
+            cloudflare_url = f"https://imagedelivery.net/{account_hash}/{image_id}/public"
             print(f"📸 Cloudflare image URL: {cloudflare_url}")
             return cloudflare_url
         else:
@@ -883,10 +884,10 @@ url: "/{category}/{title_slug}/"
 
 def main():
     """메인 함수"""
-    # 환경변수에서 설정 읽기
+    # 환경변수에서 설정 읽기 (새로운 Cloudflare 설정)
     sitemap_url = get_env_var('SITEMAP_URL', 'https://www.reportera.co.kr/news-sitemap.xml')
-    cloudflare_account_id = get_env_var('CLOUDFLARE_ACCOUNT_ID')
-    cloudflare_api_token = get_env_var('CLOUDFLARE_API_TOKEN')
+    cloudflare_account_id = get_env_var('CLOUDFLARE_ACCOUNT_ID', '5778a7b9867a82c2c6ad6d104d5ebb6d')
+    cloudflare_api_token = get_env_var('CLOUDFLARE_API_TOKEN', 'XLz-RMI1mpfrTEqLnKylT6t8tJEO7Drcx0zopcGf')
     ai_api_key = get_env_var('OPENAI_API_KEY')
     
     # 처리된 기사 DB 초기화
