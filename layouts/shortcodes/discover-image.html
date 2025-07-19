@@ -10,15 +10,13 @@
 {{ $height := .Get "height" | default 675 }}
 
 {{ if $src }}
-  {{ $image := resources.Get $src }}
-  {{ if $image }}
-    {{ $resized := $image.Resize (printf "%dx%d jpg q95" $width $height) }}
-    
+  {{ if hasPrefix $src "http" }}
+    <!-- 외부 이미지 (Cloudflare Images) -->
     <figure class="discover-image">
-      <img src="{{ $resized.RelPermalink }}" 
+      <img src="{{ $src }}" 
            alt="{{ $alt }}" 
-           width="{{ $resized.Width }}"
-           height="{{ $resized.Height }}"
+           width="{{ $width }}"
+           height="{{ $height }}"
            loading="lazy"
            style="width: 100%; height: auto; border-radius: 8px;">
       {{ if $caption }}
@@ -26,6 +24,22 @@
       {{ end }}
     </figure>
   {{ else }}
+    {{ $image := resources.Get $src }}
+    {{ if $image }}
+      {{ $resized := $image.Resize (printf "%dx%d jpg q95" $width $height) }}
+      
+      <figure class="discover-image">
+        <img src="{{ $resized.RelPermalink }}" 
+             alt="{{ $alt }}" 
+             width="{{ $resized.Width }}"
+             height="{{ $resized.Height }}"
+             loading="lazy"
+             style="width: 100%; height: auto; border-radius: 8px;">
+        {{ if $caption }}
+        <figcaption>{{ $caption }}</figcaption>
+        {{ end }}
+      </figure>
+    {{ else }}
     <!-- 외부 이미지 또는 정적 이미지 -->
     <figure class="discover-image">
       <img src="{{ $src }}" 

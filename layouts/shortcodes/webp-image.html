@@ -11,23 +11,33 @@
 {{ $loading := .Get "loading" | default "lazy" }}
 
 {{ if $src }}
-  {{ $image := resources.Get $src }}
-  {{ if $image }}
-    <!-- 로컬 이미지 - WebP 최적화 -->
-    {{ $webp := $image.Resize (printf "%dx%d webp q85" $width $height) }}
-    {{ $jpeg := $image.Resize (printf "%dx%d jpeg q95" $width $height) }}
-    
-    <picture>
-      <source srcset="{{ $webp.RelPermalink }}" type="image/webp">
-      <img src="{{ $jpeg.RelPermalink }}" 
-           alt="{{ $alt }}" 
-           width="{{ $webp.Width }}"
-           height="{{ $webp.Height }}"
-           class="{{ $class }}"
-           loading="{{ $loading }}"
-           style="width: 100%; height: auto;">
-    </picture>
+  {{ if hasPrefix $src "http" }}
+    <!-- 외부 이미지 (Cloudflare Images) -->
+    <img src="{{ $src }}" 
+         alt="{{ $alt }}" 
+         width="{{ $width }}"
+         height="{{ $height }}"
+         class="{{ $class }}"
+         loading="{{ $loading }}"
+         style="width: 100%; height: auto;">
   {{ else }}
+    {{ $image := resources.Get $src }}
+    {{ if $image }}
+      <!-- 로컬 이미지 - WebP 최적화 -->
+      {{ $webp := $image.Resize (printf "%dx%d webp q85" $width $height) }}
+      {{ $jpeg := $image.Resize (printf "%dx%d jpeg q95" $width $height) }}
+      
+      <picture>
+        <source srcset="{{ $webp.RelPermalink }}" type="image/webp">
+        <img src="{{ $jpeg.RelPermalink }}" 
+             alt="{{ $alt }}" 
+             width="{{ $webp.Width }}"
+             height="{{ $webp.Height }}"
+             class="{{ $class }}"
+             loading="{{ $loading }}"
+             style="width: 100%; height: auto;">
+      </picture>
+    {{ else }}
     <!-- 외부 이미지 - 기본 img 태그 -->
     <img src="{{ $src }}" 
          alt="{{ $alt }}" 

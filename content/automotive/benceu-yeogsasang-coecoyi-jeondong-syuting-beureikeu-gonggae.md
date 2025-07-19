@@ -2,7 +2,7 @@
 title: "“벤츠 역사상 최초의 전동 슈팅 브레이크 공개! … 2026년 출시 예정, CLA 슈팅 브레이크의 매력은?”"
 description: "158개의 별빛 루프가 눈길"
 date: 2025-07-19T00:01:33+09:00
-author: "박준성 기자"
+author: "윤신애"
 categories: ["automotive"]
 tags: ["뉴스", "이슈", "CLA", "CLA 슈팅 브레이크", "벤츠", "전기차", "디자인 혁신"]
 hash: b62b173e

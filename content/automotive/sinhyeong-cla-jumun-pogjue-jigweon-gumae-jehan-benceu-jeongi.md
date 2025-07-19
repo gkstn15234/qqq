@@ -2,7 +2,7 @@
 title: "신형 CLA ‘주문 폭주에 직원 구매 제한’ … 벤츠 전기차 생산라인 ‘24시간 가동’"
 description: "신형 CLA, 폭발적 수요에 생산라인 ‘풀가동’"
 date: 2025-07-18T23:59:03+09:00
-author: "박준성 기자"
+author: "윤신애"
 categories: ["automotive"]
 tags: ["뉴스", "이슈", "CLA", "벤츠", "신형 CLA", "전기차", "생산라인"]
 hash: 8919273c

@@ -53,23 +53,23 @@
                     {{ if .Params.images }}
                     <div class="article-main-image">
                         {{ $imagePath := index .Params.images 0 }}
-                        {{ $img := resources.Get $imagePath }}
-                        {{ if $img }}
-                            <img src="{{ $img.RelPermalink }}" 
-                                 alt="{{ .Title }}" 
-                                 class="img-fluid discover-optimized"
-                                 loading="lazy"
-                                 width="{{ $img.Width }}" 
-                                 height="{{ $img.Height }}"
-                                 data-discover="true">
-                        {{ else }}
-                            <img src="{{ $imagePath }}" 
-                                 alt="{{ .Title }}" 
-                                 class="img-fluid discover-optimized"
-                                 loading="lazy"
-                                 width="1200" 
-                                 height="675">
-                        {{ end }}
+                        <img src="{{ $imagePath }}" 
+                             alt="{{ .Title }}" 
+                             class="img-fluid discover-optimized"
+                             loading="lazy"
+                             width="{{ .Params.image_width | default 1200 }}" 
+                             height="{{ .Params.image_height | default 630 }}"
+                             data-discover="true">
+                    </div>
+                    {{ else if .Params.image }}
+                    <div class="article-main-image">
+                        <img src="{{ .Params.image }}" 
+                             alt="{{ .Title }}" 
+                             class="img-fluid discover-optimized"
+                             loading="lazy"
+                             width="{{ .Params.image_width | default 1200 }}" 
+                             height="{{ .Params.image_height | default 630 }}"
+                             data-discover="true">
                     </div>
                     {{ end }}
 

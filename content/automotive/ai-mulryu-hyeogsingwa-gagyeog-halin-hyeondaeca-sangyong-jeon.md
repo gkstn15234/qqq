@@ -2,7 +2,7 @@
 title: "“AI 물류 혁신과 가격 할인” … 현대차 상용 전기차 ST1, 보조금 혜택으로 실구매가 대폭 낮춰"
 description: "AI 물류 앱 탑재해 효율성 강화"
 date: 2025-07-18T23:54:45+09:00
-author: "박준성 기자"
+author: "윤신애"
 categories: ["automotive"]
 tags: ["뉴스", "이슈", "2026 ST1", "ST1", "상용차", "현대자동차", "AI 물류", "전기차 할인"]
 hash: 4c84c617

@@ -2,7 +2,7 @@
 title: "“전기차의 전설, 마지막 GTX 배지” … 폭스바겐 ID.3 GTX FIRE+ICE, 클래식 감성의 현대적 재탄생"
 description: "1990년 감성에 전기 심장을 담다"
 date: 2025-07-18T23:56:27+09:00
-author: "박준성 기자"
+author: "윤신애"
 categories: ["automotive"]
 tags: ["뉴스", "이슈", "ID.3 GTX FIRE+ICE", "폭스바겐", "폭스바겐 한정판", "전기차", "클래식 재해석"]
 hash: a27d54aa

@@ -500,13 +500,8 @@ def extract_content_from_url(url):
             return None
         title = title_elem.get_text().strip()
         
-        # 메타 정보 추출
-        meta_elem = soup.find('div', class_='entry-meta')
-        author = "윤신애"  # 기본값
-        if meta_elem:
-            author_elem = meta_elem.find('span', class_='author-name')
-            if author_elem:
-                author = author_elem.get_text().strip()
+        # 메타 정보 추출 - 항상 윤신애로 설정
+        author = "윤신애"
         
         # 태그 추출
         tags = ["뉴스", "이슈"]  # 기본 태그
