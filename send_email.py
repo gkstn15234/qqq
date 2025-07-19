@@ -121,7 +121,7 @@ def count_published_articles():
                             post = frontmatter.load(f)
                             articles.append({
                                 'title': post.metadata.get('title', filename),
-                                'url': f"https://오토코미.com/automotive/{filename.replace('.md', '')}/",
+                                'url': f"https://blogai2.pages.dev/automotive/{filename.replace('.md', '')}/",
                                 'category': '자동차'
                             })
                     except:
@@ -138,7 +138,7 @@ def count_published_articles():
                             post = frontmatter.load(f)
                             articles.append({
                                 'title': post.metadata.get('title', filename),
-                                'url': f"https://오토코미.com/economy/{filename.replace('.md', '')}/",
+                                'url': f"https://blogai2.pages.dev/economy/{filename.replace('.md', '')}/",
                                 'category': '경제'
                             })
                     except:
@@ -278,7 +278,7 @@ def create_report_email_content():
             body += f"  • [{article['category']}] [{clean_title}]({article['url']})\n"
 
     body += f"""
-🌐 **사이트**: https://오토코미.com
+🌐 **사이트**: https://blogai2.pages.dev
 
 ---
 자동 발송 시스템 by 오토코미 AI
