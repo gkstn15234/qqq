@@ -1,150 +1,161 @@
 {{ define "main" }}
-<main class="main-content">
+<main class="main-content py-4">
     <div class="container">
         {{ $articles := where .Site.RegularPages "Section" "in" (slice "automotive" "economy") }}
-        {{ $allArticles := shuffle ($articles.ByDate.Reverse) }}
+        {{ $sortedArticles := $articles.ByDate.Reverse }}
         
-        <!-- 메인 헤드라인 섹션 -->
-        <div class="row mb-4">
-            <div class="col-12">
-                <div class="main-headline">
-                    {{ $mainArticle := index $allArticles 0 }}
-                    {{ if $mainArticle }}
-                    <div class="card border-0 shadow-sm">
-                        <div class="row g-0">
-                                                         <div class="col-md-6">
-                                 <div class="main-article-image">
-                                     {{ if $mainArticle.Params.images }}
-                                     <img src="{{ index $mainArticle.Params.images 0 }}" alt="{{ $mainArticle.Title }}" class="img-fluid w-100 h-100 object-fit-cover">
-                                     {{ else }}
-                                     <div class="no-image-main d-flex align-items-center justify-content-center">
-                                         <i class="fas fa-{{ if eq $mainArticle.Section "automotive" }}car{{ else if eq $mainArticle.Section "economy" }}chart-line{{ else }}newspaper{{ end }} fa-3x text-muted"></i>
-                                     </div>
-                                     {{ end }}
-                                 </div>
-                             </div>
-                            <div class="col-md-6">
-                                <div class="card-body h-100 d-flex flex-column">
-                                    <span class="badge bg-danger mb-2">속보</span>
-                                    <h2 class="card-title mb-3">
-                                        <a href="{{ $mainArticle.RelPermalink }}" class="text-decoration-none text-dark">{{ $mainArticle.Title }}</a>
-                                    </h2>
-                                    <p class="card-text text-muted mb-3">{{ $mainArticle.Summary | plainify | truncate 200 }}</p>
-                                    <div class="mt-auto">
-                                        <small class="text-muted">{{ $mainArticle.Date.Format "2006년 01월 02일" }}</small>
-                                    </div>
+        <!-- 메인 헤드라인 -->
+        {{ if gt (len $sortedArticles) 0 }}
+        <section class="headline-section mb-5">
+            {{ $mainArticle := index $sortedArticles 0 }}
+            <div class="headline-card shadow-sm rounded overflow-hidden">
+                <div class="row g-0">
+                    <div class="col-lg-7">
+                        {{ if $mainArticle.Params.images }}
+                        <img src="{{ index $mainArticle.Params.images 0 }}" 
+                             alt="{{ $mainArticle.Title }}" 
+                             class="img-fluid w-100 h-100" 
+                             style="object-fit: cover; min-height: 400px;">
+                        {{ else }}
+                        <div class="no-image-placeholder d-flex align-items-center justify-content-center bg-light" style="min-height: 400px;">
+                            <i class="fas fa-newspaper fa-5x text-muted"></i>
+                        </div>
+                        {{ end }}
+                    </div>
+                    <div class="col-lg-5">
+                        <div class="p-4 h-100 d-flex flex-column">
+                            <span class="badge bg-primary mb-3">최신 뉴스</span>
+                            <h1 class="h2 mb-3">
+                                <a href="{{ $mainArticle.RelPermalink }}" class="text-decoration-none text-dark">
+                                    {{ $mainArticle.Title }}
+                                </a>
+                            </h1>
+                            <p class="text-muted mb-4">{{ $mainArticle.Summary | plainify | truncate 200 }}</p>
+                            <div class="mt-auto">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <small class="text-muted">
+                                        <i class="far fa-clock me-1"></i>
+                                        {{ $mainArticle.Date.Format "2006년 01월 02일" }}
+                                    </small>
+                                    <span class="badge bg-{{ if eq $mainArticle.Section "automotive" }}danger{{ else }}warning{{ end }}">
+                                        {{ $mainArticle.Section | title }}
+                                    </span>
                                 </div>
                             </div>
                         </div>
                     </div>
-                    {{ end }}
                 </div>
             </div>
-        </div>
+        </section>
+        {{ end }}
 
-        <!-- 주요 뉴스 카드 섹션 -->
-        <div class="row mb-4">
-            <div class="col-12">
-                <h3 class="section-title mb-3">주요 뉴스</h3>
-                <div class="row">
-                    {{ $featuredArticles := first 6 (after 1 $allArticles) }}
-                    {{ range $featuredArticles }}
-                    <div class="col-lg-4 col-md-6 mb-4">
+        <!-- 주요 기사 그리드 -->
+        {{ if gt (len $sortedArticles) 1 }}
+        <section class="featured-section mb-5">
+            <h2 class="h4 mb-4 pb-2 border-bottom">주요 기사</h2>
+            <div class="row g-4">
+                {{ range first 3 (after 1 $sortedArticles) }}
+                <div class="col-md-4">
+                    <article class="card h-100 shadow-sm border-0">
                         <a href="{{ .RelPermalink }}" class="text-decoration-none">
-                            <div class="card h-100 border-0 shadow-sm card-clickable">
-                                <div class="card-img-top position-relative">
-                                    {{ if .Params.images }}
-                                    <img src="{{ index .Params.images 0 }}" alt="{{ .Title }}" class="img-fluid w-100" style="height: 200px; object-fit: cover;" loading="lazy">
-                                    {{ else }}
-                                    <div class="no-image-card d-flex align-items-center justify-content-center" style="height: 200px;">
-                                        <i class="fas fa-{{ if eq .Section "automotive" }}car{{ else if eq .Section "economy" }}chart-line{{ else }}newspaper{{ end }} fa-2x text-muted"></i>
-                                    </div>
-                                    {{ end }}
-                                    <span class="badge bg-{{ if eq .Section "automotive" }}danger{{ else if eq .Section "economy" }}warning{{ else }}secondary{{ end }} position-absolute top-0 start-0 m-2">{{ .Section | title }}</span>
+                            <div class="card-img-top position-relative" style="height: 200px; overflow: hidden;">
+                                {{ if .Params.images }}
+                                <img src="{{ index .Params.images 0 }}" 
+                                     alt="{{ .Title }}" 
+                                     class="img-fluid w-100 h-100" 
+                                     style="object-fit: cover;">
+                                {{ else }}
+                                <div class="no-image-placeholder d-flex align-items-center justify-content-center bg-light h-100">
+                                    <i class="fas fa-image fa-3x text-muted"></i>
                                 </div>
-                                <div class="card-body d-flex flex-column">
-                                    <h5 class="card-title text-dark">{{ .Title | truncate 60 }}</h5>
-                                    <p class="card-text text-muted mb-3">{{ .Summary | plainify | truncate 100 }}</p>
-                                    <div class="mt-auto">
-                                        <small class="text-muted">{{ .Date.Format "01월 02일" }}</small>
-                                    </div>
-                                </div>
+                                {{ end }}
+                                <span class="badge bg-{{ if eq .Section "automotive" }}danger{{ else }}warning{{ end }} position-absolute top-0 end-0 m-2">
+                                    {{ .Section | title }}
+                                </span>
+                            </div>
+                            <div class="card-body">
+                                <h3 class="h5 card-title text-dark">{{ .Title | truncate 60 }}</h3>
+                                <p class="card-text text-muted small">{{ .Summary | plainify | truncate 100 }}</p>
+                                <small class="text-muted">
+                                    <i class="far fa-calendar me-1"></i>
+                                    {{ .Date.Format "01월 02일" }}
+                                </small>
                             </div>
                         </a>
-                    </div>
-                    {{ end }}
+                    </article>
                 </div>
+                {{ end }}
             </div>
-        </div>
+        </section>
+        {{ end }}
 
-                 <!-- 최신 뉴스 목록 -->
-         <div class="row">
-             <div class="col-12">
-                 <h3 class="section-title mb-3">최신 뉴스</h3>
-                 
-                 <!-- 모바일 카드 뷰 -->
-                 <div class="row d-md-none">
-                     {{ $latestArticles := first 10 (shuffle $allArticles) }}
-                     {{ range $latestArticles }}
-                     <div class="col-12 col-sm-6 mb-3">
-                         <a href="{{ .RelPermalink }}" class="text-decoration-none">
-                             <div class="card h-100 border-0 shadow-sm card-clickable">
-                                 <div class="card-img-top position-relative">
-                                     {{ if .Params.images }}
-                                     <img src="{{ index .Params.images 0 }}" alt="{{ .Title }}" class="img-fluid w-100" style="height: 180px; object-fit: cover;" loading="lazy">
-                                     {{ else }}
-                                     <div class="no-image-card d-flex align-items-center justify-content-center" style="height: 180px;">
-                                         <i class="fas fa-{{ if eq .Section "automotive" }}car{{ else if eq .Section "economy" }}chart-line{{ else }}newspaper{{ end }} fa-2x text-muted"></i>
-                                     </div>
-                                     {{ end }}
-                                     <span class="badge bg-{{ if eq .Section "automotive" }}danger{{ else if eq .Section "economy" }}warning{{ else }}secondary{{ end }} position-absolute top-0 start-0 m-2">{{ .Section | title }}</span>
-                                 </div>
-                                 <div class="card-body d-flex flex-column">
-                                     <h5 class="card-title text-dark">{{ .Title | truncate 60 }}</h5>
-                                 <p class="card-text text-muted mb-3">{{ .Summary | plainify | truncate 80 }}</p>
-                                 <div class="mt-auto">
-                                     <small class="text-muted">{{ .Date.Format "01월 02일" }}</small>
-                                 </div>
-                                 </div>
-                             </div>
-                         </a>
-                     </div>
-                     {{ end }}
-                 </div>
-                 
-                 <!-- PC 리스트 뷰 -->
-                 <div class="list-group d-none d-md-block">
-                     {{ $latestArticles := first 10 (shuffle $allArticles) }}
-                     {{ range $latestArticles }}
-                     <a href="{{ .RelPermalink }}" class="text-decoration-none">
-                         <div class="list-group-item list-group-item-action border-0 border-bottom list-clickable">
-                             <div class="row align-items-center">
-                                 <div class="col-md-4">
-                                     <div class="latest-news-thumbnail-pc">
-                                         {{ if .Params.images }}
-                                         <img src="{{ index .Params.images 0 }}" alt="{{ .Title }}" class="img-fluid w-100" style="height: 120px; object-fit: cover;" loading="lazy">
-                                         {{ else }}
-                                         <div class="no-image-latest-pc d-flex align-items-center justify-content-center" style="height: 120px;">
-                                             <i class="fas fa-{{ if eq .Section "automotive" }}car{{ else if eq .Section "economy" }}chart-line{{ else }}newspaper{{ end }} fa-3x text-{{ if eq .Section "automotive" }}danger{{ else if eq .Section "economy" }}warning{{ else }}secondary{{ end }}"></i>
-                                         </div>
-                                         {{ end }}
-                                     </div>
-                                 </div>
-                                 <div class="col-md-6">
-                                     <h6 class="mb-1 text-dark">{{ .Title }}</h6>
-                                 <p class="mb-1 text-muted">{{ .Summary | plainify | truncate 120 }}</p>
-                             </div>
-                             <div class="col-md-2 text-end">
-                                 <small class="text-muted">{{ .Date.Format "01월 02일" }}</small>
-                                 <br>
-                                 <span class="badge bg-{{ if eq .Section "automotive" }}danger{{ else if eq .Section "economy" }}warning{{ else }}secondary{{ end }}">{{ .Section | title }}</span>
-                             </div>
-                         </div>
-                     </a>
-                     {{ end }}
-                 </div>
-             </div>
-         </div>
+        <!-- 최신 뉴스 목록 -->
+        {{ if gt (len $sortedArticles) 4 }}
+        <section class="latest-section">
+            <h2 class="h4 mb-4 pb-2 border-bottom">최신 뉴스</h2>
+            <div class="latest-articles">
+                {{ range first 20 (after 4 $sortedArticles) }}
+                <article class="article-item mb-4 pb-4 border-bottom">
+                    <div class="row align-items-center">
+                        <div class="col-md-3">
+                            <a href="{{ .RelPermalink }}" class="d-block">
+                                <div class="article-thumbnail rounded overflow-hidden" style="height: 150px;">
+                                    {{ if .Params.images }}
+                                    <img src="{{ index .Params.images 0 }}" 
+                                         alt="{{ .Title }}" 
+                                         class="img-fluid w-100 h-100" 
+                                         style="object-fit: cover;"
+                                         loading="lazy">
+                                    {{ else }}
+                                    <div class="no-image-placeholder d-flex align-items-center justify-content-center bg-light h-100">
+                                        <i class="fas fa-{{ if eq .Section "automotive" }}car{{ else }}chart-line{{ end }} fa-2x text-muted"></i>
+                                    </div>
+                                    {{ end }}
+                                </div>
+                            </a>
+                        </div>
+                        <div class="col-md-9">
+                            <div class="article-content">
+                                <div class="d-flex align-items-center mb-2">
+                                    <span class="badge bg-{{ if eq .Section "automotive" }}danger{{ else }}warning{{ end }} me-2">
+                                        {{ .Section | title }}
+                                    </span>
+                                    <small class="text-muted">
+                                        <i class="far fa-clock me-1"></i>
+                                        {{ .Date.Format "2006년 01월 02일" }}
+                                    </small>
+                                </div>
+                                <h3 class="h5 mb-2">
+                                    <a href="{{ .RelPermalink }}" class="text-decoration-none text-dark">
+                                        {{ .Title }}
+                                    </a>
+                                </h3>
+                                <p class="text-muted mb-0">{{ .Summary | plainify | truncate 150 }}</p>
+                            </div>
+                        </div>
+                    </div>
+                </article>
+                {{ end }}
+            </div>
+            
+            <!-- 더보기 버튼 -->
+            {{ if gt (len $sortedArticles) 24 }}
+            <div class="text-center mt-5">
+                <a href="/automotive/" class="btn btn-outline-danger me-2">자동차 뉴스 더보기</a>
+                <a href="/economy/" class="btn btn-outline-warning">경제 뉴스 더보기</a>
+            </div>
+            {{ end }}
+        </section>
+        {{ end }}
+
+        <!-- 기사가 없을 때 -->
+        {{ if eq (len $sortedArticles) 0 }}
+        <div class="text-center py-5">
+            <i class="fas fa-newspaper fa-5x text-muted mb-4"></i>
+            <h2 class="h4 text-muted">아직 게시된 기사가 없습니다.</h2>
+            <p class="text-muted">곧 새로운 뉴스가 업데이트될 예정입니다.</p>
+        </div>
+        {{ end }}
     </div>
 </main>
 

@@ -426,7 +426,8 @@ h1, h2, h3, h4, h5, h6 {
 
 /* Main Content */
 .main-content {
-    padding: 2rem 0;
+    min-height: 100vh;
+    background-color: #f8f9fa;
 }
 
 .main-content .container {
@@ -3781,5 +3782,93 @@ body * {
         flex-direction: column;
         align-items: flex-start;
         gap: 0.5rem;
+    }
+}
+
+/* Headline Section */
+.headline-section {
+    margin-bottom: 3rem;
+}
+
+.headline-card {
+    background: white;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.headline-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+}
+
+.no-image-placeholder {
+    background-color: #e9ecef;
+}
+
+/* Featured Section */
+.featured-section h2,
+.latest-section h2 {
+    font-weight: 600;
+    color: #212529;
+}
+
+/* Article Cards */
+.card {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+}
+
+.card-title {
+    font-weight: 600;
+    line-height: 1.4;
+}
+
+/* Latest Articles */
+.article-item {
+    transition: background-color 0.3s ease;
+}
+
+.article-item:hover {
+    background-color: #f8f9fa;
+    margin-left: -1rem;
+    margin-right: -1rem;
+    padding-left: 1rem;
+    padding-right: 1rem;
+}
+
+.article-thumbnail {
+    transition: transform 0.3s ease;
+}
+
+.article-item:hover .article-thumbnail {
+    transform: scale(1.05);
+}
+
+/* Badges */
+.badge {
+    font-weight: 500;
+    padding: 0.375rem 0.75rem;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .headline-card .row {
+        flex-direction: column;
+    }
+    
+    .headline-card img,
+    .headline-card .no-image-placeholder {
+        min-height: 250px !important;
+    }
+    
+    .article-item .row {
+        flex-direction: column;
+    }
+    
+    .article-thumbnail {
+        margin-bottom: 1rem;
     }
 }
