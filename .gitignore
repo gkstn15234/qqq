@@ -1,8 +1,41 @@
-# Hugo build output
-public/
-resources/
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
 
-# OS generated files
+# Virtual environments
+venv/
+env/
+ENV/
+env.bak/
+venv.bak/
+.venv/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
 .DS_Store
 .DS_Store?
 ._*
@@ -11,53 +44,44 @@ resources/
 ehthumbs.db
 Thumbs.db
 
-# Editor files
-.vscode/
-.idea/
-*.swp
-*.swo
-*~
+# Hugo
+public/
+resources/
+.hugo_build.lock
 
-# Log files
+# Database
+*.db
+*.sqlite
+*.sqlite3
+
+# Logs
 *.log
+logs/
 
-# Node modules (if using npm/yarn)
-node_modules/
-
-# Environment files
+# Environment variables
 .env
 .env.local
-.env.production
-
-# Hugo cache
-.hugo_build.lock
+.env.development.local
+.env.test.local
+.env.production.local
 
 # Temporary files
 *.tmp
-*.temp 
+*.temp
+temp/
+tmp/
 
-# Build and deployment files
-wrangler.toml
-package.json
-package-lock.json
-_build.yml
-*.tgz
+# Node modules (if using any JS build tools)
+node_modules/
 
-# Editor and development files
-static/editor.html
-static/sw.js
-static/js/editor.js
-static/js/image-utils.js
+# Coverage reports
+htmlcov/
+.coverage
+.coverage.*
+coverage.xml
+*.cover
+.hypothesis/
+.pytest_cache/
 
-# Migration tools - keep some files local only
-static/editor/input/
-static/editor/output/
-static/editor/logs/
-static/editor/node_modules/
-static/editor/.env
-
-# Draft files
-drafts/
-
-# Scraper files
-scraper.py
+# Cloudflare
+.wrangler/
