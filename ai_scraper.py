@@ -295,9 +295,9 @@ def upload_to_cloudflare_images(image_url, api_token, account_id):
         
         result = response.json()
         if result.get('success'):
-            # Cloudflare Images URL 반환 (variant 없이 기본 URL 사용)
+            # Cloudflare Images URL 반환 (public variant 사용)
             image_id = result['result']['id']
-            cloudflare_url = f"https://imagedelivery.net/{account_id}/{image_id}"
+            cloudflare_url = f"https://imagedelivery.net/{account_id}/{image_id}/public"
             print(f"📸 Cloudflare image URL: {cloudflare_url}")
             return cloudflare_url
         else:
@@ -586,34 +586,54 @@ def extract_content_from_url(url):
         return None
 
 def shuffle_images_in_content(content, cloudflare_images):
-    """콘텐츠 내에 이미지를 랜덤하게 재배치"""
+    """콘텐츠 내에 이미지를 완전히 랜덤하게 재배치"""
     if not cloudflare_images:
         return content
     
-    paragraphs = content.split('\n\n')
+    paragraphs = [p.strip() for p in content.split('\n\n') if p.strip()]
     
     # 이미지를 완전히 랜덤하게 섞기
     shuffled_images = cloudflare_images.copy()
     random.shuffle(shuffled_images)
     random.shuffle(shuffled_images)  # 한 번 더 섞어서 더 랜덤하게
     
-    # 문단 사이에 이미지 삽입
+    # 이미지 삽입 위치를 완전히 랜덤하게 결정
+    total_paragraphs = len(paragraphs)
+    available_positions = list(range(1, total_paragraphs))  # 첫 번째 문단 제외
+    random.shuffle(available_positions)
+    
+    # 이미지 개수만큼 랜덤 위치 선택
+    image_positions = available_positions[:len(shuffled_images)]
+    image_positions.sort()  # 순서대로 삽입하기 위해 정렬
+    
+    # 결과 문단 생성
     result_paragraphs = []
     image_index = 0
     
     for i, paragraph in enumerate(paragraphs):
         result_paragraphs.append(paragraph)
         
-        # 2-3개 문단마다 이미지 삽입 (랜덤)
-        if i > 0 and i % random.randint(2, 3) == 0 and image_index < len(shuffled_images):
+        # 현재 위치가 이미지 삽입 위치라면 이미지 추가
+        if i in image_positions and image_index < len(shuffled_images):
             image_url = shuffled_images[image_index]
-            result_paragraphs.append(f"\n![기사 이미지]({image_url})\n")
+            # 다양한 alt 텍스트로 랜덤 배치
+            alt_texts = [
+                "관련 이미지",
+                "기사 내용",
+                "참고 이미지", 
+                "뉴스 이미지",
+                "상세 내용",
+                "관련 사진"
+            ]
+            alt_text = random.choice(alt_texts)
+            result_paragraphs.append(f"\n![{alt_text}]({image_url})\n")
             image_index += 1
     
-    # 남은 이미지들을 마지막에 추가
+    # 혹시 남은 이미지가 있다면 마지막에 추가
     while image_index < len(shuffled_images):
         image_url = shuffled_images[image_index]
-        result_paragraphs.append(f"\n![기사 이미지]({image_url})\n")
+        alt_text = random.choice(["추가 이미지", "관련 자료", "참고 사진"])
+        result_paragraphs.append(f"\n![{alt_text}]({image_url})\n")
         image_index += 1
     
     return '\n\n'.join(result_paragraphs)
