@@ -295,9 +295,11 @@ def upload_to_cloudflare_images(image_url, api_token, account_id):
         
         result = response.json()
         if result.get('success'):
-            # Cloudflare Images URL 반환
+            # Cloudflare Images URL 반환 (variant 없이 기본 URL 사용)
             image_id = result['result']['id']
-            return f"https://imagedelivery.net/{account_id}/{image_id}/public"
+            cloudflare_url = f"https://imagedelivery.net/{account_id}/{image_id}"
+            print(f"📸 Cloudflare image URL: {cloudflare_url}")
+            return cloudflare_url
         else:
             print(f"❌ Cloudflare upload failed: {result}")
             return image_url
@@ -755,7 +757,7 @@ url: "/{category}/{title_slug}/"
     # 첫 번째 이미지를 썸네일로 설정 (SEO 및 소셜 미디어 최적화)
     if cloudflare_images:
         thumbnail_image = cloudflare_images[0]
-        markdown_content += f'images: ["{thumbnail_image}"]\n'
+        markdown_content += f'images: {json.dumps(cloudflare_images, ensure_ascii=False)}\n'
         markdown_content += f'thumbnail: "{thumbnail_image}"\n'
         markdown_content += f'image: "{thumbnail_image}"\n'  # Open Graph용
         markdown_content += f'featured_image: "{thumbnail_image}"\n'  # 테마별 호환성
@@ -763,7 +765,7 @@ url: "/{category}/{title_slug}/"
         markdown_content += f'image_height: 630\n'  # Google Discover 최적화
     elif article_data['images']:
         thumbnail_image = article_data['images'][0]
-        markdown_content += f'images: ["{thumbnail_image}"]\n'
+        markdown_content += f'images: {json.dumps(article_data["images"], ensure_ascii=False)}\n'
         markdown_content += f'thumbnail: "{thumbnail_image}"\n'
         markdown_content += f'image: "{thumbnail_image}"\n'  # Open Graph용
         markdown_content += f'featured_image: "{thumbnail_image}"\n'  # 테마별 호환성
