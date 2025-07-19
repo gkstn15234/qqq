@@ -121,7 +121,7 @@ def count_published_articles():
                             post = frontmatter.load(f)
                             articles.append({
                                 'title': post.metadata.get('title', filename),
-                                'url': f"https://blogai2.pages.dev/automotive/{filename.replace('.md', '')}/",
+                                'url': f"https://okonomis.com/automotive/{filename.replace('.md', '')}/",
                                 'category': '자동차'
                             })
                     except:
@@ -138,7 +138,7 @@ def count_published_articles():
                             post = frontmatter.load(f)
                             articles.append({
                                 'title': post.metadata.get('title', filename),
-                                'url': f"https://blogai2.pages.dev/economy/{filename.replace('.md', '')}/",
+                                'url': f"https://okonomis.com/economy/{filename.replace('.md', '')}/",
                                 'category': '경제'
                             })
                     except:
@@ -251,7 +251,7 @@ def create_report_email_content():
     status_text = "성공" if scraping_stats['today_processed'] > 0 else "처리된 신규 기사 없음"
     
     body = f"""
-🤖 **오토코미 AI 기사 자동화 보고서** {status_emoji}
+🤖 **오코노미 AI 기사 자동화 보고서** {status_emoji}
 
 📅 **실행 시간**: {current_time}
 🎯 **실행 상태**: {status_text}
@@ -278,10 +278,10 @@ def create_report_email_content():
             body += f"  • [{article['category']}] [{clean_title}]({article['url']})\n"
 
     body += f"""
-🌐 **사이트**: https://blogai2.pages.dev
+🌐 **사이트**: https://okonomis.com
 
 ---
-자동 발송 시스템 by 오토코미 AI
+자동 발송 시스템 by 오코노미 AI
     """
     
     return body
@@ -294,7 +294,7 @@ def send_report_email():
     
     try:
         # 이메일 내용 생성
-        subject = "🤖 오토코미 AI 기사 자동화 보고서"
+        subject = "🤖 오코노미 AI 기사 자동화 보고서"
         body = create_report_email_content()
         
         # 이메일 메시지 객체 생성
@@ -328,9 +328,9 @@ def send_error_email(error_message="스크래퍼 실행 중 오류가 발생했�
         # 한국 시간으로 현재 시간 가져오기
         current_time = datetime.now(KST).strftime("%Y년 %m월 %d일 %H시 %M분 (KST)")
         
-        subject = "🚨 오토코미 AI 스크래퍼 오류 알림"
+        subject = "🚨 오코노미 AI 스크래퍼 오류 알림"
         body = f"""
-🚨 **오토코미 AI 스크래퍼 실행 실패**
+🚨 **오코노미 AI 스크래퍼 실행 실패**
 
 📅 **발생 시간**: {current_time}
 ❌ **상태**: 실행 실패
@@ -351,7 +351,7 @@ GitHub Actions 로그를 확인하여 자세한 내용을 파악해주세요.
 ⚙️ **시스템**: GitHub Actions + n8n Automation
 
 ---
-오토코미 AI 자동화 시스템 오류 알림
+오코노미 AI 자동화 시스템 오류 알림
         """
         
         # 이메일 메시지 객체 생성
