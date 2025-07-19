@@ -38,14 +38,15 @@
              style="width: 100%; height: auto;">
       </picture>
     {{ else }}
-    <!-- 외부 이미지 - 기본 img 태그 -->
-    <img src="{{ $src }}" 
-         alt="{{ $alt }}" 
-         width="{{ $width }}"
-         height="{{ $height }}"
-         class="{{ $class }}"
-         loading="{{ $loading }}"
-         style="width: 100%; height: auto;">
+      <!-- 외부 이미지 - 기본 img 태그 -->
+      <img src="{{ $src }}" 
+           alt="{{ $alt }}" 
+           width="{{ $width }}"
+           height="{{ $height }}"
+           class="{{ $class }}"
+           loading="{{ $loading }}"
+           style="width: 100%; height: auto;">
+    {{ end }}
   {{ end }}
 {{ else }}
   <div class="image-error">
