@@ -25,6 +25,38 @@ def get_env_var(name, default=None):
     """환경변수 가져오기"""
     return os.environ.get(name, default)
 
+def rebuild_hugo_site():
+    """Hugo 사이트 재빌드 (새 기사를 메인페이지에 반영)"""
+    try:
+        import subprocess
+        print("🔨 Rebuilding Hugo site to reflect new articles...")
+        
+        # Hugo 빌드 명령 실행
+        result = subprocess.run(
+            ['hugo', '--gc', '--minify'], 
+            capture_output=True, 
+            text=True, 
+            timeout=30,
+            cwd=os.getcwd()
+        )
+        
+        if result.returncode == 0:
+            print("✅ Hugo site rebuilt successfully!")
+            return True
+        else:
+            print(f"⚠️ Hugo build warning: {result.stderr}")
+            return False
+            
+    except subprocess.TimeoutExpired:
+        print("⚠️ Hugo build timed out after 30 seconds")
+        return False
+    except FileNotFoundError:
+        print("⚠️ Hugo not found - install Hugo or ensure it's in PATH")
+        return False
+    except Exception as e:
+        print(f"⚠️ Hugo rebuild error: {e}")
+        return False
+
 def init_processed_db():
     """처리된 기사 추적을 위한 SQLite DB 초기화"""
     db_path = 'processed_articles.db'
@@ -892,6 +924,10 @@ url: "/{category}/{title_slug}/"
         mark_article_processed(article_data['url'], article_data['title'], article_hash)
         
         print(f"✅ Created: {category}/{os.path.basename(filepath)}")
+        
+        # Hugo 사이트 재빌드 (메인페이지에 새 기사 반영)
+        rebuild_hugo_site()
+        
         return True
         
     except Exception as e:

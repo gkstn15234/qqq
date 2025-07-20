@@ -13,6 +13,8 @@ document.addEventListener('DOMContentLoaded', function() {
     initializeAccessibility();
     // H5 세로 막대기 스타일링
     initializeH5Styling();
+    // 메인페이지 기사 랜덤 배치
+    initializeRandomArticles();
 });
 
 // Reading Progress Bar
@@ -910,4 +912,76 @@ function initializeH5Styling() {
             h5.innerHTML = styledContent;
         }
     });
+}
+
+// 메인페이지 기사 랜덤 배치 초기화
+function initializeRandomArticles() {
+    // 메인페이지에서만 실행
+    if (window.location.pathname !== '/') return;
+    
+    // 기사 요소들을 가져오기
+    const featuredSection = document.querySelector('.featured-section .row');
+    const latestSection = document.querySelector('.latest-articles');
+    const mobileSection = document.querySelector('.row.g-4.d-md-none');
+    
+    // 추가적인 랜덤성을 위해 CSS 애니메이션 클래스 추가
+    if (featuredSection) {
+        featuredSection.classList.add('fade-in-random');
+    }
+    if (latestSection) {
+        latestSection.classList.add('fade-in-random');
+    }
+    if (mobileSection) {
+        mobileSection.classList.add('fade-in-random');
+    }
+    
+    // 시각적 효과를 위한 스타일 추가
+    addRandomArticleStyles();
+}
+
+// 랜덤 기사 표시를 위한 CSS 스타일 동적 추가
+function addRandomArticleStyles() {
+    if (document.getElementById('random-articles-styles')) return;
+    
+    const style = document.createElement('style');
+    style.id = 'random-articles-styles';
+    style.textContent = `
+        .fade-in-random {
+            animation: fadeInUp 0.6s ease-out;
+        }
+        
+        .fade-in-random > * {
+            animation: fadeInStagger 0.8s ease-out;
+            animation-fill-mode: both;
+        }
+        
+        .fade-in-random > *:nth-child(1) { animation-delay: 0.1s; }
+        .fade-in-random > *:nth-child(2) { animation-delay: 0.2s; }
+        .fade-in-random > *:nth-child(3) { animation-delay: 0.3s; }
+        .fade-in-random > *:nth-child(4) { animation-delay: 0.4s; }
+        .fade-in-random > *:nth-child(5) { animation-delay: 0.5s; }
+        
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        @keyframes fadeInStagger {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+    `;
+    document.head.appendChild(style);
 }
