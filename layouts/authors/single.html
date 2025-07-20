@@ -124,9 +124,9 @@
 
                 <!-- Load More Button -->
                 {{ if gt (len $authorArticles) 10 }}
-                <div class="text-center mt-4">
-                    <button id="load-more-btn" class="btn btn-outline-primary btn-lg px-4 py-2">
-                        <i class="fas fa-plus-circle me-2"></i>더보기 
+                <div class="d-flex justify-content-center mt-5 mb-4">
+                    <button id="load-more-btn" class="btn btn-outline-primary btn-lg px-5 py-3">
+                        <i class="fas fa-plus-circle me-2"></i>더 보기
                         <span class="badge bg-primary ms-2">{{ sub (len $authorArticles) 10 }}개 더</span>
                     </button>
                 </div>
