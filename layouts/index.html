@@ -60,7 +60,7 @@
             <h2 class="h4 mb-4 pb-2 border-bottom">주요 기사</h2>
             <div class="row g-4">
                 {{ range first 3 (after 1 $sortedArticles) }}
-                <div class="col-md-4">
+                <div class="col-12 col-md-4">
                     <article class="card h-100 shadow-sm border-0">
                         <a href="{{ .RelPermalink }}" class="text-decoration-none">
                             <div class="card-img-top position-relative" style="height: 200px; overflow: hidden;">
