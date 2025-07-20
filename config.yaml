@@ -151,6 +151,55 @@ buildDrafts: false
 buildFuture: false
 buildExpired: false
 
+# 성능 최적화
+minify:
+  disableCSS: false
+  disableHTML: false
+  disableJS: false
+  disableJSON: false
+  disableSVG: false
+  disableXML: false
+  minifyOutput: true
+  tdewolff:
+    css:
+      keepCSS2: false
+      precision: 1
+    html:
+      keepComments: false
+      keepConditionalComments: false
+      keepDefaultAttrVals: false
+      keepDocumentTags: false
+      keepEndTags: false
+      keepQuotes: false
+      keepWhitespace: false
+    js:
+      keepVarNames: false
+      precision: 1
+    json:
+      precision: 1
+    svg:
+      precision: 1
+    xml:
+      keepWhitespace: false
+
+# 캐시 최적화
+caches:
+  assets:
+    dir: ":cacheDir/assets"
+    maxAge: "1h"
+  getcsv:
+    dir: ":cacheDir/getcsv"
+    maxAge: "1h"
+  getjson:
+    dir: ":cacheDir/getjson"
+    maxAge: "1h"
+  images:
+    dir: ":cacheDir/images"
+    maxAge: "1h"
+  modules:
+    dir: ":cacheDir/modules"
+    maxAge: "1h"
+
 # SEO 최적화
 googleAnalytics: ""
 disableKinds: []
