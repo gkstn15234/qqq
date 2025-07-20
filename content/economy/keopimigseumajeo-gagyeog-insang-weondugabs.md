@@ -1,4 +1,4 @@
----
+﻿---
 title: "“커피믹스마저 가격 인상?! 원두값 하락에도 소비자 부담 가중”"
 description: "## 커피믹스마저 오를 줄은 몰랐다 원가 내려도 소비자가격은 그대로 ..."
 date: 2025-07-20T06:51:54+09:00
@@ -72,4 +72,5 @@ draft: false
 
 
 ![커피믹스 가격 인상](https://imagedelivery.net/BhPWbivJAhTvor9c-8lV2w/bb54e8d3-10e0-46cc-ae78-3024c97e1b00/public)
+
 

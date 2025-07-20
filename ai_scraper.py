@@ -514,7 +514,7 @@ def extract_content_from_url(url):
             return None
         title = title_elem.get_text().strip()
         
-        # 메타 정보 추출 - 항상 윤신애로 설정
+        # 메타 정보 추출 - 항상 윤신애로 설정 (UTF-8 안전)
         author = "윤신애"
         
         # 태그 추출
@@ -832,12 +832,13 @@ def create_markdown_file(article_data, output_dir, cloudflare_account_id=None, c
     # YAML-safe title 생성  
     safe_title = validate_yaml_string(new_title)
     
-    # 마크다운 생성
+    # 마크다운 생성 (UTF-8 안전한 author 필드)
+    safe_author = "윤신애"  # 하드코딩으로 인코딩 문제 방지
     markdown_content = f"""---
 title: "{safe_title}"
 description: "{safe_description}"
 date: {current_date}
-author: "{article_data['author']}"
+author: "{safe_author}"
 categories: ["{category}"]
 tags: {json.dumps(enhanced_tags, ensure_ascii=False)}
 hash: {article_hash}

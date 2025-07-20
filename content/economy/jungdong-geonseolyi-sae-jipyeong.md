@@ -1,4 +1,4 @@
----
+﻿---
 title: "“중동 건설의 새 지평, K-건설 위상 강화” .. 삼성물산, 사우디 발전소 수주로 6억 달러 계약 성사!"
 description: "## 사우디 산업단지 심장에 한국 기술 삼성물산, 신뢰와 기술력으로 중동 장악 ..."
 date: 2025-07-20T06:58:48+09:00
@@ -66,4 +66,5 @@ draft: false
 
 
 ![삼성물산 에너지 혁신](https://imagedelivery.net/BhPWbivJAhTvor9c-8lV2w/b038f547-0701-4313-d5a7-dcec70f95100/public)
+
 

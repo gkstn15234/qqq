@@ -1,4 +1,4 @@
----
+﻿---
 title: "K-방산 위기! '중국의 첨단 무기'에 치명적 약점 드러나… 민간 기술 활용 못하는 한국의 현실"
 description: "## 중국 앞에 드러난 K-방산의 민낯 민간 기술은 세계 최고인데 군에선 못 쓴다 ..."
 date: 2025-07-20T13:03:27+09:00
@@ -62,4 +62,5 @@ draft: false
 
 
 ![K-방산 기술 혁신](https://imagedelivery.net/BhPWbivJAhTvor9c-8lV2w/5094fffc-97ed-4e5f-bb3a-649a33b86b00/public)
+
 
