@@ -18,7 +18,9 @@
                              style="object-fit: cover; min-height: 400px;"
                              loading="eager"
                              fetchpriority="high"
-                             decoding="async">
+                             decoding="sync"
+                             width="800"
+                             height="400">
                         {{ else }}
                         <div class="no-image-placeholder d-flex align-items-center justify-content-center bg-light" style="min-height: 400px;">
                             <i class="fas fa-newspaper fa-5x text-muted"></i>

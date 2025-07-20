@@ -3811,11 +3811,12 @@ img {
     overflow: hidden;
 }
 
-/* 메인 헤드라인 이미지 최적화 */
+/* 메인 헤드라인 이미지 최적화 - LCP 개선 */
 .headline-card .col-lg-7 {
     min-height: 400px;
     position: relative;
     overflow: hidden;
+    background: #f8f9fa; /* 이미지 로딩 전 배경색 */
 }
 
 .headline-card .col-lg-7 img {
@@ -3825,6 +3826,8 @@ img {
     width: 100% !important;
     height: 100% !important;
     object-fit: cover;
+    will-change: transform; /* GPU 가속 */
+    transform: translateZ(0); /* 하드웨어 가속 강제 */
 }
 
 /* 주요기사 카드 이미지 고정 */

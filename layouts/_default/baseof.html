@@ -194,6 +194,14 @@
     <!-- Preload critical resources -->
     {{ if .IsHome }}
     <link rel="preload" as="fetch" href="/index.json" crossorigin>
+    {{ $articles := where .Site.RegularPages "Section" "in" (slice "automotive" "economy") }}
+    {{ $sortedArticles := $articles.ByDate.Reverse }}
+    {{ if gt (len $sortedArticles) 0 }}
+    {{ $mainArticle := index $sortedArticles 0 }}
+    {{ if $mainArticle.Params.images }}
+    <link rel="preload" as="image" href="{{ index $mainArticle.Params.images 0 }}" fetchpriority="high">
+    {{ end }}
+    {{ end }}
     {{ end }}
     
     <!-- Critical CSS (Inline for faster rendering) -->
@@ -287,16 +295,31 @@
     
     <!-- Load critical Bootstrap CSS inline (minimal) -->
     <style>
-        /* Critical Bootstrap utilities only */
-        .container{width:100%;padding-right:15px;padding-left:15px;margin-right:auto;margin-left:auto}
+        /* Critical Bootstrap utilities + LCP optimization */
+        .container{width:100%;padding-right:15px;padding-left:15px;margin-right:auto;margin-left:auto;max-width:1140px}
         .row{display:flex;flex-wrap:wrap;margin-right:-15px;margin-left:-15px}
         .col,.col-1,.col-2,.col-3,.col-4,.col-5,.col-6,.col-7,.col-8,.col-9,.col-10,.col-11,.col-12{position:relative;width:100%;padding-right:15px;padding-left:15px}
         .col-1{flex:0 0 8.333333%;max-width:8.333333%}.col-2{flex:0 0 16.666667%;max-width:16.666667%}
         .col-3{flex:0 0 25%;max-width:25%}.col-4{flex:0 0 33.333333%;max-width:33.333333%}
-        .col-6{flex:0 0 50%;max-width:50%}.col-12{flex:0 0 100%;max-width:100%}
+        .col-5{flex:0 0 41.666667%;max-width:41.666667%}.col-6{flex:0 0 50%;max-width:50%}
+        .col-7{flex:0 0 58.333333%;max-width:58.333333%}.col-9{flex:0 0 75%;max-width:75%}
+        .col-12{flex:0 0 100%;max-width:100%}.col-lg-5{flex:0 0 41.666667%;max-width:41.666667%}
+        .col-lg-7{flex:0 0 58.333333%;max-width:58.333333%}.col-md-4{flex:0 0 33.333333%;max-width:33.333333%}
         .d-flex{display:flex!important}.justify-content-center{justify-content:center!important}
-        .align-items-center{align-items:center!important}.text-center{text-align:center!important}
-        .mb-3{margin-bottom:1rem!important}.mb-4{margin-bottom:1.5rem!important}.py-4{padding-top:1.5rem!important;padding-bottom:1.5rem!important}
+        .justify-content-between{justify-content:space-between!important}.align-items-center{align-items:center!important}
+        .text-center{text-align:center!important}.text-dark{color:#212529!important}.text-muted{color:#6c757d!important}
+        .text-decoration-none{text-decoration:none!important}.img-fluid{max-width:100%;height:auto}
+        .mb-2{margin-bottom:.5rem!important}.mb-3{margin-bottom:1rem!important}.mb-4{margin-bottom:1.5rem!important}
+        .mb-5{margin-bottom:3rem!important}.py-4{padding-top:1.5rem!important;padding-bottom:1.5rem!important}
+        .p-4{padding:1.5rem!important}.h-100{height:100%!important}.w-100{width:100%!important}
+        .bg-light{background-color:#f8f9fa!important}.bg-primary{background-color:#007bff!important}
+        .badge{display:inline-block;padding:.25em .4em;font-size:.875em;font-weight:700;line-height:1;color:#fff;text-align:center;white-space:nowrap;vertical-align:baseline;border-radius:.25rem}
+        .bg-danger{background-color:#dc3545!important}.bg-warning{background-color:#ffc107!important}
+        .rounded{border-radius:.25rem!important}.overflow-hidden{overflow:hidden!important}
+        .shadow-sm{box-shadow:0 .125rem .25rem rgba(0,0,0,.075)!important}
+        /* Critical headline styles */
+        .headline-card{background:#fff}.headline-section{margin-bottom:3rem}
+        .h2{font-size:2rem;font-weight:500;line-height:1.2;margin-bottom:.5rem}
     </style>
     
     <!-- Load full Bootstrap CSS asynchronously -->
