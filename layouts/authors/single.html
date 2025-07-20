@@ -65,30 +65,70 @@
             {{ $authorArticles := where .Site.RegularPages ".Params.author" .Title }}
             {{ if $authorArticles }}
             
-            <!-- Articles List - 썸네일과 제목만 표시 -->
-            <div class="row">
-                {{ range $authorArticles }}
-                <div class="col-lg-4 col-md-6 mb-4">
-                    <article class="card h-100 border-0 shadow-sm">
-                        <a href="{{ .Permalink }}" class="text-decoration-none">
-                            {{ if .Params.images }}
-                            <img src="{{ index .Params.images 0 }}" alt="{{ .Title }}" class="card-img-top" style="height: 180px; object-fit: cover;">
-                            {{ else }}
-                            <div class="card-img-top bg-light d-flex align-items-center justify-content-center" style="height: 180px;">
-                                <span class="text-muted h1">📰</span>
-                            </div>
-                            {{ end }}
-                            
-                            <div class="card-body p-3">
-                                <div class="article-meta mb-2">
-                                    <span class="badge bg-{{ if eq .Section "automotive" }}danger{{ else if eq .Section "economy" }}warning{{ else }}secondary{{ end }} me-2">{{ .Section | title }}</span>
-                                    <small class="text-muted">{{ .Date.Format "2006.01.02" }}</small>
+            <!-- Articles List - 페이지네이션 (10개씩) -->
+            <div id="articles-container">
+                <div class="row" id="articles-grid">
+                    {{ range first 10 $authorArticles }}
+                    <div class="col-lg-4 col-md-6 mb-4 article-item">
+                        <article class="card h-100 border-0 shadow-sm">
+                            <a href="{{ .Permalink }}" class="text-decoration-none">
+                                {{ if .Params.images }}
+                                <img src="{{ index .Params.images 0 }}" alt="{{ .Title }}" class="card-img-top" style="height: 180px; object-fit: cover;">
+                                {{ else }}
+                                <div class="card-img-top bg-light d-flex align-items-center justify-content-center" style="height: 180px;">
+                                    <span class="text-muted h1">📰</span>
                                 </div>
+                                {{ end }}
                                 
-                                <h6 class="card-title text-dark mb-0" style="line-height: 1.4; font-size: 0.95rem;">{{ .Title | truncate 60 }}</h6>
-                            </div>
-                        </a>
-                    </article>
+                                <div class="card-body p-3">
+                                    <div class="article-meta mb-2">
+                                        <span class="badge bg-{{ if eq .Section "automotive" }}danger{{ else if eq .Section "economy" }}warning{{ else }}secondary{{ end }} me-2">{{ .Section | title }}</span>
+                                        <small class="text-muted">{{ .Date.Format "2006.01.02" }}</small>
+                                    </div>
+                                    
+                                    <h6 class="card-title text-dark mb-0" style="line-height: 1.4; font-size: 0.95rem;">{{ .Title | truncate 60 }}</h6>
+                                </div>
+                            </a>
+                        </article>
+                    </div>
+                    {{ end }}
+                </div>
+
+                <!-- Hidden articles for pagination -->
+                <div id="hidden-articles" style="display: none;">
+                    {{ range after 10 $authorArticles }}
+                    <div class="col-lg-4 col-md-6 mb-4 article-item">
+                        <article class="card h-100 border-0 shadow-sm">
+                            <a href="{{ .Permalink }}" class="text-decoration-none">
+                                {{ if .Params.images }}
+                                <img src="{{ index .Params.images 0 }}" alt="{{ .Title }}" class="card-img-top" style="height: 180px; object-fit: cover;">
+                                {{ else }}
+                                <div class="card-img-top bg-light d-flex align-items-center justify-content-center" style="height: 180px;">
+                                    <span class="text-muted h1">📰</span>
+                                </div>
+                                {{ end }}
+                                
+                                <div class="card-body p-3">
+                                    <div class="article-meta mb-2">
+                                        <span class="badge bg-{{ if eq .Section "automotive" }}danger{{ else if eq .Section "economy" }}warning{{ else }}secondary{{ end }} me-2">{{ .Section | title }}</span>
+                                        <small class="text-muted">{{ .Date.Format "2006.01.02" }}</small>
+                                    </div>
+                                    
+                                    <h6 class="card-title text-dark mb-0" style="line-height: 1.4; font-size: 0.95rem;">{{ .Title | truncate 60 }}</h6>
+                                </div>
+                            </a>
+                        </article>
+                    </div>
+                    {{ end }}
+                </div>
+
+                <!-- Load More Button -->
+                {{ if gt (len $authorArticles) 10 }}
+                <div class="text-center mt-4">
+                    <button id="load-more-btn" class="btn btn-outline-primary btn-lg px-4 py-2">
+                        <i class="fas fa-plus-circle me-2"></i>더보기 
+                        <span class="badge bg-primary ms-2">{{ sub (len $authorArticles) 10 }}개 더</span>
+                    </button>
                 </div>
                 {{ end }}
             </div>
@@ -103,4 +143,98 @@
         </div>
     </div>
 </section>
+
+<!-- JavaScript for Load More functionality -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const loadMoreBtn = document.getElementById('load-more-btn');
+    const hiddenArticles = document.getElementById('hidden-articles');
+    const articlesGrid = document.getElementById('articles-grid');
+    let currentPage = 1;
+    const articlesPerPage = 10;
+
+    if (loadMoreBtn && hiddenArticles) {
+        const allHiddenArticles = Array.from(hiddenArticles.children);
+        const totalPages = Math.ceil(allHiddenArticles.length / articlesPerPage) + 1;
+
+        loadMoreBtn.addEventListener('click', function() {
+            // 다음 10개 기사 표시
+            const startIndex = (currentPage - 1) * articlesPerPage;
+            const endIndex = Math.min(startIndex + articlesPerPage, allHiddenArticles.length);
+            
+            for (let i = startIndex; i < endIndex; i++) {
+                if (allHiddenArticles[i]) {
+                    articlesGrid.appendChild(allHiddenArticles[i]);
+                }
+            }
+            
+            currentPage++;
+            
+            // 남은 기사 수 업데이트
+            const remainingArticles = allHiddenArticles.length - (currentPage - 1) * articlesPerPage;
+            const badge = loadMoreBtn.querySelector('.badge');
+            
+            if (remainingArticles <= 0) {
+                loadMoreBtn.style.display = 'none';
+            } else {
+                badge.textContent = remainingArticles + '개 더';
+            }
+            
+            // 부드러운 스크롤 효과
+            const newArticles = articlesGrid.querySelectorAll('.article-item');
+            const lastNewArticle = newArticles[newArticles.length - 1];
+            if (lastNewArticle) {
+                lastNewArticle.scrollIntoView({ 
+                    behavior: 'smooth', 
+                    block: 'nearest' 
+                });
+            }
+        });
+    }
+});
+</script>
+
+<style>
+/* Load More Button Animation */
+#load-more-btn {
+    transition: all 0.3s ease;
+    border-radius: 25px;
+    font-weight: 500;
+}
+
+#load-more-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(0,123,255,0.3);
+}
+
+/* Article Animation */
+.article-item {
+    opacity: 1;
+    transform: translateY(0);
+    transition: all 0.3s ease;
+}
+
+.article-item:hover {
+    transform: translateY(-5px);
+}
+
+.article-item .card {
+    transition: all 0.3s ease;
+}
+
+.article-item .card:hover {
+    box-shadow: 0 8px 25px rgba(0,0,0,0.15) !important;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .article-item {
+        margin-bottom: 1rem;
+    }
+    
+    #load-more-btn {
+        width: 100%;
+    }
+}
+</style>
 {{ end }} 
