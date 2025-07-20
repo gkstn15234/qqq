@@ -265,5 +265,31 @@
 .list-group-item:hover {
     background-color: #f8f9fa;
 }
+
+/* 포커스 테두리 제거 */
+.card:focus,
+.card:focus-within,
+.card a:focus,
+.text-decoration-none:focus {
+    outline: none !important;
+    box-shadow: none !important;
+    border-color: transparent !important;
+}
+
+/* 카드 호버 효과 개선 */
+.card {
+    transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+}
+
+.card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1) !important;
+}
+
+/* 링크 스타일 초기화 */
+a.text-decoration-none:focus {
+    outline: none;
+    text-decoration: none !important;
+}
 </style>
 {{ end }}

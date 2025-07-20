@@ -13,6 +13,61 @@
     --font-primary: 'Noto Sans KR', -apple-system, BlinkMacSystemFont, sans-serif;
 }
 
+/* ===== 전역 포커스 스타일 제거 ===== */
+*:focus,
+*:focus-visible,
+*:focus-within {
+    outline: none !important;
+    box-shadow: none !important;
+}
+
+/* 링크 포커스 스타일 제거 */
+a:focus,
+a:focus-visible,
+a:active {
+    outline: none !important;
+    box-shadow: none !important;
+    text-decoration: none !important;
+}
+
+/* 버튼 포커스 스타일 제거 */
+button:focus,
+button:focus-visible,
+.btn:focus,
+.btn:focus-visible {
+    outline: none !important;
+    box-shadow: none !important;
+    border-color: inherit !important;
+}
+
+/* 카드 포커스 스타일 제거 */
+.card:focus,
+.card:focus-within,
+.card a:focus,
+.card-body:focus {
+    outline: none !important;
+    box-shadow: none !important;
+    border-color: inherit !important;
+}
+
+/* 입력 필드 포커스 스타일 개선 (필요시에만 미묘한 스타일) */
+input:focus,
+textarea:focus,
+select:focus {
+    outline: none !important;
+    box-shadow: 0 0 0 2px rgba(0,123,255,0.1) !important;
+    border-color: #80bdff !important;
+}
+
+/* Bootstrap 기본 포커스 스타일 오버라이드 */
+.form-control:focus,
+.form-select:focus,
+.form-check-input:focus {
+    outline: none !important;
+    box-shadow: 0 0 0 2px rgba(0,123,255,0.1) !important;
+    border-color: #80bdff !important;
+}
+
 /* Dark Mode Variables */
 [data-theme="dark"] {
     --primary-color: #63b3ed;
