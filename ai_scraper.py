@@ -445,10 +445,18 @@ def rewrite_with_ai(original_content, title, api_key, api_type="openai"):
 9. **독자 관점 전환**: 다른 독자층에게 말하는 것처럼 톤앤매너 변경
 10. **핵심 사실만 보존**: 날짜, 수치, 고유명사, 핵심 사실은 정확히 유지
 
+**시인성 향상을 위한 굵게 처리 (최우선):**
+- **핵심 키워드와 중요 정보**를 반드시 **굵게** 표시
+- **수치, 날짜, 기업명, 제품명** 등은 모두 **굵게** 처리
+- **주요 변화나 결론**은 **굵게** 강조
+- **독자가 꼭 기억해야 할 내용**은 **굵게** 표시
+- 문단마다 최소 2-3개의 **굵은 키워드** 포함
+- **35-60대 독자층**이 핵심만 빠르게 파악할 수 있도록 **굵게** 활용
+
 **문체 변형 예시:**
-- 원본: "회사가 발표했다" → 변형: "업체 측이 공개한 바에 따르면"
-- 원본: "증가했다" → 변형: "상승세를 보이고 있다", "늘어나는 추세다"
-- 원본: "문제가 있다" → 변형: "우려스러운 상황이 벌어지고 있다"
+- 원본: "회사가 발표했다" → 변형: "**업체 측이 공개한** 바에 따르면"
+- 원본: "증가했다" → 변형: "**상승세를 보이고** 있다", "**늘어나는 추세**다"
+- 원본: "문제가 있다" → 변형: "**우려스러운 상황**이 벌어지고 있다"
 
 **헤딩 구조 (절대 엄수):**
 ##### [첫 번째 줄 요약]<br>[두 번째 줄 요약]
@@ -465,8 +473,8 @@ def rewrite_with_ai(original_content, title, api_key, api_type="openai"):
 
 **기사 구조 (절대 준수):**
 1. H5 요약: ##### **첫 번째 줄**<br>**두 번째 줄**
-2. 도입 본문: 2-3개 문단 (H2 없이 바로 본문으로 시작)
-3. H2 소제목 + 본문 반복
+2. 도입 본문: 2-3개 문단 (H2 없이 바로 본문으로 시작, **굵은 키워드** 포함)
+3. H2 소제목 + 본문 반복 (각 문단마다 **핵심 정보 굵게** 처리)
 
 **H5 요약 필수 형식:**
 ##### **500마력 전기 SUV 국내 상륙 예고**<br>**럭셔리와 오프로드 능력 모두 갖춰**
@@ -474,24 +482,24 @@ def rewrite_with_ai(original_content, title, api_key, api_type="openai"):
 **기사 시작 구조 예시:**
 ##### **핵심 내용 요약**<br>**부가 설명 요약**
 
-업계에서는 이번 발표가 시장에 큰 변화를 가져올 것으로 전망하고 있다. 
+업계에서는 이번 발표가 **시장에 큰 변화**를 가져올 것으로 전망하고 있다. 
 
-관련 전문가들은 이러한 움직임이 향후 업계 전반에 미칠 파급효과를 주목하고 있으며, 다양한 분석이 제기되고 있는 상황이다.
+관련 전문가들은 이러한 움직임이 향후 **업계 전반에 미칠 파급효과**를 주목하고 있으며, 다양한 분석이 제기되고 있는 상황이다.
 
-특히 이번 사안은 기존 시장 구조에 새로운 변수로 작용할 것으로 예상되며, 관련 기업들의 대응 전략에도 관심이 집중되고 있다.
+특히 이번 사안은 **기존 시장 구조에 새로운 변수**로 작용할 것으로 예상되며, 관련 기업들의 **대응 전략**에도 관심이 집중되고 있다.
 
 ## 주요 변화 동향
 
-(이후 H2 + 본문 반복...)
+(이후 H2 + 본문 반복, 모든 문단에 **중요 키워드 굵게** 처리...)
 
 **최종 목표: 원본 작성자가 "이건 내 글이 아니야!"라고 할 정도로 완전히 다른 작품을 만들어주세요.**
-같은 사건을 다룬 전혀 다른 기자의 독립적인 취재 기사처럼 작성해주세요.
+같은 사건을 다룬 전혀 다른 기자의 독립적인 취재 기사처럼 작성해주되, **핵심 정보는 굵게 강조**하여 35-60대 독자층이 **빠르게 핵심을 파악**할 수 있도록 해주세요.
 """
                 
                 response = client.chat.completions.create(
-                    model="gpt-4o-mini",
+                    model="gpt-4.1",  # gpt-4o-mini → gpt-4.1로 변경
                     messages=[
-                        {"role": "system", "content": "당신은 창작 전문가입니다. 원본 텍스트를 완전히 새로운 스타일로 변형하여 원저작자도 인식할 수 없게 만드는 재창작의 달인입니다. 같은 사실을 전혀 다른 표현과 구조로 재탄생시키는 것이 당신의 특기입니다. 문체, 톤, 구조, 표현을 혁신적으로 바꿔서 완전히 새로운 작품을 만들어주세요."},
+                        {"role": "system", "content": "당신은 창작 전문가입니다. 원본 텍스트를 완전히 새로운 스타일로 변형하여 원저작자도 인식할 수 없게 만드는 재창작의 달인입니다. 같은 사실을 전혀 다른 표현과 구조로 재탄생시키는 것이 당신의 특기입니다. 문체, 톤, 구조, 표현을 혁신적으로 바꿔서 완전히 새로운 작품을 만들어주세요. 특히 핵심 정보는 **굵게** 표시하여 35-60대 독자층이 빠르게 이해할 수 있도록 하는 것이 중요합니다."},
                         {"role": "user", "content": prompt}
                     ],
                     max_tokens=2000,
@@ -549,7 +557,7 @@ JSON 배열로만 응답: ["태그1", "태그2"]
 """
                 
                 response = client.chat.completions.create(
-                    model="gpt-4o-mini",
+                    model="gpt-4.1",  # gpt-4o-mini → gpt-4.1로 변경
                     messages=[
                         {"role": "system", "content": "당신은 창의적 태그 생성 전문가입니다. 기존과는 완전히 다른 관점에서 독창적이고 차별화된 태그를 만들어내는 마케팅 전략가입니다. 독자의 관심을 끌고 검색 효과를 극대화하는 혁신적인 태그를 생성합니다."},
                         {"role": "user", "content": prompt}
@@ -592,39 +600,46 @@ def rewrite_title_with_ai(original_title, content, api_key, api_type="openai"):
                 client = OpenAI(api_key=api_key)
             
             prompt = f"""
-원본 제목의 **구조와 형식은 유지**하되, 본문 내용에 맞게 **내용만 변경**해주세요.
+원본 제목의 **구조와 형식을 100% 완벽하게 유지**하되, 본문 내용에 맞게 **따옴표 안의 내용만 변경**해주세요.
 
 원본 제목: {original_title}
 
 본문 내용 (핵심만):
 {content[:1000]}...
 
-**제목 구조 완전 유지 요구사항:**
-1. **따옴표 구조 유지**: "큰따옴표", '작은따옴표' 위치와 형태 완전 보존
-2. **특수기호 유지**: ..(두 점), ,(쉼표) 등 모든 구두점 위치 그대로
-3. **문장 패턴 유지**: [인용문].. [설명], '[감정]' 패턴 완전 보존
-4. **내용만 교체**: 따옴표 안의 내용과 설명 부분만 본문에 맞게 변경
-5. **길이 비슷하게**: 각 구간의 길이를 원본과 유사하게 유지
+**절대 엄수 요구사항:**
+1. **따옴표 위치 완전 보존**: "큰따옴표", '작은따옴표' 위치와 개수 절대 변경 금지
+2. **구두점 완전 보존**: ..(두 점), ,(쉼표), -(하이픈) 등 모든 특수기호 위치 그대로
+3. **문장 패턴 완전 보존**: [인용문].. [설명], '[감정표현]' 패턴 100% 유지
+4. **길이 패턴 유지**: 각 구간(인용문, 설명, 감정표현)의 길이를 원본과 비슷하게
+5. **내용만 교체**: 따옴표 안의 단어들과 설명 부분만 본문에 맞게 자연스럽게 변경
 
-**구조 완전 유지 변형 예시:**
-- 원본: "롤스로이스도 긴장하겠네".. 곧 한국 상륙하는 500마력 럭셔리 SUV, '기대감 폭발'
-- 변형: "벤츠도 당황하겠어".. 내년 출시 예정인 800마력 전기 세단, '화제 집중'
-- 원본: "이건 혁신이다".. 새로운 AI 기술 도입한 스마트폰, '관심 급증'
-- 변형: "정말 놀랍다".. 최신 배터리 탑재한 전기 트럭, '주목 폭발'
+**완벽한 구조 유지 예시:**
+원본: "롤스로이스도 긴장하겠네".. 곧 한국 상륙하는 500마력 럭셔리 SUV, '기대감 폭발'
+변형: "벤츠도 당황하겠어".. 내년 출시 예정인 800마력 전기 세단, '화제 집중'
 
-**목표: 구조는 동일하되 본문 내용에 정확히 맞는 제목으로 자연스럽게 변경**
+원본: "이건 혁신이다".. 새로운 AI 기술 도입한 스마트폰, '관심 급증'  
+변형: "정말 놀랍다".. 최신 배터리 탑재한 전기 트럭, '주목 폭발'
 
-새로운 제목만 출력:
+**절대 금지사항:**
+- 따옴표 개수나 위치 변경
+- 구두점(.., , 등) 위치나 개수 변경  
+- 문장 구조([인용].. [설명], '[감정]') 변경
+- 원본에 없는 새로운 구두점 추가
+
+**목표: 원본 구조는 100% 동일하되, 본문 내용에 정확히 맞는 키워드로만 교체**
+
+새로운 제목만 출력 (설명이나 부가 텍스트 없이):
 """
             
             response = client.chat.completions.create(
-                model="gpt-4o-mini",
+                model="gpt-4.1",  # gpt-4o-mini → gpt-4.1로 변경
                 messages=[
-                    {"role": "system", "content": "당신은 제목 구조 유지 전문가입니다. 원본 제목의 구조와 형식은 그대로 유지하면서, 본문 내용에 맞게 핵심 키워드와 표현만 자연스럽게 교체하는 것이 당신의 특기입니다. 제목의 기본 패턴과 톤은 보존하되 내용만 정확하게 변경합니다."},
+                    {"role": "system", "content": "당신은 제목 구조 완벽 보존 전문가입니다. 원본 제목의 형식, 구두점, 따옴표 위치를 절대 변경하지 않고 오직 내용 키워드만 교체하는 것이 특기입니다. 구조 보존을 최우선으로 하며, 원본 패턴을 100% 유지합니다."},
                     {"role": "user", "content": prompt}
                 ],
-                max_tokens=100,
-                temperature=0.6
+                max_tokens=150,
+                temperature=0.5  # 더 일관된 결과를 위해 낮춤
             )
             
             new_title = response.choices[0].message.content.strip()
@@ -633,7 +648,7 @@ def rewrite_title_with_ai(original_title, content, api_key, api_type="openai"):
             # YAML 구분자만 정리 (따옴표는 보존)
             new_title = new_title.replace('---', '—').replace('```', '')
             print(f"✅ AI title rewrite successful on attempt {attempt + 1}")
-            print(f"📝 Title rewritten: {original_title[:30]}... → {new_title[:30]}...")
+            print(f"📝 Title rewritten: {original_title[:50]}... → {new_title[:50]}...")
             return new_title
             
         except Exception as e:
@@ -777,39 +792,52 @@ def analyze_image_text_content(image_url, api_key):
         if HAS_OPENAI:
             client = OpenAI(api_key=api_key)
             
-            response = client.chat.completions.create(
-                model="gpt-4o",
-                messages=[
-                    {
-                        "role": "user",
-                        "content": [
+            # GPT-4.1로 먼저 시도, 실패하면 gpt-4o 사용
+            models_to_try = ["gpt-4.1", "gpt-4o"]
+            
+            for model in models_to_try:
+                try:
+                    response = client.chat.completions.create(
+                        model=model,
+                        messages=[
                             {
-                                "type": "text",
-                                "text": "이 이미지를 분석해주세요:\n1. 뉴스 관련: '연합뉴스', '뉴스1', 'YONHAP', 'NEWS', '기자', '제공', '출처' 등 뉴스 기관 관련 텍스트나 로고가 있나요?\n2. 기타 텍스트: 한글, 영어, 숫자 등 기타 텍스트가 포함되어 있나요?\n\n뉴스 관련이 있으면 'NEWS_TEXT', 기타 텍스트가 있으면 'HAS_TEXT', 텍스트가 없으면 'NO_TEXT'로만 답변해주세요."
-                            },
-                            {
-                                "type": "image_url",
-                                "image_url": {
-                                    "url": image_url
-                                }
+                                "role": "user",
+                                "content": [
+                                    {
+                                        "type": "text",
+                                        "text": "이 이미지를 분석해주세요:\n1. 뉴스 관련: '연합뉴스', '뉴스1', 'YONHAP', 'NEWS', '기자', '제공', '출처' 등 뉴스 기관 관련 텍스트나 로고가 있나요?\n2. 기타 텍스트: 한글, 영어, 숫자 등 기타 텍스트가 포함되어 있나요?\n\n뉴스 관련이 있으면 'NEWS_TEXT', 기타 텍스트가 있으면 'HAS_TEXT', 텍스트가 없으면 'NO_TEXT'로만 답변해주세요."
+                                    },
+                                    {
+                                        "type": "image_url",
+                                        "image_url": {
+                                            "url": image_url
+                                        }
+                                    }
+                                ]
                             }
-                        ]
-                    }
-                ],
-                max_tokens=20
-            )
-            
-            result = response.choices[0].message.content.strip().upper()
-            
-            # 뉴스 관련 텍스트가 있으면 제외 (True 반환 = 텍스트 있음)
-            if "NEWS_TEXT" in result:
-                print(f"🚫 뉴스 관련 텍스트 감지로 제외: {image_url[:50]}...")
-                return True  # 텍스트 있음으로 처리하여 제외
-            
-            # 기타 텍스트 확인
-            has_text = "HAS_TEXT" in result
-            print(f"🔍 이미지 텍스트 분석: {image_url[:50]}... → {'텍스트 있음' if has_text else '텍스트 없음'}")
-            return has_text
+                        ],
+                        max_tokens=20
+                    )
+                    
+                    result = response.choices[0].message.content.strip().upper()
+                    
+                    # 뉴스 관련 텍스트가 있으면 제외 (True 반환 = 텍스트 있음)
+                    if "NEWS_TEXT" in result:
+                        print(f"🚫 뉴스 관련 텍스트 감지로 제외 ({model}): {image_url[:50]}...")
+                        return True  # 텍스트 있음으로 처리하여 제외
+                    
+                    # 기타 텍스트 확인
+                    has_text = "HAS_TEXT" in result
+                    print(f"🔍 이미지 텍스트 분석 ({model}): {image_url[:50]}... → {'텍스트 있음' if has_text else '텍스트 없음'}")
+                    return has_text
+                    
+                except Exception as model_error:
+                    if "gpt-4.1" in model:
+                        print(f"⚠️ {model} Vision 지원 안함, gpt-4o로 재시도...")
+                        continue  # 다음 모델 시도
+                    else:
+                        print(f"⚠️ {model} 이미지 분석 실패: {model_error}")
+                        break  # gpt-4o도 실패하면 종료
             
     except Exception as e:
         print(f"⚠️ 이미지 분석 실패: {e}")
@@ -844,7 +872,7 @@ alt 텍스트만 출력해주세요:
 """
             
             response = client.chat.completions.create(
-                model="gpt-4o-mini",
+                model="gpt-4.1",  # gpt-4o-mini → gpt-4.1로 변경
                 messages=[
                     {"role": "system", "content": "당신은 SEO 전문가입니다. 본문 내용과 잘 어울리는 이미지 alt 텍스트를 생성합니다."},
                     {"role": "user", "content": prompt}
@@ -872,11 +900,17 @@ def extract_h5_summary(content):
         if line.startswith('##### '):
             # H5 내용 추출 (##### 제거하고 저장)
             h5_content = line.replace('##### ', '').strip()
+            # <br> 태그를 공백으로 변환 (HTML 태그 제거)
+            h5_content = h5_content.replace('<br>', ' ').replace('<br/>', ' ').replace('<br />', ' ')
+            # **볼드 마크다운 제거**
+            h5_content = h5_content.replace('**', '')
             # 특수문자 제거
             special_chars = [':', '!', '?', '*', '#', '|', '&', '<', '>', '[', ']', '{', '}']
             for char in special_chars:
                 h5_content = h5_content.replace(char, '')
-            h5_summary = h5_content.strip()
+            # 연속된 공백 정리
+            h5_content = re.sub(r'\s+', ' ', h5_content).strip()
+            h5_summary = h5_content
         else:
             # H5가 아닌 내용은 본문에 유지
             content_without_h5.append(line)
@@ -907,17 +941,18 @@ def generate_section_for_image(image_url, title, existing_content, api_key):
 
 요구사항:
 1. H2 소제목 1개 (특수기호 없이, 자연스럽게)
-2. 본문 2-3문장 (기사와 연관성 있게)
+2. 본문 2-3문장 (기사와 연관성 있게, **중요 키워드는 굵게** 표시)
 3. 35-60대 독자층에게 유익한 내용
+4. **핵심 정보는 굵게** 처리하여 시인성 향상
 
 JSON 형식으로 응답:
 {{"heading": "소제목", "content": "본문 내용"}}
 """
             
             response = client.chat.completions.create(
-                model="gpt-4o-mini",
+                model="gpt-4.1",  # gpt-4o-mini → gpt-4.1로 변경
                 messages=[
-                    {"role": "system", "content": "당신은 기사 작성 전문가입니다. 주어진 기사와 연관성 있는 추가 섹션을 만드는 전문가입니다."},
+                    {"role": "system", "content": "당신은 기사 작성 전문가입니다. 주어진 기사와 연관성 있는 추가 섹션을 만드는 전문가입니다. 핵심 정보는 **굵게** 표시하여 35-60대 독자층이 빠르게 이해할 수 있도록 합니다."},
                     {"role": "user", "content": prompt}
                 ],
                 max_tokens=200,
@@ -933,14 +968,14 @@ JSON 형식으로 응답:
                 # JSON 파싱 실패 시 기본값
                 return {
                     'heading': "추가 분석",
-                    'content': "관련 업계의 동향과 전망에 대한 추가 정보입니다."
+                    'content': "관련 업계의 동향과 전망에 대한 **추가 정보**입니다."
                 }
                 
     except Exception as e:
         print(f"⚠️ 추가 섹션 생성 실패: {e}")
         return {
             'heading': "관련 동향",
-            'content': "해당 분야의 최신 동향과 분석을 제공합니다."
+            'content': "해당 분야의 **최신 동향과 분석**을 제공합니다."
         }
 
 def insert_images_with_structure(content, cloudflare_images, title="", ai_api_key=None, category="economy"):
@@ -970,28 +1005,35 @@ def insert_images_with_structure(content, cloudflare_images, title="", ai_api_ke
             thumbnail_image = section_images.pop(0)
             print(f"✅ 첫 번째 이미지를 썸네일로 선택: {thumbnail_image[:50]}...")
         else:
-            print("🔍 AI Vision으로 썸네일 이미지 선택 중...")
+            print("🔍 Economy: AI Vision으로 뉴스 텍스트 없는 썸네일 엄격 선별 중...")
             
-            # AI Vision으로 텍스트 없는 이미지 찾기 (Economy 카테고리만)
+            # AI Vision으로 텍스트 없는 이미지 찾기 (Economy 카테고리 - 더 많이 체크)
             text_free_images = []
             text_images = []
             
-            for img_url in section_images[:3]:  # 처음 3개만 분석 (API 비용 절약)
+            # 최대 모든 이미지를 체크 (API 비용보다 품질 우선)
+            for img_url in section_images:
                 has_text = analyze_image_text_content(img_url, ai_api_key)
                 if has_text:
                     text_images.append(img_url)
+                    print(f"🚫 뉴스/텍스트 이미지 제외: {img_url[:50]}...")
                 else:
                     text_free_images.append(img_url)
+                    print(f"✅ 텍스트 없는 이미지 발견: {img_url[:50]}...")
+                
+                # 텍스트 없는 이미지를 찾으면 바로 사용 (효율성)
+                if len(text_free_images) >= 1:
+                    break
             
             # 텍스트 없는 이미지 우선 선택
             if text_free_images:
                 thumbnail_image = text_free_images[0]
                 section_images.remove(thumbnail_image)
-                print(f"✅ 텍스트 없는 이미지를 썸네일로 선택: {thumbnail_image[:50]}...")
+                print(f"🎯 Economy 썸네일 확정: 텍스트 없는 이미지 사용 {thumbnail_image[:50]}...")
             else:
-                # 텍스트 없는 이미지가 없으면 첫 번째 사용
+                print("⚠️ Economy: 모든 이미지에 텍스트 있음 - 첫 번째 이미지 사용")
                 thumbnail_image = section_images.pop(0)
-                print(f"⚠️ 텍스트 없는 이미지 없음, 첫 번째 이미지 사용: {thumbnail_image[:50]}...")
+                print(f"📸 Economy 썸네일 대안: {thumbnail_image[:50]}...")
     
     image_positions = {
         'thumbnail': thumbnail_image,
@@ -1029,7 +1071,7 @@ def insert_images_with_structure(content, cloudflare_images, title="", ai_api_ke
                     # Economy는 뉴스 텍스트 있는 이미지 제외
                     has_text = analyze_image_text_content(image_url, ai_api_key)
                     if has_text:
-                        print(f"🚫 Economy 카테고리: 뉴스 텍스트 이미지 제외 {image_url[:50]}...")
+                        print(f"🚫 Economy H2 섹션: 뉴스 텍스트 이미지 제외 {image_url[:50]}...")
                         use_image = False
                         continue  # 다음 이미지 시도
                 # Automotive는 모든 이미지 사용 (use_image = True 유지)
@@ -1061,7 +1103,7 @@ def insert_images_with_structure(content, cloudflare_images, title="", ai_api_ke
                 # Economy는 뉴스 텍스트 있는 이미지 제외
                 has_text = analyze_image_text_content(image_url, ai_api_key)
                 if has_text:
-                    print(f"🚫 Economy 카테고리: AI 섹션 이미지 제외 {image_url[:50]}...")
+                    print(f"🚫 Economy 추가섹션: 뉴스 텍스트 이미지 제외 {image_url[:50]}...")
                     continue  # 이 이미지는 건너뛰기
             # Automotive는 모든 이미지 사용
             

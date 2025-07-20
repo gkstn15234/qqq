@@ -14,38 +14,38 @@ SENDER_PASSWORD = os.getenv('SENDER_PASSWORD')
 RECIPIENT_EMAIL = os.getenv('RECIPIENT_EMAIL')
 OPENAI_API_KEY = os.getenv('OPENAI_API_KEY')
 
-# OpenAI 모델 선택 (기본값: gpt-4o-mini)
-OPENAI_MODEL = os.getenv('OPENAI_MODEL', 'gpt-4o-mini')
+# OpenAI 모델 선택 (기본값: gpt-4.1)
+OPENAI_MODEL = os.getenv('OPENAI_MODEL', 'gpt-4.1')
 
 # 한국 시간대 설정
 KST = pytz.timezone('Asia/Seoul')
 
-# 사용 가능한 모델들과 설정
+# ==================== 모델별 설정 ====================
 MODEL_CONFIGS = {
-    'gpt-3.5-turbo': {
-        'max_tokens': 300,
+    'gpt-4.1': {
+        'max_tokens': 32768,
         'temperature': 0.7,
-        'description': '빠르고 효율적인 모델'
-    },
-    'gpt-4': {
-        'max_tokens': 400,
-        'temperature': 0.6,
-        'description': '더 정확하고 상세한 분석'
-    },
-    'gpt-4-turbo': {
-        'max_tokens': 500,
-        'temperature': 0.7,
-        'description': '최신 GPT-4 터보 모델'
-    },
-    'gpt-4o': {
-        'max_tokens': 500,
-        'temperature': 0.7,
-        'description': '최신 GPT-4o 모델'
+        'description': 'GPT-4.1 - 최신 고성능 모델'
     },
     'gpt-4o-mini': {
-        'max_tokens': 300,
+        'max_tokens': 16384,
         'temperature': 0.7,
-        'description': '경제적인 GPT-4o 미니 모델'
+        'description': 'GPT-4o Mini - 빠르고 효율적인 모델'
+    },
+    'gpt-4o': {
+        'max_tokens': 4096,
+        'temperature': 0.7,
+        'description': 'GPT-4o - 균형잡힌 성능 모델'
+    },
+    'gpt-4': {
+        'max_tokens': 8192,
+        'temperature': 0.7,
+        'description': 'GPT-4 - 고품질 모델'
+    },
+    'gpt-3.5-turbo': {
+        'max_tokens': 4096,
+        'temperature': 0.7,
+        'description': 'GPT-3.5 Turbo - 비용 효율적인 모델'
     }
 }
 
@@ -260,7 +260,7 @@ def summarize_news_with_openai(news_items):
         news_text = "\n".join([f"- {item['title']}" for item in news_items])
         
         # 선택된 모델의 설정 가져오기
-        model_config = MODEL_CONFIGS.get(OPENAI_MODEL, MODEL_CONFIGS['gpt-4o-mini'])
+        model_config = MODEL_CONFIGS.get(OPENAI_MODEL, MODEL_CONFIGS['gpt-4.1'])
         
         headers = {
             'Authorization': f'Bearer {OPENAI_API_KEY}',
