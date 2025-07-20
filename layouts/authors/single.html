@@ -1,37 +1,37 @@
 {{ define "main" }}
-{{ partial "breadcrumb.html" . }}
-
-<section class="author-page">
+<section class="author-page py-5">
     <div class="container">
         <!-- Author Header -->
-        <div class="author-header">
+        <div class="author-header mb-5">
             <div class="row align-items-center">
-                <div class="col-lg-3">
-                    <div class="author-profile-image">
-                        <div class="author-avatar-large">
-                            <i class="fas fa-user-circle"></i>
+                <div class="col-lg-3 mb-4 mb-lg-0">
+                    <div class="author-profile-image text-center">
+                        <div class="bg-primary text-white rounded-circle mx-auto d-flex align-items-center justify-content-center" style="width: 120px; height: 120px; font-size: 48px; font-weight: bold;">
+                            {{ substr .Title 0 1 }}
                         </div>
                     </div>
                 </div>
                 <div class="col-lg-9">
                     <div class="author-info">
-                        <h1 class="author-name">{{ .Title }}</h1>
-                        <div class="author-title">{{ .Params.bio | default "포스트업 기자" }}</div>
-                        <div class="author-specialization">
-                            {{ if .Params.specialization }}
-                            <strong>전문 분야:</strong>
+                        <h1 class="author-name h2 mb-2">{{ .Title }} 기자</h1>
+                        <p class="author-title text-muted mb-3">{{ .Site.Title }} 전문 기자</p>
+                        
+                        {{ if .Params.specialization }}
+                        <div class="author-specialization mb-3">
+                            <strong class="text-dark">전문 분야:</strong>
                             {{ range .Params.specialization }}
-                            <span class="specialization-tag">{{ . }}</span>
-                            {{ end }}
+                            <span class="badge bg-secondary me-2">{{ . }}</span>
                             {{ end }}
                         </div>
+                        {{ end }}
+                        
+                        {{ if .Params.email }}
                         <div class="author-contact">
-                            {{ if .Params.email }}
-                            <a href="mailto:{{ .Params.email }}" class="contact-link">
-                                <i class="fas fa-envelope"></i> {{ .Params.email }}
+                            <a href="mailto:{{ .Params.email }}" class="btn btn-outline-primary">
+                                이메일 문의
                             </a>
-                            {{ end }}
                         </div>
+                        {{ end }}
                     </div>
                 </div>
             </div>
@@ -39,11 +39,11 @@
 
         <!-- Author Bio -->
         {{ if .Content }}
-        <div class="author-bio-section">
+        <div class="author-bio-section mb-5">
             <div class="row">
                 <div class="col-lg-8">
                     <div class="author-bio-content">
-                        <h3>기자 소개</h3>
+                        <h3 class="h4 mb-3">기자 소개</h3>
                         <div class="bio-text">
                             {{ .Content }}
                         </div>
@@ -51,9 +51,11 @@
                 </div>
                 <div class="col-lg-4">
                     <div class="author-stats">
-                        <div class="stat-card">
-                            <div class="stat-number">{{ len (where .Site.RegularPages ".Params.author" .Title) }}</div>
-                            <div class="stat-label">작성 기사</div>
+                        <div class="card text-center">
+                            <div class="card-body">
+                                <h4 class="card-title h2 text-primary">{{ len (where .Site.RegularPages ".Params.author" .Title) }}</h4>
+                                <p class="card-text text-muted">작성 기사</p>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -63,96 +65,57 @@
 
         <!-- Author Articles -->
         <div class="author-articles-section">
-            <div class="section-header">
-                <h3 class="section-title">{{ .Title }} 기자의 기사</h3>
-                <div class="articles-count">
-                    총 {{ len (where .Site.RegularPages ".Params.author" .Title) }}개 기사
-                </div>
+            <div class="section-header mb-4">
+                <h3 class="section-title h4">{{ .Title }} 기자의 기사</h3>
+                <p class="text-muted">총 {{ len (where .Site.RegularPages ".Params.author" .Title) }}개 기사</p>
             </div>
 
             {{ $authorArticles := where .Site.RegularPages ".Params.author" .Title }}
             {{ if $authorArticles }}
             
-            <!-- Featured Article -->
-            {{ $featured := index $authorArticles 0 }}
-            <div class="author-featured-article">
-                <article class="featured-article-card">
-                    <div class="row">
-                        <div class="col-lg-6">
-                            <div class="featured-article-image">
-                                {{ if $featured.Params.images }}
-                                <img src="{{ index $featured.Params.images 0 }}" alt="{{ $featured.Title }}" class="img-fluid">
-                                {{ else }}
-                                <div class="no-image-featured">
-                                    <i class="fas fa-newspaper"></i>
-                                </div>
-                                {{ end }}
-                            </div>
-                        </div>
-                        <div class="col-lg-6">
-                            <div class="featured-article-content">
-                                <div class="featured-meta">
-                                    <span class="featured-category">{{ $featured.Section | title }}</span>
-                                    <span class="featured-date">{{ $featured.Date.Format "2006년 01월 02일" }}</span>
-                                </div>
-                                <h2 class="featured-title">
-                                    <a href="{{ $featured.Permalink }}">{{ $featured.Title }}</a>
-                                </h2>
-                                <p class="featured-excerpt">{{ $featured.Summary | truncate 200 }}</p>
-                                <a href="{{ $featured.Permalink }}" class="read-more-btn">자세히 보기</a>
-                            </div>
-                        </div>
-                    </div>
-                </article>
-            </div>
-
             <!-- Articles List -->
-            <div class="author-articles-list">
-                {{ range after 1 $authorArticles }}
-                <article class="author-article-item">
-                    <div class="row">
-                        <div class="col-md-3">
-                            <div class="article-thumb">
-                                {{ if .Params.images }}
-                                <img src="{{ index .Params.images 0 }}" alt="{{ .Title }}" class="img-fluid">
-                                {{ else }}
-                                <div class="no-image">
-                                                                            <i class="fas fa-{{ if eq .Section "health" }}heartbeat{{ else if eq .Section "economy" }}chart-line{{ else if eq .Section "entertainment" }}star{{ else }}newspaper{{ end }}"></i>
-                                </div>
+            <div class="row">
+                {{ range $authorArticles }}
+                <div class="col-lg-6 mb-4">
+                    <article class="card h-100">
+                        {{ if .Params.images }}
+                        <img src="{{ index .Params.images 0 }}" alt="{{ .Title }}" class="card-img-top" style="height: 200px; object-fit: cover;">
+                        {{ else }}
+                        <div class="card-img-top bg-light d-flex align-items-center justify-content-center" style="height: 200px;">
+                            <span class="text-muted h1">📰</span>
+                        </div>
+                        {{ end }}
+                        
+                        <div class="card-body d-flex flex-column">
+                            <div class="article-meta mb-2">
+                                <span class="badge bg-{{ if eq .Section "automotive" }}danger{{ else if eq .Section "economy" }}warning{{ else }}secondary{{ end }} me-2">{{ .Section | title }}</span>
+                                <small class="text-muted">{{ .Date.Format "2006년 01월 02일" }}</small>
+                            </div>
+                            
+                            <h5 class="card-title">
+                                <a href="{{ .Permalink }}" class="text-decoration-none text-dark">{{ .Title }}</a>
+                            </h5>
+                            
+                            <p class="card-text text-muted flex-grow-1">{{ .Summary | truncate 100 }}</p>
+                            
+                            {{ if .Params.tags }}
+                            <div class="article-tags mt-auto">
+                                {{ range first 3 .Params.tags }}
+                                <span class="badge bg-light text-dark me-1">#{{ . }}</span>
                                 {{ end }}
                             </div>
+                            {{ end }}
                         </div>
-                        <div class="col-md-9">
-                            <div class="article-content">
-                                <div class="article-meta">
-                                    <span class="article-category">{{ .Section | title }}</span>
-                                    <span class="article-date">{{ .Date.Format "2006년 01월 02일" }}</span>
-                                </div>
-                                <h3 class="article-title">
-                                    <a href="{{ .Permalink }}">{{ .Title }}</a>
-                                </h3>
-                                <p class="article-excerpt">{{ .Summary | truncate 150 }}</p>
-                                <div class="article-tags">
-                                    {{ if .Params.tags }}
-                                    {{ range first 3 .Params.tags }}
-                                    <span class="tag">#{{ . }}</span>
-                                    {{ end }}
-                                    {{ end }}
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </article>
+                    </article>
+                </div>
                 {{ end }}
             </div>
 
             {{ else }}
-            <div class="no-articles">
-                <div class="no-articles-content">
-                    <i class="fas fa-newspaper"></i>
-                    <h4>작성된 기사가 없습니다</h4>
-                    <p>아직 이 기자가 작성한 기사가 없습니다.</p>
-                </div>
+            <div class="text-center py-5">
+                <span class="display-1">📝</span>
+                <h4 class="mt-3">작성된 기사가 없습니다</h4>
+                <p class="text-muted">아직 이 기자가 작성한 기사가 없습니다.</p>
             </div>
             {{ end }}
         </div>

@@ -1,69 +1,58 @@
 {{ define "main" }}
-{{ partial "breadcrumb.html" . }}
-
-<section class="authors-page">
+<section class="authors-page py-5">
     <div class="container">
         <!-- Page Header -->
-        <div class="page-header">
-            <div class="row align-items-center">
-                <div class="col-lg-8">
-                    <h1 class="page-title">{{ .Title }}</h1>
-                    <p class="page-description">{{ .Description | default "포스트업의 전문 기자진을 소개합니다." }}</p>
-                </div>
-                <div class="col-lg-4">
-                    <div class="page-stats">
-                        <div class="stat-item">
-                            <i class="fas fa-users"></i>
-                            <span>{{ len .Pages }}</span>
-                            <small>명의 기자</small>
-                        </div>
-                    </div>
-                </div>
+        <div class="page-header text-center mb-5">
+            <h1 class="page-title h2 mb-3">{{ .Title }}</h1>
+            <p class="page-description text-muted">{{ .Description | default "오코노미의 전문 기자진을 소개합니다." }}</p>
+            <div class="page-stats mt-3">
+                <span class="badge bg-primary fs-6">{{ len .Pages }}명의 기자</span>
             </div>
         </div>
 
         <!-- Authors Grid -->
         <div class="authors-grid">
-            <div class="row">
+            <div class="row justify-content-center">
                 {{ range .Pages }}
-                <div class="col-lg-6 col-md-6 mb-4">
-                    <article class="author-card">
-                        <div class="author-card-content">
-                            <div class="author-avatar">
-                                <i class="fas fa-user-circle"></i>
+                <div class="col-lg-6 col-md-8 mb-4">
+                    <article class="card author-card h-100">
+                        <div class="card-body text-center">
+                            <div class="author-avatar mb-3">
+                                <div class="bg-primary text-white rounded-circle mx-auto d-flex align-items-center justify-content-center" style="width: 80px; height: 80px; font-size: 32px; font-weight: bold;">
+                                    {{ substr .Title 0 1 }}
+                                </div>
                             </div>
-                            <div class="author-details">
-                                <h3 class="author-name">
-                                    <a href="{{ .Permalink }}">{{ .Title }}</a>
-                                </h3>
-                                <div class="author-bio">{{ .Params.bio | default "포스트업 기자" }}</div>
-                                
-                                {{ if .Params.specialization }}
-                                <div class="author-specialization">
-                                    <strong>전문 분야:</strong>
-                                    {{ range .Params.specialization }}
-                                    <span class="specialization-tag">{{ . }}</span>
-                                    {{ end }}
-                                </div>
+                            
+                            <h3 class="author-name h5 mb-2">
+                                <a href="{{ .Permalink }}" class="text-decoration-none text-dark">{{ .Title }} 기자</a>
+                            </h3>
+                            
+                            <p class="author-bio text-muted mb-3">{{ .Site.Title }} 전문 기자</p>
+                            
+                            {{ if .Params.specialization }}
+                            <div class="author-specialization mb-3">
+                                {{ range .Params.specialization }}
+                                <span class="badge bg-secondary me-1">{{ . }}</span>
                                 {{ end }}
-                                
-                                <div class="author-stats">
-                                    <div class="stat">
-                                        <span class="stat-number">{{ len (where $.Site.RegularPages ".Params.author" .Title) }}</span>
-                                        <span class="stat-label">기사</span>
-                                    </div>
+                            </div>
+                            {{ end }}
+                            
+                            <div class="author-stats mb-3">
+                                <div class="d-flex justify-content-center align-items-center">
+                                    <span class="h4 text-primary mb-0 me-2">{{ len (where $.Site.RegularPages ".Params.author" .Title) }}</span>
+                                    <span class="text-muted">기사</span>
                                 </div>
-                                
-                                <div class="author-contact">
-                                    {{ if .Params.email }}
-                                    <a href="mailto:{{ .Params.email }}" class="contact-link">
-                                        <i class="fas fa-envelope"></i> 이메일
-                                    </a>
-                                    {{ end }}
-                                    <a href="{{ .Permalink }}" class="profile-link">
-                                        <i class="fas fa-user"></i> 프로필 보기
-                                    </a>
-                                </div>
+                            </div>
+                            
+                            <div class="author-actions">
+                                {{ if .Params.email }}
+                                <a href="mailto:{{ .Params.email }}" class="btn btn-outline-primary btn-sm me-2">
+                                    이메일
+                                </a>
+                                {{ end }}
+                                <a href="{{ .Permalink }}" class="btn btn-primary btn-sm">
+                                    프로필 보기
+                                </a>
                             </div>
                         </div>
                     </article>
@@ -73,9 +62,10 @@
         </div>
 
         <!-- Recent Articles by Authors -->
-        <div class="recent-articles-section">
-            <div class="section-header">
-                <h3 class="section-title">기자별 최신 기사</h3>
+        {{ if .Pages }}
+        <div class="recent-articles-section mt-5">
+            <div class="section-header text-center mb-4">
+                <h3 class="section-title h4">기자별 최신 기사</h3>
             </div>
             
             <div class="row">
@@ -83,22 +73,20 @@
                 {{ $authorArticles := where $.Site.RegularPages ".Params.author" .Title }}
                 {{ if $authorArticles }}
                 <div class="col-lg-6 mb-4">
-                    <div class="author-recent-articles">
-                        <div class="author-section-header">
-                            <h4 class="author-section-title">{{ .Title }} 기자</h4>
-                            <a href="{{ .Permalink }}" class="view-all-link">전체보기</a>
+                    <div class="card">
+                        <div class="card-header d-flex justify-content-between align-items-center">
+                            <h5 class="card-title mb-0">{{ .Title }} 기자</h5>
+                            <a href="{{ .Permalink }}" class="btn btn-sm btn-outline-primary">전체보기</a>
                         </div>
-                        <div class="recent-articles-list">
+                        <div class="card-body">
                             {{ range first 3 $authorArticles }}
-                            <article class="recent-article-item">
-                                <div class="recent-article-content">
-                                    <h5 class="recent-article-title">
-                                        <a href="{{ .Permalink }}">{{ .Title | truncate 50 }}</a>
-                                    </h5>
-                                    <div class="recent-article-meta">
-                                        <span class="recent-category">{{ .Section | title }}</span>
-                                        <span class="recent-date">{{ .Date.Format "01월 02일" }}</span>
-                                    </div>
+                            <article class="border-bottom pb-2 mb-2">
+                                <h6 class="mb-1">
+                                    <a href="{{ .Permalink }}" class="text-decoration-none text-dark">{{ .Title | truncate 60 }}</a>
+                                </h6>
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <span class="badge bg-{{ if eq .Section "automotive" }}danger{{ else if eq .Section "economy" }}warning{{ else }}secondary{{ end }}">{{ .Section | title }}</span>
+                                    <small class="text-muted">{{ .Date.Format "01월 02일" }}</small>
                                 </div>
                             </article>
                             {{ end }}
@@ -109,6 +97,7 @@
                 {{ end }}
             </div>
         </div>
+        {{ end }}
     </div>
 </section>
 {{ end }} 

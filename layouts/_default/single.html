@@ -97,16 +97,9 @@
                     <div class="author-info-section mb-4 p-3 bg-light rounded">
                         <div class="d-flex flex-column">
                             <h6 class="author-name mb-1 text-dark fw-medium">
-                                <a href="/authors/yoon-shin-ae/" class="text-decoration-none text-dark">
-                                    {{ .Params.author }} 기자
-                                </a>
+                                {{ .Params.author }} 기자
                             </h6>
-                            <p class="author-bio text-muted mb-2 small">{{ .Site.Title }}</p>
-                            <div class="author-links">
-                                <a href="/authors/yoon-shin-ae/" class="btn btn-sm btn-outline-primary">
-                                    기자 프로필 보기
-                                </a>
-                            </div>
+                            <p class="author-bio text-muted mb-0 small">{{ .Site.Title }}</p>
                         </div>
                     </div>
                     {{ end }}
