@@ -24,7 +24,7 @@
                         <div class="meta-left mb-2 mb-md-0">
                             <span class="author me-3">
                                 {{ if .Params.author }}
-                                <a href="/authors/{{ .Params.author | urlize }}/" class="text-decoration-none">
+                                <a href="/authors/yoon-shin-ae/" class="text-decoration-none">
                                     {{ .Params.author }} 기자
                                 </a>
                                 {{ else }}
@@ -95,22 +95,17 @@
                     <!-- Author Info Section -->
                     {{ if .Params.author }}
                     <div class="author-info-section mb-4 p-3 bg-light rounded">
-                        <div class="row align-items-center">
-                            <div class="col-12">
-                                <h5 class="author-name mb-1">
-                                    <a href="/authors/{{ .Params.author | urlize }}/" class="text-decoration-none">
-                                        {{ .Params.author }} 기자
-                                    </a>
-                                </h5>
-                                <p class="author-bio text-muted mb-2">{{ .Site.Title }} 전문 기자</p>
-                                <div class="author-links">
-                                    <a href="/authors/{{ .Params.author | urlize }}/" class="btn btn-sm btn-outline-primary me-2">
-                                        기자 프로필 보기
-                                    </a>
-                                    <a href="/authors/{{ .Params.author | urlize }}/" class="btn btn-sm btn-outline-secondary">
-                                        다른 기사 보기
-                                    </a>
-                                </div>
+                        <div class="d-flex flex-column">
+                            <h6 class="author-name mb-1 text-dark fw-medium">
+                                <a href="/authors/yoon-shin-ae/" class="text-decoration-none text-dark">
+                                    {{ .Params.author }} 기자
+                                </a>
+                            </h6>
+                            <p class="author-bio text-muted mb-2 small">{{ .Site.Title }}</p>
+                            <div class="author-links">
+                                <a href="/authors/yoon-shin-ae/" class="btn btn-sm btn-outline-primary">
+                                    기자 프로필 보기
+                                </a>
                             </div>
                         </div>
                     </div>
