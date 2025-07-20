@@ -98,10 +98,61 @@ def get_scraping_statistics():
             'last_run': 'Error'
         }
 
+def count_articles_basic():
+    """frontmatter 없이 기본 파일 카운팅"""
+    try:
+        content_dir = 'content'
+        if not os.path.exists(content_dir):
+            return {'automotive': 0, 'economy': 0, 'total': 0, 'articles': []}
+        
+        automotive_count = 0
+        economy_count = 0
+        articles = []
+        
+        # automotive 카테고리
+        automotive_dir = os.path.join(content_dir, 'automotive')
+        if os.path.exists(automotive_dir):
+            for filename in os.listdir(automotive_dir):
+                if filename.endswith('.md') and filename != '_index.md':
+                    automotive_count += 1
+                    articles.append({
+                        'title': filename.replace('.md', '').replace('-', ' ').title(),
+                        'url': f"https://okonomis.com/automotive/{filename.replace('.md', '')}/",
+                        'category': '자동차'
+                    })
+        
+        # economy 카테고리  
+        economy_dir = os.path.join(content_dir, 'economy')
+        if os.path.exists(economy_dir):
+            for filename in os.listdir(economy_dir):
+                if filename.endswith('.md') and filename != '_index.md':
+                    economy_count += 1
+                    articles.append({
+                        'title': filename.replace('.md', '').replace('-', ' ').title(),
+                        'url': f"https://okonomis.com/economy/{filename.replace('.md', '')}/",
+                        'category': '경제'
+                    })
+        
+        total_count = automotive_count + economy_count
+        return {
+            'automotive': automotive_count,
+            'economy': economy_count, 
+            'total': total_count,
+            'articles': articles
+        }
+    except Exception as e:
+        print(f"Error counting articles: {e}")
+        return {'automotive': 0, 'economy': 0, 'total': 0, 'articles': []}
+
 def count_published_articles():
     """발행된 기사 수 계산 및 목록 반환"""
     try:
-        import frontmatter
+        try:
+            import frontmatter
+        except ImportError:
+            print("Warning: frontmatter module not found. Using basic file counting.")
+            return count_articles_basic()
+            
         content_dir = 'content'
         if not os.path.exists(content_dir):
             return {'automotive': 0, 'economy': 0, 'total': 0, 'articles': []}

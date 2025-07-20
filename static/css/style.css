@@ -68,6 +68,140 @@ select:focus {
     border-color: #80bdff !important;
 }
 
+/* 헤더, 푸터, 사이드바 포커스 스타일 제거 */
+header a:focus,
+footer a:focus,
+.sidebar a:focus,
+.widget a:focus,
+nav a:focus,
+.navbar a:focus,
+.navbar-brand:focus,
+.nav-link:focus,
+.dropdown-item:focus,
+.dropdown-toggle:focus {
+    outline: none !important;
+    box-shadow: none !important;
+    text-decoration: none !important;
+    border-color: transparent !important;
+}
+
+/* 네비게이션 메뉴 포커스 제거 */
+.navbar-nav .nav-link:focus,
+.navbar-nav .nav-link:active,
+.navbar-toggler:focus,
+.navbar-toggler:active {
+    outline: none !important;
+    box-shadow: none !important;
+    border-color: transparent !important;
+}
+
+/* 사이드바 위젯 포커스 제거 */
+.sidebar .card:focus,
+.sidebar .list-group-item:focus,
+.sidebar .btn:focus,
+.widget .card:focus,
+.widget .list-group-item:focus,
+.widget .btn:focus {
+    outline: none !important;
+    box-shadow: none !important;
+    border-color: inherit !important;
+}
+
+/* 모바일 햄버거 메뉴 포커스 제거 */
+.navbar-toggler:focus,
+.navbar-toggler:active,
+.navbar-toggler-icon:focus {
+    outline: none !important;
+    box-shadow: none !important;
+}
+
+/* 추가 포커스 스타일 제거 - 빠진 요소들 */
+/* 공유 버튼 포커스 제거 */
+.share-btn:focus,
+.btn-facebook:focus,
+.btn-twitter:focus,
+.btn-naver:focus,
+.btn-link-copy:focus,
+.share-buttons .btn:focus {
+    outline: none !important;
+    box-shadow: none !important;
+    border-color: inherit !important;
+}
+
+/* 페이지네이션 포커스 제거 */
+.pagination .page-link:focus,
+.pagination .page-item:focus,
+.page-link:focus {
+    outline: none !important;
+    box-shadow: none !important;
+    border-color: inherit !important;
+}
+
+/* 브레드크럼 포커스 제거 */
+.breadcrumb-item a:focus,
+.breadcrumb a:focus {
+    outline: none !important;
+    box-shadow: none !important;
+    text-decoration: none !important;
+}
+
+/* 태그 및 카테고리 링크 포커스 제거 */
+.tag-link:focus,
+.category-link:focus,
+.taxonomy-link:focus,
+.badge:focus {
+    outline: none !important;
+    box-shadow: none !important;
+    text-decoration: none !important;
+}
+
+/* 모달 요소 포커스 제거 */
+.modal:focus,
+.modal-dialog:focus,
+.modal-content:focus,
+.modal-header .btn-close:focus {
+    outline: none !important;
+    box-shadow: none !important;
+}
+
+/* 검색 관련 포커스 제거 (입력 필드 제외) */
+#searchButton:focus,
+.search-btn:focus {
+    outline: none !important;
+    box-shadow: none !important;
+    border-color: inherit !important;
+}
+
+/* 더보기/로드모어 버튼 포커스 제거 */
+#load-more-btn:focus,
+.load-more:focus,
+.read-more:focus,
+.view-all-link:focus {
+    outline: none !important;
+    box-shadow: none !important;
+    border-color: inherit !important;
+}
+
+/* 작성자 관련 링크 포커스 제거 */
+.author-link:focus,
+.author-name:focus,
+.byline a:focus {
+    outline: none !important;
+    box-shadow: none !important;
+    text-decoration: none !important;
+}
+
+/* 기타 인터랙티브 요소 포커스 제거 */
+.clickable-card:focus,
+.article-item:focus,
+.taxonomy-item:focus,
+.widget-article:focus,
+.recent-article-item:focus {
+    outline: none !important;
+    box-shadow: none !important;
+    border-color: inherit !important;
+}
+
 /* Dark Mode Variables */
 [data-theme="dark"] {
     --primary-color: #63b3ed;
@@ -4430,12 +4564,17 @@ body * {
     transform: translateY(-2px);
 }
 
-/* Line Clamp Utility */
+/* Line Clamp Utility with fallback */
 .line-clamp-2 {
     display: -webkit-box;
     -webkit-line-clamp: 2;
     -webkit-box-orient: vertical;
+    line-clamp: 2; /* Standard property */
     overflow: hidden;
+    
+    /* Fallback for browsers that don't support line-clamp */
+    max-height: 3em; /* Approximate height for 2 lines */
+    line-height: 1.5;
 }
 
 /* Mobile Optimizations */
