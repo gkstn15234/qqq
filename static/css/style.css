@@ -4744,7 +4744,7 @@ body * {
     .entry-content p,
     .entry-content li,
     .entry-content div {
-        font-size: 1.5rem !important;  /* 워드프레스 18pt 수준 (24px) */
+        font-size: 1.5rem !important;  /* 나이드신 분들을 위해 H5보다 크게 */
         line-height: 1.8 !important;   /* 줄 간격도 넓게 */
         margin-bottom: 1.8rem !important;
     }

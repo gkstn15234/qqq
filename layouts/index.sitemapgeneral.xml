@@ -12,12 +12,12 @@
     
     <!-- Regular Pages -->
     {{ range .Site.RegularPages }}
-    {{ if not .Params.private }}
+    {{ if and (not .Params.private) (eq .Section "automotive") }}
     <url>
         <loc>{{ .Permalink }}</loc>
         <lastmod>{{ .Lastmod.Format "2006-01-02T15:04:05-07:00" }}</lastmod>
-        <changefreq>{{ if eq .Section "news" }}daily{{ else if eq .Section "it" }}weekly{{ else }}monthly{{ end }}</changefreq>
-        <priority>{{ if .IsHome }}1.0{{ else if eq .Section "economy" }}0.8{{ else if eq .Section "securities" }}0.8{{ else }}0.6{{ end }}</priority>
+        <changefreq>{{ if eq .Section "automotive" }}daily{{ else }}monthly{{ end }}</changefreq>
+        <priority>{{ if .IsHome }}1.0{{ else if eq .Section "automotive" }}0.8{{ else }}0.6{{ end }}</priority>
         {{ if .Params.image }}
         <image:image>
             <image:loc>{{ .Params.image | absURL }}</image:loc>
@@ -29,14 +29,16 @@
     {{ end }}
     {{ end }}
     
-    <!-- Section Pages -->
+    <!-- Section Pages (Automotive Only) -->
     {{ range .Site.Sections }}
+    {{ if eq .Section "automotive" }}
     <url>
         <loc>{{ .Permalink }}</loc>
         <lastmod>{{ .Lastmod.Format "2006-01-02T15:04:05-07:00" }}</lastmod>
         <changefreq>daily</changefreq>
         <priority>0.7</priority>
     </url>
+    {{ end }}
     {{ end }}
     
     <!-- Taxonomy Pages -->

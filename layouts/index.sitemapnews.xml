@@ -3,8 +3,8 @@
         xmlns:news="http://www.google.com/schemas/sitemap-news/0.9">
     
     {{ range first 1000 (.Site.RegularPages.ByDate.Reverse) }}
-    {{ if and (not .Params.private) (not .Params.draft) (ge (.Date.Unix) (sub now.Unix 259200)) }}
-    <!-- Only include articles from the last 3 days for Google News -->
+    {{ if and (not .Params.private) (not .Params.draft) (ge (.Date.Unix) (sub now.Unix 259200)) (eq .Section "automotive") }}
+    <!-- Only include automotive articles from the last 3 days for Google News -->
     <!-- Section: {{ .Section }}, Title: {{ .Title }} -->
     <url>
         <loc>{{ .Permalink }}</loc>
@@ -14,7 +14,7 @@
                 <news:name>{{ .Site.Title }}</news:name>
                 <news:language>ko</news:language>
             </news:publication>
-            {{ if or (eq .Section "automotive") (eq .Section "economy") (eq .Section "securities") }}
+            {{ if eq .Section "automotive" }}
             <news:genres>PressRelease</news:genres>
             {{ else if or (eq .Section "technology") (eq .Section "realestate") (eq .Section "it") (eq .Section "international") }}
             <news:genres>OpEd</news:genres>

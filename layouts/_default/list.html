@@ -16,16 +16,16 @@
                 <a href="{{ .RelPermalink }}" class="text-decoration-none">
                     <div class="row align-items-center">
                         <!-- Thumbnail -->
-                        <div class="col-4 col-md-3">
+                        <div class="col-5 col-md-3">
                             <div class="article-thumbnail">
                                 {{ if .Params.images }}
                                 <img src="{{ index .Params.images 0 }}" alt="{{ .Title }}" 
                                      class="img-fluid w-100 h-100" 
-                                     style="height: 100px; object-fit: cover; border-radius: 8px;" 
+                                     style="height: 140px; object-fit: cover; border-radius: 8px;" 
                                      loading="lazy">
                                 {{ else }}
                                 <div class="no-image d-flex align-items-center justify-content-center h-100" 
-                                     style="height: 100px; background: #f8f9fa; border-radius: 8px;">
+                                     style="height: 140px; background: #f8f9fa; border-radius: 8px;">
                                     <i class="fas fa-{{ if eq .Section "automotive" }}car{{ else if eq .Section "economy" }}chart-line{{ else }}newspaper{{ end }} fa-lg text-muted"></i>
                                 </div>
                                 {{ end }}
@@ -33,7 +33,7 @@
                         </div>
                         
                         <!-- Content -->
-                        <div class="col-8 col-md-9">
+                        <div class="col-7 col-md-9">
                             <div class="article-content ps-2 ps-md-3">
                                 <h3 class="article-title h6 h5-md mb-1 mb-md-2 text-dark">{{ .Title }}</h3>
                                 <p class="article-excerpt text-muted mb-1 mb-md-2 d-none d-sm-block">{{ .Summary | plainify | truncate 150 }}</p>

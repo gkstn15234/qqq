@@ -445,18 +445,17 @@ def rewrite_with_ai(original_content, title, api_key, api_type="openai"):
 9. **독자 관점 전환**: 다른 독자층에게 말하는 것처럼 톤앤매너 변경
 10. **핵심 사실만 보존**: 날짜, 수치, 고유명사, 핵심 사실은 정확히 유지
 
-**시인성 향상을 위한 굵게 처리 (최우선):**
-- **핵심 키워드와 중요 정보**를 반드시 **굵게** 표시
-- **수치, 날짜, 기업명, 제품명** 등은 모두 **굵게** 처리
-- **주요 변화나 결론**은 **굵게** 강조
-- **독자가 꼭 기억해야 할 내용**은 **굵게** 표시
-- 문단마다 최소 2-3개의 **굵은 키워드** 포함
-- **35-60대 독자층**이 핵심만 빠르게 파악할 수 있도록 **굵게** 활용
+**굵게 표시 최소화 (중요):**
+- **핵심 키워드**는 문단당 최대 1-2개만 **굵게** 표시
+- **수치나 기업명** 등 꼭 필요한 정보만 **굵게** 처리
+- 과도한 **굵게** 표시는 피하고 자연스럽게 읽히도록 작성
+- **35-60대 독자층**이 부담스럽지 않게 적당히 강조
+- 문단마다 **굵은 텍스트**가 없어도 괜찮음
 
 **문체 변형 예시:**
-- 원본: "회사가 발표했다" → 변형: "**업체 측이 공개한** 바에 따르면"
-- 원본: "증가했다" → 변형: "**상승세를 보이고** 있다", "**늘어나는 추세**다"
-- 원본: "문제가 있다" → 변형: "**우려스러운 상황**이 벌어지고 있다"
+- 원본: "회사가 발표했다" → 변형: "업체 측이 공개한 바에 따르면"
+- 원본: "증가했다" → 변형: "상승세를 보이고 있다", "늘어나는 추세다"
+- 원본: "문제가 있다" → 변형: "우려스러운 상황이 벌어지고 있다"
 
 **헤딩 구조 (절대 엄수):**
 ##### [첫 번째 줄 요약]<br>[두 번째 줄 요약]
@@ -473,8 +472,8 @@ def rewrite_with_ai(original_content, title, api_key, api_type="openai"):
 
 **기사 구조 (절대 준수):**
 1. H5 요약: ##### **첫 번째 줄**<br>**두 번째 줄**
-2. 도입 본문: 2-3개 문단 (H2 없이 바로 본문으로 시작, **굵은 키워드** 포함)
-3. H2 소제목 + 본문 반복 (각 문단마다 **핵심 정보 굵게** 처리)
+2. 도입 본문: 2-3개 문단 (H2 없이 바로 본문으로 시작, 적당한 강조)
+3. H2 소제목 + 본문 반복 (과도한 **굵게** 표시 금지)
 
 **H5 요약 필수 형식:**
 ##### **500마력 전기 SUV 국내 상륙 예고**<br>**럭셔리와 오프로드 능력 모두 갖춰**
@@ -482,24 +481,24 @@ def rewrite_with_ai(original_content, title, api_key, api_type="openai"):
 **기사 시작 구조 예시:**
 ##### **핵심 내용 요약**<br>**부가 설명 요약**
 
-업계에서는 이번 발표가 **시장에 큰 변화**를 가져올 것으로 전망하고 있다. 
+업계에서는 이번 발표가 시장에 큰 변화를 가져올 것으로 전망하고 있다. 
 
-관련 전문가들은 이러한 움직임이 향후 **업계 전반에 미칠 파급효과**를 주목하고 있으며, 다양한 분석이 제기되고 있는 상황이다.
+관련 전문가들은 이러한 움직임이 향후 업계 전반에 미칠 파급효과를 주목하고 있으며, 다양한 분석이 제기되고 있는 상황이다.
 
-특히 이번 사안은 **기존 시장 구조에 새로운 변수**로 작용할 것으로 예상되며, 관련 기업들의 **대응 전략**에도 관심이 집중되고 있다.
+특히 이번 사안은 기존 시장 구조에 새로운 변수로 작용할 것으로 예상되며, 관련 기업들의 **대응 전략**에도 관심이 집중되고 있다.
 
 ## 주요 변화 동향
 
-(이후 H2 + 본문 반복, 모든 문단에 **중요 키워드 굵게** 처리...)
+(이후 H2 + 본문 반복, **굵게** 표시는 꼭 필요한 곳에만 최소한으로...)
 
 **최종 목표: 원본 작성자가 "이건 내 글이 아니야!"라고 할 정도로 완전히 다른 작품을 만들어주세요.**
-같은 사건을 다룬 전혀 다른 기자의 독립적인 취재 기사처럼 작성해주되, **핵심 정보는 굵게 강조**하여 35-60대 독자층이 **빠르게 핵심을 파악**할 수 있도록 해주세요.
+같은 사건을 다룬 전혀 다른 기자의 독립적인 취재 기사처럼 작성해주되, **굵게 표시는 최소화**하여 35-60대 독자층이 **자연스럽게 읽을 수 있도록** 해주세요.
 """
                 
                 response = client.chat.completions.create(
                     model="gpt-4.1",  # gpt-4o-mini → gpt-4.1로 변경
                     messages=[
-                        {"role": "system", "content": "당신은 창작 전문가입니다. 원본 텍스트를 완전히 새로운 스타일로 변형하여 원저작자도 인식할 수 없게 만드는 재창작의 달인입니다. 같은 사실을 전혀 다른 표현과 구조로 재탄생시키는 것이 당신의 특기입니다. 문체, 톤, 구조, 표현을 혁신적으로 바꿔서 완전히 새로운 작품을 만들어주세요. 특히 핵심 정보는 **굵게** 표시하여 35-60대 독자층이 빠르게 이해할 수 있도록 하는 것이 중요합니다."},
+                        {"role": "system", "content": "당신은 창작 전문가입니다. 원본 텍스트를 완전히 새로운 스타일로 변형하여 원저작자도 인식할 수 없게 만드는 재창작의 달인입니다. 같은 사실을 전혀 다른 표현과 구조로 재탄생시키는 것이 당신의 특기입니다. 문체, 톤, 구조, 표현을 혁신적으로 바꿔서 완전히 새로운 작품을 만들어주세요. 굵게 표시는 꼭 필요한 곳에만 최소한으로 사용하여 자연스럽게 읽히도록 하는 것이 중요합니다."},
                         {"role": "user", "content": prompt}
                     ],
                     max_tokens=2000,
@@ -600,66 +599,89 @@ def rewrite_title_with_ai(original_title, content, api_key, api_type="openai"):
                 client = OpenAI(api_key=api_key)
             
             prompt = f"""
-원본 제목의 **구조와 형식을 100% 완벽하게 유지**하되, 본문 내용에 맞게 **따옴표 안의 내용만 변경**해주세요.
+원본 제목의 **정확한 구조와 문법을 100% 완벽하게 유지**하되, 본문 내용에 맞게 **따옴표 안의 핵심 내용만 변경**해주세요.
 
 원본 제목: {original_title}
 
 본문 내용 (핵심만):
 {content[:1000]}...
 
-**절대 엄수 요구사항:**
-1. **따옴표 위치 완전 보존**: "큰따옴표", '작은따옴표' 위치와 개수 절대 변경 금지
-2. **구두점 완전 보존**: ..(두 점), ,(쉼표), -(하이픈) 등 모든 특수기호 위치 그대로
-3. **문장 패턴 완전 보존**: [인용문].. [설명], '[감정표현]' 패턴 100% 유지
-4. **길이 패턴 유지**: 각 구간(인용문, 설명, 감정표현)의 길이를 원본과 비슷하게
-5. **내용만 교체**: 따옴표 안의 단어들과 설명 부분만 본문에 맞게 자연스럽게 변경
+**절대 엄수 요구사항 (위반 시 실패):**
 
-**완벽한 구조 유지 예시:**
-원본: "롤스로이스도 긴장하겠네".. 곧 한국 상륙하는 500마력 럭셔리 SUV, '기대감 폭발'
-변형: "벤츠도 당황하겠어".. 내년 출시 예정인 800마력 전기 세단, '화제 집중'
+1. **따옴표 완전 보존**: "큰따옴표", '작은따옴표' 개수와 위치 절대 변경 금지
+2. **구두점 완전 보존**: ..(두 점), ,(쉼표), -(하이픈), …(말줄임표) 등 모든 기호 그대로
+3. **조사/어미 완전 보존**: ~다더니, ~라더니, ~에서, ~의, ~를, ~이, ~로 등 모든 조사와 어미 그대로
+4. **문장 구조 완전 보존**: [인용문].. [설명], '[감정표현]' 패턴 100% 유지
+5. **자연스러운 한국어**: "민간 이 안되어 있니" 같은 부자연스러운 표현 절대 금지
+6. **따옴표 누락 절대 금지**: 원본에 있는 모든 따옴표는 반드시 유지
 
-원본: "이건 혁신이다".. 새로운 AI 기술 도입한 스마트폰, '관심 급증'  
-변형: "정말 놀랍다".. 최신 배터리 탑재한 전기 트럭, '주목 폭발'
+**변경 허용 범위:**
+- 따옴표 안의 핵심 단어/문구만 본문 내용에 맞게 변경
+- 고유명사(기업명, 제품명, 지역명)를 본문 내용에 맞게 변경
+- 업계/분야명을 본문 내용에 맞게 변경
 
-**절대 금지사항:**
-- 따옴표 개수나 위치 변경
-- 구두점(.., , 등) 위치나 개수 변경  
-- 문장 구조([인용].. [설명], '[감정]') 변경
-- 원본에 없는 새로운 구두점 추가
+**금지사항:**
+- 문법 구조 변경 절대 금지
+- 새로운 조사나 어미 추가 금지  
+- 따옴표 위치나 개수 변경 금지
+- 구두점 추가/삭제/이동 금지
+- 따옴표 누락 절대 금지
 
-**목표: 원본 구조는 100% 동일하되, 본문 내용에 정확히 맞는 키워드로만 교체**
+**예시 (구조만 참고):**
+원본: "월세로 자동차 한 대씩 따박따박"… 서울 아파트 64% 월세 계약, 전년 대비 29% 증...
+변경: "월세로 럭셔리카 한 대값씩 나간다".. 서울 아파트 64% 월세 계약, 전년 대비 29% 증...
 
-새로운 제목만 출력 (설명이나 부가 텍스트 없이):
+원본: A업계 최고라더니".. B에서 드러난 C의 'D'...
+변경: X업계 최고라더니".. Y에서 드러난 Z의 'W'...
+
+본문 내용에 맞는 **정확하고 자연스러운** 제목만 출력해주세요:
 """
             
             response = client.chat.completions.create(
-                model="gpt-4.1",  # gpt-4o-mini → gpt-4.1로 변경
+                model="gpt-4.1",
                 messages=[
-                    {"role": "system", "content": "당신은 제목 구조 완벽 보존 전문가입니다. 원본 제목의 형식, 구두점, 따옴표 위치를 절대 변경하지 않고 오직 내용 키워드만 교체하는 것이 특기입니다. 구조 보존을 최우선으로 하며, 원본 패턴을 100% 유지합니다."},
+                    {"role": "system", "content": "당신은 제목 구조 보존 전문가입니다. 원본 제목의 정확한 문법과 구조를 100% 유지하면서 내용만 변경하는 것이 핵심입니다. 특히 따옴표는 절대 누락시키면 안 됩니다."},
                     {"role": "user", "content": prompt}
                 ],
-                max_tokens=150,
-                temperature=0.5  # 더 일관된 결과를 위해 낮춤
+                max_tokens=200,
+                temperature=0.2  # 더 보수적으로 설정
             )
             
-            new_title = response.choices[0].message.content.strip()
-            # 앞뒤 시스템 따옴표만 제거 (내용의 따옴표는 보존)
-            new_title = new_title.strip('"').strip("'")
-            # YAML 구분자만 정리 (따옴표는 보존)
-            new_title = new_title.replace('---', '—').replace('```', '')
-            print(f"✅ AI title rewrite successful on attempt {attempt + 1}")
-            print(f"📝 Title rewritten: {original_title[:50]}... → {new_title[:50]}...")
-            return new_title
+            rewritten_title = response.choices[0].message.content.strip()
+            
+            # 기본 검증: 따옴표 개수 확인
+            original_double_quotes = original_title.count('"')
+            original_single_quotes = original_title.count("'")
+            rewritten_double_quotes = rewritten_title.count('"')
+            rewritten_single_quotes = rewritten_title.count("'")
+            
+            if (original_double_quotes != rewritten_double_quotes or 
+                original_single_quotes != rewritten_single_quotes):
+                print(f"⚠️ 따옴표 개수 불일치 (시도 {attempt + 1}): 원본 \"{original_double_quotes}, '{original_single_quotes} vs 재작성 \"{rewritten_double_quotes}, '{rewritten_single_quotes}, 재시도...")
+                continue
+            
+            # 추가 검증: 기본 구조 단어들 확인
+            structure_words = ["다더니", "라더니", "에서", "드러난", "의", "로", "으로", "월세로"]
+            original_structure = [word for word in structure_words if word in original_title]
+            rewritten_structure = [word for word in structure_words if word in rewritten_title]
+            
+            if set(original_structure) != set(rewritten_structure):
+                print(f"⚠️ 구조 단어 불일치 (시도 {attempt + 1}): 원본 {original_structure} vs 재작성 {rewritten_structure}, 재시도...")
+                continue
+            
+            # 자연스러운 한국어 검증
+            unnatural_patterns = [" 이 안", " 가 안", " 을 안", " 를 안"]
+            if any(pattern in rewritten_title for pattern in unnatural_patterns):
+                print(f"⚠️ 부자연스러운 표현 감지 (시도 {attempt + 1}), 재시도...")
+                continue
+            
+            print(f"✅ 제목 재작성 성공: {rewritten_title}")
+            return rewritten_title
             
         except Exception as e:
-            print(f"❌ AI title rewrite attempt {attempt + 1} failed: {e}")
-            if attempt < 2:
-                time.sleep(1)
-                continue
-            else:
-                print("⚠️ All AI title rewrite attempts failed - using original title")
-                return original_title
+            print(f"⚠️ Title rewrite attempt {attempt + 1} failed: {e}")
     
+    print("⚠️ AI title rewrite failed after 3 attempts, keeping original")
     return original_title
 
 def extract_content_from_url(url):
@@ -805,7 +827,7 @@ def analyze_image_text_content(image_url, api_key):
                                 "content": [
                                     {
                                         "type": "text",
-                                        "text": "이 이미지를 분석해주세요:\n1. 뉴스 관련: '연합뉴스', '뉴스1', 'YONHAP', 'NEWS', '기자', '제공', '출처' 등 뉴스 기관 관련 텍스트나 로고가 있나요?\n2. 기타 텍스트: 한글, 영어, 숫자 등 기타 텍스트가 포함되어 있나요?\n\n뉴스 관련이 있으면 'NEWS_TEXT', 기타 텍스트가 있으면 'HAS_TEXT', 텍스트가 없으면 'NO_TEXT'로만 답변해주세요."
+                                        "text": "이 이미지를 매우 엄격하게 분석해주세요:\n\n뉴스 관련 텍스트 체크 (우선순위):\n- '연합뉴스', '뉴스1', 'YONHAP', 'NEWS', 'SBS', 'KBS', 'MBC', 'JTBC' 등 언론사명\n- '기자', '제공', '출처', '취재', '보도' 등 뉴스 관련 단어\n- 뉴스 로고, 워터마크, 방송국 심볼\n- 기사 캡션, 뉴스 화면 캡처\n\n일반 텍스트 체크:\n- 한글, 영어, 숫자가 포함된 경우\n- 상품명, 브랜드명, 가격 표시\n- 광고 문구, 설명 텍스트\n\n매우 엄격한 기준으로 판단하여:\n- 뉴스 관련이 조금이라도 있으면: 'NEWS_TEXT'\n- 기타 텍스트가 있으면: 'HAS_TEXT'  \n- 완전히 텍스트 없으면: 'NO_TEXT'\n\n한 단어로만 답변해주세요."
                                     },
                                     {
                                         "type": "image_url",
@@ -979,9 +1001,9 @@ JSON 형식으로 응답:
         }
 
 def insert_images_with_structure(content, cloudflare_images, title="", ai_api_key=None, category="economy"):
-    """원본과 완전히 다른 위치에 이미지 배치: 우리만의 새로운 구조"""
+    """원본과 완전히 다른 위치에 이미지 배치: 필터링 없이 랜덤 위치만 적용"""
     if not cloudflare_images:
-        return content
+        return content, None  # content와 thumbnail 정보 반환
     
     lines = content.split('\n')
     result_lines = []
@@ -994,46 +1016,13 @@ def insert_images_with_structure(content, cloudflare_images, title="", ai_api_ke
     shuffled_images = cloudflare_images.copy()
     random.shuffle(shuffled_images)  # 원본 순서와 완전히 다르게
     
-    # 우리만의 이미지 배치 전략 (썸네일은 텍스트 없는 이미지 우선 선택)
-    thumbnail_image = None
-    section_images = shuffled_images.copy()
+    # 모든 카테고리에서 필터링 없이 첫 번째 이미지를 썸네일로 사용
+    thumbnail_image = shuffled_images[0] if shuffled_images else None
+    section_images = shuffled_images[1:] if len(shuffled_images) > 1 else []
     
-    if shuffled_images:
-        if category == "automotive":
-            print("🚗 자동차 카테고리: 모든 이미지 사용 (필터링 없음)")
-            # 자동차는 필터링 없이 첫 번째 이미지 사용
-            thumbnail_image = section_images.pop(0)
-            print(f"✅ 첫 번째 이미지를 썸네일로 선택: {thumbnail_image[:50]}...")
-        else:
-            print("🔍 Economy: AI Vision으로 뉴스 텍스트 없는 썸네일 엄격 선별 중...")
-            
-            # AI Vision으로 텍스트 없는 이미지 찾기 (Economy 카테고리 - 더 많이 체크)
-            text_free_images = []
-            text_images = []
-            
-            # 최대 모든 이미지를 체크 (API 비용보다 품질 우선)
-            for img_url in section_images:
-                has_text = analyze_image_text_content(img_url, ai_api_key)
-                if has_text:
-                    text_images.append(img_url)
-                    print(f"🚫 뉴스/텍스트 이미지 제외: {img_url[:50]}...")
-                else:
-                    text_free_images.append(img_url)
-                    print(f"✅ 텍스트 없는 이미지 발견: {img_url[:50]}...")
-                
-                # 텍스트 없는 이미지를 찾으면 바로 사용 (효율성)
-                if len(text_free_images) >= 1:
-                    break
-            
-            # 텍스트 없는 이미지 우선 선택
-            if text_free_images:
-                thumbnail_image = text_free_images[0]
-                section_images.remove(thumbnail_image)
-                print(f"🎯 Economy 썸네일 확정: 텍스트 없는 이미지 사용 {thumbnail_image[:50]}...")
-            else:
-                print("⚠️ Economy: 모든 이미지에 텍스트 있음 - 첫 번째 이미지 사용")
-                thumbnail_image = section_images.pop(0)
-                print(f"📸 Economy 썸네일 대안: {thumbnail_image[:50]}...")
+    print(f"🖼️ 이미지 필터링 없이 랜덤 배치: 썸네일 1개, 섹션 이미지 {len(section_images)}개")
+    if thumbnail_image:
+        print(f"📸 썸네일 선택: {thumbnail_image[:50]}...")
     
     image_positions = {
         'thumbnail': thumbnail_image,
@@ -1060,33 +1049,21 @@ def insert_images_with_structure(content, cloudflare_images, title="", ai_api_ke
         elif line.startswith('## '):
             h2_count += 1
             
-            # 모든 H2 소제목 뒤에 이미지 배치 (카테고리별 필터링)
-            while section_image_index < len(image_positions['section_images']):
+            # 모든 H2 소제목 뒤에 이미지 배치 (필터링 없이)
+            if section_image_index < len(image_positions['section_images']):
                 image_url = image_positions['section_images'][section_image_index]
                 section_image_index += 1
                 
-                # 카테고리별 이미지 필터링
-                use_image = True
-                if category == "economy" and ai_api_key:
-                    # Economy는 뉴스 텍스트 있는 이미지 제외
-                    has_text = analyze_image_text_content(image_url, ai_api_key)
-                    if has_text:
-                        print(f"🚫 Economy H2 섹션: 뉴스 텍스트 이미지 제외 {image_url[:50]}...")
-                        use_image = False
-                        continue  # 다음 이미지 시도
-                # Automotive는 모든 이미지 사용 (use_image = True 유지)
+                if ai_api_key:
+                    alt_text = generate_contextual_alt_text(line, title, ai_api_key)
+                else:
+                    alt_text = line.replace('## ', '').replace('**', '').strip()
                 
-                if use_image:
-                    if ai_api_key:
-                        alt_text = generate_contextual_alt_text(line, title, ai_api_key)
-                    else:
-                        alt_text = line.replace('## ', '').replace('**', '').strip()
-                    
-                    result_lines.append("")
-                    result_lines.append(f"![{alt_text}]({image_url})")
-                    result_lines.append("*출처: 온라인 커뮤니티*")
-                    result_lines.append("")
-                    break  # 이미지 사용했으므로 루프 종료
+                result_lines.append("")
+                result_lines.append(f"![{alt_text}]({image_url})")
+                result_lines.append("*출처: 온라인 커뮤니티*")
+                result_lines.append("")
+                print(f"✅ H2 섹션에 이미지 배치: {image_url[:50]}...")
     
     # 남은 이미지들을 H2 소제목 + 이미지 + 본문 형태로 배치
     remaining_images = image_positions['section_images'][section_image_index:]
@@ -1097,16 +1074,6 @@ def insert_images_with_structure(content, cloudflare_images, title="", ai_api_ke
         existing_content = '\n'.join(result_lines)
         
         for idx, image_url in enumerate(remaining_images):
-            # 카테고리별 이미지 필터링
-            use_image = True
-            if category == "economy" and ai_api_key:
-                # Economy는 뉴스 텍스트 있는 이미지 제외
-                has_text = analyze_image_text_content(image_url, ai_api_key)
-                if has_text:
-                    print(f"🚫 Economy 추가섹션: 뉴스 텍스트 이미지 제외 {image_url[:50]}...")
-                    continue  # 이 이미지는 건너뛰기
-            # Automotive는 모든 이미지 사용
-            
             # AI로 섹션 생성
             section_data = generate_section_for_image(image_url, title, existing_content, ai_api_key)
             
@@ -1129,9 +1096,9 @@ def insert_images_with_structure(content, cloudflare_images, title="", ai_api_ke
             result_lines.append(section_data['content'])
             result_lines.append("")
             
-            print(f"✅ 추가 섹션 생성: {section_data['heading']}")
+            print(f"✅ 추가 섹션 생성: {section_data['heading']} - {image_url[:50]}...")
     
-    return '\n'.join(result_lines)
+    return '\n'.join(result_lines), thumbnail_image  # content와 thumbnail 정보 반환
 
 def validate_yaml_string(text):
     """YAML에서 안전한 문자열로 변환 (HTML 엔티티 제거, 특수문자 정리)"""
@@ -1240,16 +1207,12 @@ def create_markdown_file(article_data, output_dir, article_index=0, general_coun
                 cloudflare_images.append(cf_url)
             time.sleep(1)  # API 제한 고려
     
-    # 카테고리 분배: 처음 20%는 일반사이트맵(automotive), 나머지 80%는 뉴스사이트맵(economy)
-    if article_index < general_count:
-        category = 'automotive'  # 일반사이트맵으로 배치
-        print(f"📋 일반사이트맵 배치 ({article_index + 1}/{general_count})")
-    else:
-        category = 'economy'  # 뉴스사이트맵으로 배치
-        print(f"📰 뉴스사이트맵 배치 ({article_index + 1 - general_count}/{total_count - general_count})")
+    # 카테고리 분배: 모든 기사를 automotive 카테고리로 배치
+    category = 'automotive'  # 모든 기사를 자동차 카테고리로 배치
+    print(f"🚗 자동차 카테고리 배치 ({article_index + 1}/{total_count})")
     
-    # 이미지를 원본과 완전히 다른 위치에 배치 (H5 제거된 본문 사용, 카테고리별 필터링)
-    final_content = insert_images_with_structure(content_without_h5, cloudflare_images, new_title, ai_api_key, category)
+    # 이미지를 원본과 완전히 다른 위치에 배치 (필터링 없이 랜덤 위치만 적용)
+    final_content, thumbnail_image = insert_images_with_structure(content_without_h5, cloudflare_images, new_title, ai_api_key, category)
     
     # URL 슬러그 생성 (새 제목 기반)
     title_slug = create_url_slug(new_title)
@@ -1307,14 +1270,21 @@ h5_summary: "{yaml_safe_h5}"
 """
     
     # Cloudflare Images만 사용 (원본 이미지 사용하지 않음)
-    if cloudflare_images:
-        thumbnail_image = cloudflare_images[0]
+    if cloudflare_images and thumbnail_image:
+        # 썸네일이 설정되어 있는 경우만 이미지 필드 추가
         markdown_content += f'images: {json.dumps(cloudflare_images, ensure_ascii=False)}\n'
         markdown_content += f'thumbnail: "{thumbnail_image}"\n'
         markdown_content += f'image: "{thumbnail_image}"\n'  # Open Graph용
         markdown_content += f'featured_image: "{thumbnail_image}"\n'  # 테마별 호환성
         markdown_content += f'image_width: 1200\n'  # Google Discover 최적화
         markdown_content += f'image_height: 630\n'  # Google Discover 최적화
+        print(f"📸 썸네일 설정: {thumbnail_image[:50]}...")
+    else:
+        # 썸네일이 None인 경우 (뉴스 텍스트 방지) 또는 이미지 없는 경우
+        if cloudflare_images:
+            print(f"📸 뉴스 텍스트 방지: 썸네일 없이 기사 생성")
+        else:
+            print(f"📸 Cloudflare 이미지 없음: 이미지 없이 기사 생성")
     
     # SEO 최적화 추가 필드
     markdown_content += f'slug: "{title_slug}"\n'
@@ -1412,19 +1382,17 @@ def main():
     import random
     random.shuffle(urls)  # 순서 섞기
     
-    # 내 사이트 배치 계획: 20% 일반사이트맵 + 80% 뉴스사이트맵
+    # 내 사이트 배치 계획: 모든 기사를 automotive 카테고리로 배치
     total_articles = len(urls)
-    general_count = min(200, int(total_articles * 0.2))  # 일반사이트맵 최대 200개
-    news_count = total_articles - general_count  # 나머지는 뉴스사이트맵
+    automotive_count = total_articles  # 모든 기사를 자동차 카테고리로
     
     print(f"📊 원본 수집 및 배치 계획:")
     print(f"   🗞️ 뉴스 사이트맵에서 수집: {len(news_urls)}개")
     print(f"   🎯 총 처리 대상: {len(urls)}개")
-    print(f"   📋 일반사이트맵 배치: {general_count}개 (20%)")
-    print(f"   📰 뉴스사이트맵 배치: {news_count}개 (80%)")
+    print(f"   🚗 자동차 카테고리 배치: {automotive_count}개 (100%)")
     
-    # 🔥 분배된 기사 처리
-    print(f"🔍 스마트 사이트맵 분배 완료 - {len(urls)}개 URL 처리 시작")
+    # 🔥 자동차 카테고리 전용 기사 처리
+    print(f"🔍 자동차 카테고리 전용 배치 완료 - {len(urls)}개 URL 처리 시작")
     
     # 출력 디렉토리
     output_dir = 'content'
@@ -1478,7 +1446,7 @@ def main():
                 article_data, 
                 output_dir,
                 i,  # article_index
-                general_count,  # general_count
+                automotive_count,  # automotive_count (기존 general_count)
                 len(urls),  # total_count
                 cloudflare_account_id,
                 cloudflare_api_token,
