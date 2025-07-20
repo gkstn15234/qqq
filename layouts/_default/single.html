@@ -71,6 +71,15 @@
 
                 <!-- Article Content -->
                 <div class="article-content">
+                    <!-- H5 Summary (Before Featured Image) -->
+                    {{ if .Params.h5_summary }}
+                    <div class="article-summary mb-4">
+                        <h5 class="summary-heading fw-bold text-dark lh-base">
+                            {{ .Params.h5_summary | safeHTML }}
+                        </h5>
+                    </div>
+                    {{ end }}
+
                     <!-- Featured Image -->
                     {{ if .Params.images }}
                     <figure class="article-featured-image mb-4">
