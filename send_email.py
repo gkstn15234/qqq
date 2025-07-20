@@ -147,11 +147,12 @@ def count_articles_basic():
 def count_published_articles():
     """발행된 기사 수 계산 및 목록 반환"""
     try:
-    try:
         import frontmatter
-        except ImportError:
-            print("Warning: frontmatter module not found. Using basic file counting.")
-            return count_articles_basic()
+    except ImportError:
+        print("Warning: frontmatter module not found. Using basic file counting.")
+        return count_articles_basic()
+    
+    try:
             
         content_dir = 'content'
         if not os.path.exists(content_dir):
@@ -339,16 +340,28 @@ def create_report_email_content():
 
 def send_report_email():
     """기사 자동화 보고서 이메일 발송"""
+    # 환경변수 디버깅
+    print(f"🔍 Email Debug Info:")
+    print(f"   SENDER_EMAIL: {'✅ 설정됨' if SENDER_EMAIL else '❌ 없음'}")
+    print(f"   SENDER_PASSWORD: {'✅ 설정됨' if SENDER_PASSWORD else '❌ 없음'}")
+    print(f"   RECIPIENT_EMAIL: {'✅ 설정됨' if RECIPIENT_EMAIL else '❌ 없음'}")
+    print(f"   OPENAI_API_KEY: {'✅ 설정됨' if OPENAI_API_KEY else '❌ 없음'}")
+    
     if not all([SENDER_EMAIL, SENDER_PASSWORD, RECIPIENT_EMAIL]):
-        print("이메일 설정이 완료되지 않았습니다.")
+        print("❌ 이메일 설정이 완료되지 않았습니다.")
+        print("   필요한 환경변수: SENDER_EMAIL, SENDER_PASSWORD, RECIPIENT_EMAIL")
         return False
     
     try:
+        print("📧 이메일 전송 시작...")
+        
         # 이메일 내용 생성
+        print("   📝 이메일 내용 생성 중...")
         subject = "🤖 오코노미 AI 기사 자동화 보고서"
         body = create_report_email_content()
         
         # 이메일 메시지 객체 생성
+        print("   📨 이메일 메시지 객체 생성 중...")
         msg = EmailMessage()
         msg['Subject'] = subject
         msg['From'] = SENDER_EMAIL
@@ -356,8 +369,11 @@ def send_report_email():
         msg.set_content(body)
         
         # Gmail SMTP 서버에 연결하여 이메일 발송
+        print("   🔗 Gmail SMTP 서버 연결 중...")
         with smtplib.SMTP_SSL('smtp.gmail.com', 465) as smtp:
+            print("   🔐 로그인 시도 중...")
             smtp.login(SENDER_EMAIL, SENDER_PASSWORD)
+            print("   📤 이메일 전송 중...")
             smtp.send_message(msg)
         
         print("✅ 보고서 이메일 발송 성공!")
@@ -365,8 +381,26 @@ def send_report_email():
         print(f"⏰ 발송 시간: {datetime.now(KST).strftime('%Y-%m-%d %H:%M:%S KST')}")
         return True
         
+    except smtplib.SMTPAuthenticationError as e:
+        print(f"❌ SMTP 인증 실패: {e}")
+        print("   💡 확인사항:")
+        print("      - Gmail 앱 비밀번호가 올바른지 확인")
+        print("      - 2단계 인증이 활성화되어 있는지 확인")
+        print("      - 앱 비밀번호를 사용하고 있는지 확인")
+        return False
+    except smtplib.SMTPConnectError as e:
+        print(f"❌ SMTP 연결 실패: {e}")
+        print("   💡 네트워크 연결을 확인해주세요")
+        return False
+    except smtplib.SMTPRecipientsRefused as e:
+        print(f"❌ 수신자 주소 거부: {e}")
+        print("   💡 수신자 이메일 주소를 확인해주세요")
+        return False
     except Exception as e:
         print(f"❌ 이메일 발송 실패: {e}")
+        print(f"   🔍 에러 타입: {type(e).__name__}")
+        import traceback
+        print(f"   📋 상세 에러:\n{traceback.format_exc()}")
         return False
 
 def send_error_email(error_message="스크래퍼 실행 중 오류가 발생했습니다"):
@@ -428,14 +462,74 @@ def create_email_content():
     """기존 뉴스 브리핑 이메일 내용 생성 (호환성 유지)"""
     return create_report_email_content()
 
+def test_email_connection():
+    """이메일 연결 테스트 함수"""
+    print("🧪 이메일 연결 테스트 시작...")
+    
+    # 환경변수 확인
+    print(f"📋 환경변수 확인:")
+    print(f"   SENDER_EMAIL: {SENDER_EMAIL[:5]}***@{SENDER_EMAIL.split('@')[1] if SENDER_EMAIL and '@' in SENDER_EMAIL else 'None'}")
+    print(f"   SENDER_PASSWORD: {'***설정됨***' if SENDER_PASSWORD else '❌ 없음'}")
+    print(f"   RECIPIENT_EMAIL: {RECIPIENT_EMAIL[:3]}***@{RECIPIENT_EMAIL.split('@')[1] if RECIPIENT_EMAIL and '@' in RECIPIENT_EMAIL else 'None'}")
+    
+    if not all([SENDER_EMAIL, SENDER_PASSWORD, RECIPIENT_EMAIL]):
+        print("❌ 환경변수가 설정되지 않았습니다!")
+        return False
+    
+    try:
+        print("🔗 SMTP 서버 연결 테스트...")
+        with smtplib.SMTP_SSL('smtp.gmail.com', 465) as smtp:
+            print("🔐 로그인 테스트...")
+            smtp.login(SENDER_EMAIL, SENDER_PASSWORD)
+            print("✅ 이메일 연결 테스트 성공!")
+            return True
+            
+    except smtplib.SMTPAuthenticationError:
+        print("❌ Gmail 인증 실패!")
+        print("💡 해결방법:")
+        print("   1. Gmail 2단계 인증 활성화")
+        print("   2. 앱 비밀번호 생성 (https://myaccount.google.com/apppasswords)")
+        print("   3. 생성된 앱 비밀번호를 SENDER_PASSWORD에 설정")
+        return False
+    except Exception as e:
+        print(f"❌ 연결 테스트 실패: {e}")
+        return False
+
 # 메인 실행 부분
 if __name__ == "__main__":
     import sys
     
-    # 명령행 인자로 에러 모드 체크
-    if len(sys.argv) > 1 and sys.argv[1] == "error":
-        error_msg = sys.argv[2] if len(sys.argv) > 2 else "스크래퍼 실행 중 오류가 발생했습니다"
-        send_error_email(error_msg)
+    # 명령행 인자 처리
+    if len(sys.argv) > 1:
+        command = sys.argv[1]
+        
+        if command == "test":
+            # 이메일 연결 테스트
+            print("=" * 50)
+            print("🧪 이메일 시스템 테스트")
+            print("=" * 50)
+            success = test_email_connection()
+            if success:
+                print("\n✅ 이메일 시스템이 정상적으로 작동합니다!")
+            else:
+                print("\n❌ 이메일 시스템에 문제가 있습니다.")
+            print("=" * 50)
+            
+        elif command == "error":
+            # 에러 이메일 발송
+            error_msg = sys.argv[2] if len(sys.argv) > 2 else "스크래퍼 실행 중 오류가 발생했습니다"
+            send_error_email(error_msg)
+            
+        elif command == "send":
+            # 강제 보고서 이메일 발송
+            print("📧 보고서 이메일 강제 발송...")
+            send_report_email()
+            
+        else:
+            print("사용법:")
+            print("  python send_email.py test    # 이메일 연결 테스트")
+            print("  python send_email.py send    # 보고서 이메일 발송")
+            print("  python send_email.py error   # 에러 이메일 발송")
     else:
         # 기본 동작: 보고서 이메일 발송
         send_report_email() 
