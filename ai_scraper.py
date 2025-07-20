@@ -242,44 +242,101 @@ def check_existing_articles(output_dir, article_hash, title, url):
     return False
 
 def create_manual_rewrite(original_content, title):
-    """AI 실패 시 수동으로 기사 재작성"""
+    """AI 실패 시 수동으로 기사 재작성 - 극단적 변형"""
     try:
         # 원본 콘텐츠를 문단별로 분리
         paragraphs = original_content.split('\n\n')
         rewritten_paragraphs = []
         
-        # 각 문단을 재구성
+        # 문체 변형을 위한 표현 사전
+        style_transforms = {
+            "발표했다": ["공개했다", "밝혔다", "알렸다", "전했다", "공표했다"],
+            "증가했다": ["늘어났다", "상승했다", "확대됐다", "성장했다", "오름세를 보였다"],
+            "감소했다": ["줄어들었다", "하락했다", "축소됐다", "내림세를 보였다", "둔화됐다"],
+            "계획이다": ["예정이다", "방침이다", "구상이다", "의도다", "계획을 세웠다"],
+            "문제가": ["이슈가", "우려가", "쟁점이", "과제가", "난제가"],
+            "중요하다": ["핵심적이다", "주요하다", "결정적이다", "필수적이다", "관건이다"],
+            "진행됐다": ["이뤄졌다", "추진됐다", "실시됐다", "개최됐다", "펼쳐졌다"]
+        }
+        
+        # 접속사 및 시작 표현 다양화
+        connectors = [
+            "한편", "또한", "이와 관련해", "특히", "더불어", "아울러", 
+            "그런 가운데", "이런 상황에서", "주목할 점은", "눈여겨볼 대목은",
+            "업계에 따르면", "전문가들은", "관계자들에 의하면"
+        ]
+        
+        # 각 문단을 극단적으로 재구성
         for i, paragraph in enumerate(paragraphs):
             if not paragraph.strip():
                 continue
                 
             sentences = paragraph.split('.')
             if len(sentences) > 1:
-                # 문장 순서 재배치 및 접속사 추가
                 rewritten_sentences = []
+                
                 for j, sentence in enumerate(sentences):
                     sentence = sentence.strip()
                     if not sentence:
                         continue
                     
-                    # 문장 시작을 다양하게 변경
+                    # 1. 표현 사전을 활용한 어휘 변경
+                    for original, alternatives in style_transforms.items():
+                        if original in sentence:
+                            import random
+                            sentence = sentence.replace(original, random.choice(alternatives))
+                    
+                    # 2. 문장 구조 변형
+                    if "는" in sentence and "이다" in sentence:
+                        # "A는 B이다" → "B로 나타나는 것이 A다"
+                        parts = sentence.split("는")
+                        if len(parts) == 2:
+                            subject = parts[0].strip()
+                            predicate = parts[1].strip()
+                            if "이다" in predicate:
+                                predicate = predicate.replace("이다", "로 확인되는 것이")
+                                sentence = f"{predicate} {subject}다"
+                    
+                    # 3. 숫자 표현 변형
+                    import re
+                    percent_pattern = r'(\d+)%'
+                    sentence = re.sub(percent_pattern, lambda m: f"100명 중 {m.group(1)}명", sentence)
+                    
+                    # 4. 문장 시작 다양화
                     if j == 0 and i > 0:
-                        connectors = ["한편", "또한", "이와 관련해", "특히", "더불어", "아울러"]
+                        connector = connectors[i % len(connectors)]
                         if not any(sentence.startswith(conn) for conn in connectors):
-                            sentence = f"{connectors[i % len(connectors)]} {sentence}"
+                            sentence = f"{connector} {sentence.lower()}"
+                    
+                    # 5. 질문형/감탄형 변형 (일부 문장을)
+                    if j % 3 == 0 and "중요" in sentence:
+                        sentence = sentence.replace("중요하다", "중요하지 않을까?")
+                    elif "놀라운" in sentence or "주목" in sentence:
+                        sentence = sentence + "!"
                     
                     rewritten_sentences.append(sentence)
                 
                 if rewritten_sentences:
+                    # 문장 순서도 일부 변경
+                    if len(rewritten_sentences) > 2:
+                        # 마지막 문장을 앞으로 이동 (때때로)
+                        if i % 2 == 0:
+                            last_sentence = rewritten_sentences.pop()
+                            rewritten_sentences.insert(0, last_sentence)
+                    
                     rewritten_paragraphs.append('. '.join(rewritten_sentences) + '.')
             else:
+                # 단일 문장도 변형
+                paragraph = paragraph.strip()
+                for original, alternatives in style_transforms.items():
+                    if original in paragraph:
+                        import random
+                        paragraph = paragraph.replace(original, random.choice(alternatives))
                 rewritten_paragraphs.append(paragraph)
         
-        # 35~60대 독자층을 위한 기본 구조로 재구성 (H1 제목 + H5 요약 + 썸네일 + 본문 + H2 소제목)
-        rewritten_content = f"""
-# {title}
-
-##### | {title} 관련 주요 이슈를 간단히 요약한 내용
+        # 35~60대 독자층을 위한 기본 구조로 재구성 (H5 두 줄 + 썸네일 + 본문 + H2 소제목)
+        rewritten_content = f"""##### | {title}의 핵심 내용을 간단히 요약한 최신 뉴스
+##### 업계 동향과 향후 전망에 대한 상세 분석 내용
 
 {chr(10).join(rewritten_paragraphs[:3])}
 
@@ -298,11 +355,9 @@ def create_manual_rewrite(original_content, title):
         
     except Exception as e:
         print(f"⚠️ Manual rewrite failed: {e}")
-        # 최소한의 기본 구조라도 생성 (H1 제목 + H5 요약 + H2 소제목)
-        return f"""
-# {title}
-
-##### | 업계 주요 동향에 대한 핵심 내용을 다룬 기사
+        # 최소한의 기본 구조라도 생성 (H5 두 줄 + H2 소제목)
+        return f"""##### | 업계 주요 동향에 대한 핵심 내용을 다룬 최신 기사
+##### {title}의 영향과 향후 시장 전망에 대한 상세 분석
 
 본 기사는 현재 업계의 주요 동향을 다루고 있습니다.
 
@@ -369,45 +424,50 @@ def rewrite_with_ai(original_content, title, api_key, api_type="openai"):
                 client = OpenAI(api_key=api_key)
                 
                 prompt = f"""
-다음 기사를 완전히 새로운 스타일로 재해석하여 창작해주세요.
-원본의 핵심 사실과 데이터만 유지하고, 나머지는 모두 새롭게 작성해주세요.
+다음 원본 기사를 분석하여 **완전히 새로운 관점과 문체**로 재창작해주세요.
+원본 작성자가 자신의 글이라고 인식할 수 없을 정도로 **혁신적으로 변형**해주세요.
 
 제목: {title}
 
 원본 기사:
 {original_content}
 
-창작 요구사항:
-1. 제목을 더 매력적이고 흥미롭게 재작성
-2. 도입부를 완전히 새로운 각도에서 시작
-3. 문단 구조와 흐름을 독창적으로 재구성  
-4. 표현 방식과 문체를 완전히 변경
-5. 핵심 사실과 수치는 정확히 유지
-6. SEO 친화적이고 독자의 관심을 끄는 문체
-7. 마크다운 형식으로 출력 (H1 태그 사용 금지, H2는 H5로 변경)
-8. 감정적 몰입과 스토리텔링 요소 추가
-9. **35~60대 주 독자층을 위한 가독성 최적화**: 
-   - 문장을 적절한 길이로 구성 (15~25단어)
-   - 문단을 2~4문장으로 간결하게 구성
-   - 복잡한 용어는 쉬운 표현으로 설명 추가
-   - 핵심 포인트를 볼드(**텍스트**)로 강조
-10. **헤딩 구조 규칙**: 
-    - H1(#) 제목 사용 (기사 제목)
-    - H5(#####) 요약 (전체 기사 한 줄 요약)
-    - H2(##) 소제목 사용 (본문 소제목)
-    - 구조: H1 제목 > H5 요약 > 썸네일 이미지 > 본문 > H2 소제목
+**극단적 변형 요구사항:**
+1. **문체 완전 변경**: 원본이 딱딱하면 친근하게, 친근하면 전문적으로 바꿔주세요
+2. **시작 각도 혁신**: 원본과 전혀 다른 관점에서 사건을 접근해주세요
+3. **문장 구조 파괴**: 원본의 문장 패턴을 완전히 해체하고 재구성해주세요
+4. **어휘 선택 변화**: 같은 의미의 다른 표현, 다른 뉘앙스로 바꿔주세요
+5. **논리 흐름 재배치**: 정보 제시 순서를 완전히 재배열해주세요
+6. **스타일 정체성 변경**: 마치 성격이 다른 기자가 쓴 것처럼 만들어주세요
+7. **표현 기법 다변화**: 
+   - 질문형/서술형/감탄형을 다양하게 활용
+   - 비유와 은유 표현 추가
+   - 숫자 표현 방식 변경 (예: "30%" → "10명 중 3명")
+8. **감정 톤 변경**: 원본의 감정적 톤을 완전히 다르게 설정
+9. **독자 관점 전환**: 다른 독자층에게 말하는 것처럼 톤앤매너 변경
+10. **핵심 사실만 보존**: 날짜, 수치, 고유명사, 핵심 사실은 정확히 유지
 
-마치 다른 기자가 같은 사건을 취재해서 완전히 다른 시각으로 쓴 것처럼 작성해주세요.
+**문체 변형 예시:**
+- 원본: "회사가 발표했다" → 변형: "업체 측이 공개한 바에 따르면"
+- 원본: "증가했다" → 변형: "상승세를 보이고 있다", "늘어나는 추세다"
+- 원본: "문제가 있다" → 변형: "우려스러운 상황이 벌어지고 있다"
+
+**헤딩 구조 (반드시 준수):**
+##### | [핵심 내용을 완전히 새로운 표현으로 요약]
+##### [업계 영향을 독창적 관점에서 분석한 설명]
+
+**최종 목표: 원본 작성자가 "이건 내 글이 아니야!"라고 할 정도로 완전히 다른 작품을 만들어주세요.**
+같은 사건을 다룬 전혀 다른 기자의 독립적인 취재 기사처럼 작성해주세요.
 """
                 
                 response = client.chat.completions.create(
                     model="gpt-4o-mini",
                     messages=[
-                        {"role": "system", "content": "당신은 전문 기자입니다. 기사를 자연스럽고 매력적으로 재작성하는 전문가입니다."},
+                        {"role": "system", "content": "당신은 창작 전문가입니다. 원본 텍스트를 완전히 새로운 스타일로 변형하여 원저작자도 인식할 수 없게 만드는 재창작의 달인입니다. 같은 사실을 전혀 다른 표현과 구조로 재탄생시키는 것이 당신의 특기입니다. 문체, 톤, 구조, 표현을 혁신적으로 바꿔서 완전히 새로운 작품을 만들어주세요."},
                         {"role": "user", "content": prompt}
                     ],
                     max_tokens=2000,
-                    temperature=0.7
+                    temperature=0.8
                 )
                 
                 rewritten = response.choices[0].message.content.strip()
@@ -440,25 +500,34 @@ def generate_ai_tags(title, content, existing_tags, api_key, api_type="openai"):
                 client = OpenAI(api_key=api_key)
                 
                 prompt = f"""
-다음 기사의 제목과 내용을 분석하여 적절한 태그 2개를 추가로 생성해주세요.
-기존 태그와 중복되지 않게 하고, 한국어로 작성해주세요.
+기사 내용을 분석하여 **독창적이고 차별화된** 태그 2개를 생성해주세요.
+기존 태그와는 완전히 다른 관점에서 접근해주세요.
 
 제목: {title}
 내용: {content[:500]}...
 기존 태그: {', '.join(existing_tags)}
 
-새로운 태그 2개만 JSON 배열 형태로 응답해주세요.
-예: ["태그1", "태그2"]
+**창의적 태그 생성 요구사항:**
+1. 기존 태그와 중복되지 않는 새로운 관점
+2. 해당 업계의 전문 용어나 트렌드 반영
+3. 검색 키워드로 활용 가능한 실용적 태그
+4. 35~60대 독자층이 관심 가질만한 주제
+
+**태그 스타일 예시:**
+- "미래전망", "업계동향", "전문가분석", "시장변화"
+- "투자포인트", "소비트렌드", "기술혁신", "정책영향"
+
+JSON 배열로만 응답: ["태그1", "태그2"]
 """
                 
                 response = client.chat.completions.create(
                     model="gpt-4o-mini",
                     messages=[
-                        {"role": "system", "content": "당신은 SEO 전문가입니다. 기사에 맞는 최적의 태그를 생성합니다."},
+                        {"role": "system", "content": "당신은 창의적 태그 생성 전문가입니다. 기존과는 완전히 다른 관점에서 독창적이고 차별화된 태그를 만들어내는 마케팅 전략가입니다. 독자의 관심을 끌고 검색 효과를 극대화하는 혁신적인 태그를 생성합니다."},
                         {"role": "user", "content": prompt}
                     ],
                     max_tokens=100,
-                    temperature=0.5
+                    temperature=0.7
                 )
                 
                 result = response.choices[0].message.content.strip()
@@ -495,36 +564,41 @@ def rewrite_title_with_ai(original_title, content, api_key, api_type="openai"):
                 client = OpenAI(api_key=api_key)
             
             prompt = f"""
-본문 내용을 참고하여 제목을 새롭게 재작성해주세요.
+원본 제목을 **완전히 다른 스타일**로 재창작해주세요. 원본 작성자가 인식할 수 없을 정도로 변형해주세요.
 
 원본 제목: {original_title}
 
-본문 내용 (요약):
+본문 내용 (핵심만):
 {content[:1000]}...
 
-재작성 요구사항:
-1. 원본 제목의 구조와 길이를 최대한 유지
-2. 본문의 핵심 내용을 반영한 새로운 제목
-3. 더 흥미롭고 클릭하고 싶게 만들기
-4. SEO에 최적화된 키워드 포함
-5. 한국어 뉴스 제목 스타일 유지
-6. 따옴표나 특수문자 활용 가능
-7. **35~60대 독자층에게 매력적인 제목**: 
-   - 명확하고 직관적인 표현 사용
-   - 궁금증을 유발하는 요소 포함
-   - 숫자나 구체적 정보 활용
+**극단적 제목 변형 요구사항:**
+1. **표현 방식 완전 변경**: 원본과 정반대 톤으로 (딱딱함↔친근함, 직설↔우회)
+2. **구조 파괴**: 원본의 단어 배치와 구조를 완전히 해체하고 재조립
+3. **어휘 혁신**: 같은 의미의 완전히 다른 표현 사용
+4. **관점 전환**: 다른 각도에서 사건을 바라본 제목
+5. **감정 변화**: 원본의 뉘앙스를 완전히 다르게 설정
+6. **문체 변신**: 
+   - 질문형 ↔ 서술형 ↔ 감탄형 자유 변환
+   - 숫자 표현 방식 변경 ("30%" → "3명 중 1명")
+   - 시점 변경 (현재→미래, 과거→현재)
 
-새로운 제목만 출력해주세요:
+**변형 예시:**
+- 원본: "삼성전자 주가 상승" → 변형: "투자자들이 주목하는 삼성전자의 약진"
+- 원본: "코로나19 확산 우려" → 변형: "또다시 찾아온 팬데믹 그림자"
+
+**목표: 원저작자가 "이건 내 제목이 아니야!"라고 할 정도의 완전 변형**
+
+새로운 제목만 출력:
 """
             
             response = client.chat.completions.create(
                 model="gpt-4o-mini",
                 messages=[
-                    {"role": "system", "content": "당신은 뉴스 제목 작성 전문가입니다. 흥미롭고 클릭률이 높은 제목을 만드는 전문가입니다."},
+                    {"role": "system", "content": "당신은 제목 변형의 마스터입니다. 원본 제목을 완전히 다른 스타일로 재창작하여 원저작자도 인식할 수 없게 만드는 변형 전문가입니다. 같은 내용을 전혀 다른 표현, 구조, 톤으로 재탄생시켜 완전히 새로운 제목을 만들어내는 것이 당신의 특기입니다."},
                     {"role": "user", "content": prompt}
                 ],
                 max_tokens=100,
-                temperature=0.8
+                temperature=0.9
             )
             
             new_title = response.choices[0].message.content.strip()
@@ -592,7 +666,7 @@ def extract_content_from_url(url):
         for share in content_elem.find_all('ul', class_='share-list'):
             share.decompose()
         
-        # 이미지 URL 수집
+        # 이미지 URL 수집 (순서 무시하고 섞어서 수집 - 원본 위치와 완전히 다르게)
         images = []
         for img in content_elem.find_all('img'):
             img_src = img.get('src')
@@ -606,16 +680,35 @@ def extract_content_from_url(url):
                     img_src = 'https://www.reportera.co.kr/' + img_src
                 images.append(img_src)
         
-        # 텍스트 내용 추출 (이미지 제외)
+        # 원본 이미지 순서를 완전히 섞어서 배치 (원본과 다르게)
+        import random
+        if images:
+            random.shuffle(images)  # 이미지 순서 무작위로 섞기
+        
+        # 텍스트 내용 추출 (이미지 완전 제거 - 원본 위치 정보 삭제)
         paragraphs = []
         for elem in content_elem.children:
             if hasattr(elem, 'name') and elem.name:
                 if elem.name in ['p', 'h1', 'h2', 'h3', 'h4', 'h5']:
+                    # 이미지 태그 완전 제거 (원본 위치 정보 삭제)
+                    for img in elem.find_all('img'):
+                        img.decompose()
+                    
+                    # 피겨 태그도 제거 (이미지 캡션 포함)
+                    for figure in elem.find_all('figure'):
+                        figure.decompose()
+                        
                     # <br> 태그를 줄바꿈으로 변환
                     for br in elem.find_all('br'):
                         br.replace_with('\n')
                     
                     text = elem.get_text().strip()
+                    # 이미지 관련 텍스트 패턴 제거
+                    text = re.sub(r'\[이미지.*?\]', '', text)
+                    text = re.sub(r'\(사진.*?\)', '', text)
+                    text = re.sub(r'사진=.*', '', text)
+                    text = re.sub(r'이미지=.*', '', text)
+                    
                     if text and not text.startswith('(adsbygoogle'):
                         if elem.name in ['h2', 'h3', 'h4', 'h5']:
                             paragraphs.append(f"\n## {text}\n")  # H2로 유지
@@ -693,63 +786,107 @@ alt 텍스트만 출력해주세요:
     return "기사 관련 이미지"
 
 def insert_images_with_structure(content, cloudflare_images, title="", ai_api_key=None):
-    """새로운 구조에 맞게 이미지 배치: H1 > H5 > 썸네일 > 본문 > H2 + 이미지"""
+    """원본과 완전히 다른 위치에 이미지 배치: 우리만의 새로운 구조"""
     if not cloudflare_images:
         return content
     
     lines = content.split('\n')
     result_lines = []
-    thumbnail_inserted = False
-    remaining_images = cloudflare_images.copy()
+    h5_count = 0
+    h2_count = 0
+    paragraph_count = 0
     
-    # 썸네일 이미지 (첫 번째 이미지)
-    thumbnail_image = remaining_images.pop(0) if remaining_images else None
+    # 이미지를 완전히 새로운 규칙으로 배치하기 위해 이미지들을 다시 섞기
+    import random
+    shuffled_images = cloudflare_images.copy()
+    random.shuffle(shuffled_images)  # 원본 순서와 완전히 다르게
+    
+    # 우리만의 이미지 배치 전략
+    image_positions = {
+        'thumbnail': shuffled_images[0] if len(shuffled_images) > 0 else None,
+        'section_images': shuffled_images[1:] if len(shuffled_images) > 1 else []
+    }
+    
+    thumbnail_inserted = False
+    section_image_index = 0
     
     for i, line in enumerate(lines):
         result_lines.append(line)
         
-        # H5 요약 뒤에 썸네일 이미지 삽입 (구글 디스커버 사이즈)
-        if line.startswith('##### ') and not thumbnail_inserted and thumbnail_image:
-            if ai_api_key:
-                alt_text = generate_contextual_alt_text(line, title, ai_api_key)
-            else:
-                alt_text = f"{title} 관련 이미지"
+        # H5 줄 카운트
+        if line.startswith('##### '):
+            h5_count += 1
             
-            result_lines.append("")  # 빈 줄
-            result_lines.append(f"![{alt_text}]({thumbnail_image})")
-            result_lines.append("")  # 빈 줄
-            thumbnail_inserted = True
+            # 두 번째 H5 줄 뒤에 썸네일 이미지 삽입 (무조건 첫 번째 위치)
+            if h5_count == 2 and not thumbnail_inserted and image_positions['thumbnail']:
+                if ai_api_key:
+                    alt_text = generate_contextual_alt_text(line, title, ai_api_key)
+                else:
+                    alt_text = f"{title} 관련 메인 이미지"
+                
+                result_lines.append("")
+                result_lines.append(f"![{alt_text}]({image_positions['thumbnail']})")
+                result_lines.append("")
+                thumbnail_inserted = True
         
-        # H2 소제목 뒤에 이미지 삽입
-        elif line.startswith('## ') and remaining_images:
-            # 다음 몇 줄을 확인해서 본문이 있는지 체크
-            next_content = ""
-            for j in range(i+1, min(i+4, len(lines))):
-                if j < len(lines) and lines[j].strip():
-                    next_content += lines[j] + " "
+        # 문단 카운트 (일반 텍스트)
+        elif line.strip() and not line.startswith('#') and not line.startswith('!'):
+            paragraph_count += 1
             
-            if next_content.strip():  # 본문이 있으면 이미지 추가
-                image_url = remaining_images.pop(0)
+            # 새로운 배치 규칙: 3번째, 7번째, 11번째 문단 뒤에 이미지 삽입
+            # (원본과 완전히 다른 패턴)
+            insert_positions = [3, 7, 11, 15, 19]  # 홀수 패턴으로 원본과 차별화
+            
+            if (paragraph_count in insert_positions and 
+                section_image_index < len(image_positions['section_images'])):
+                
+                image_url = image_positions['section_images'][section_image_index]
+                section_image_index += 1
                 
                 if ai_api_key:
-                    alt_text = generate_contextual_alt_text(next_content[:200], title, ai_api_key)
+                    alt_text = generate_contextual_alt_text(line[:200], title, ai_api_key)
+                else:
+                    alt_text = f"관련 이미지 {section_image_index}"
+                
+                result_lines.append("")
+                result_lines.append(f"![{alt_text}]({image_url})")
+                result_lines.append("")
+        
+        # H2 소제목 처리 (일부에만 이미지 추가 - 예측 불가능하게)
+        elif line.startswith('## '):
+            h2_count += 1
+            
+            # 원본과 다르게: 2번째, 4번째 H2에만 이미지 추가 (패턴 파괴)
+            if (h2_count % 2 == 0 and  # 짝수 번째 H2에만
+                section_image_index < len(image_positions['section_images'])):
+                
+                image_url = image_positions['section_images'][section_image_index]
+                section_image_index += 1
+                
+                if ai_api_key:
+                    alt_text = generate_contextual_alt_text(line, title, ai_api_key)
                 else:
                     alt_text = line.replace('## ', '').replace('**', '').strip()
                 
-                # H2 소제목 직후에 이미지 추가
-                result_lines.append("")  # 빈 줄
+                result_lines.append("")
                 result_lines.append(f"![{alt_text}]({image_url})")
-                result_lines.append("")  # 빈 줄
+                result_lines.append("")
     
-    # 남은 이미지가 있다면 마지막에 추가
-    for image_url in remaining_images:
-        if ai_api_key:
-            alt_text = generate_contextual_alt_text("기사 관련", title, ai_api_key)
-        else:
-            alt_text = "관련 이미지"
-        
+    # 남은 이미지들은 마지막에 한꺼번에 배치 (원본과 다른 패턴)
+    remaining_images = image_positions['section_images'][section_image_index:]
+    if remaining_images:
         result_lines.append("")
-        result_lines.append(f"![{alt_text}]({image_url})")
+        result_lines.append("## 관련 이미지")
+        result_lines.append("")
+        
+        for idx, image_url in enumerate(remaining_images):
+            if ai_api_key:
+                alt_text = generate_contextual_alt_text("추가 관련 내용", title, ai_api_key)
+            else:
+                alt_text = f"추가 관련 이미지 {idx + 1}"
+            
+            result_lines.append(f"![{alt_text}]({image_url})")
+            result_lines.append("")
     
     return '\n'.join(result_lines)
 
@@ -834,17 +971,20 @@ def create_markdown_file(article_data, output_dir, cloudflare_account_id=None, c
         ai_api_key
     )
     
-    # Cloudflare에 이미지 업로드 (원본 이미지 사용하지 않음)
+    # Cloudflare에 이미지 업로드 (원본 순서와 완전히 다르게 - 역순으로)
     cloudflare_images = []
     if cloudflare_api_token and cloudflare_account_id and article_data['images']:
-        print(f"📸 Uploading {len(article_data['images'])} images to Cloudflare...")
-        for img_url in article_data['images'][:5]:  # 최대 5개만
+        # 원본과 다르게 역순으로 업로드하여 위치 완전 변경
+        reversed_images = list(reversed(article_data['images'][:5]))  # 역순 + 최대 5개
+        print(f"📸 Uploading {len(reversed_images)} images to Cloudflare (in reverse order)...")
+        
+        for img_url in reversed_images:
             cf_url = upload_to_cloudflare_images(img_url, cloudflare_api_token, cloudflare_account_id)
-            if cf_url:  # 성공한 경우만 추가 (원본 이미지 사용하지 않음)
+            if cf_url:  # 성공한 경우만 추가 (원본 순서와 완전히 다름)
                 cloudflare_images.append(cf_url)
             time.sleep(1)  # API 제한 고려
     
-    # 이미지를 새로운 구조에 맞게 배치 (H1 > H5 > 썸네일 > 본문 > H2 + 이미지)
+    # 이미지를 원본과 완전히 다른 위치에 배치 (우리만의 새로운 구조)
     final_content = insert_images_with_structure(rewritten_content, cloudflare_images, new_title, ai_api_key)
     
     # 카테고리 자동 분류 (새 제목 기반)
@@ -880,6 +1020,14 @@ def create_markdown_file(article_data, output_dir, cloudflare_account_id=None, c
     
     # 마크다운 생성 (UTF-8 안전한 author 필드)
     safe_author = "윤신애"  # 하드코딩으로 인코딩 문제 방지
+    
+    # 날짜 포맷팅 (한국 시간대)
+    kst_date = datetime.now(kst)
+    formatted_date = kst_date.strftime("%Y년 %m월 %d일 %H:%M")
+    
+    # 카테고리 한글명
+    category_korean = "Economy" if category == "economy" else "Automotive"
+    
     markdown_content = f"""---
 title: "{safe_title}"
 description: "{safe_description}"
@@ -911,6 +1059,13 @@ url: "/{category}/{title_slug}/"
     
     markdown_content += f"""draft: false
 ---
+
+# {safe_title}
+
+**{safe_author} 기자**  
+{formatted_date}  
+{category_korean}  
+**공유하기:**
 
 {final_content}
 """
