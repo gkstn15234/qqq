@@ -147,8 +147,8 @@ def count_articles_basic():
 def count_published_articles():
     """발행된 기사 수 계산 및 목록 반환"""
     try:
-        try:
-            import frontmatter
+    try:
+        import frontmatter
         except ImportError:
             print("Warning: frontmatter module not found. Using basic file counting.")
             return count_articles_basic()

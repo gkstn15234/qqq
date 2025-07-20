@@ -75,7 +75,7 @@
                                     <div class="article-meta mb-2">
                                         <span class="badge bg-{{ if eq .Section "automotive" }}danger{{ else if eq .Section "economy" }}warning{{ else }}secondary{{ end }} me-2">{{ .Section | title }}</span>
                                         <small class="text-muted">{{ .Date.Format "2006.01.02" }}</small>
-                                    </div>
+                            </div>
                                     
                                     <h6 class="card-title text-dark mb-0" style="line-height: 1.4; font-size: 0.95rem;">{{ .Title | truncate 60 }}</h6>
                                 </div>
@@ -83,7 +83,7 @@
                         </article>
                     </div>
                     {{ end }}
-                </div>
+            </div>
 
                 <!-- Hidden articles for pagination -->
                 <div id="hidden-articles" style="display: none;">
@@ -103,7 +103,7 @@
                                     <div class="article-meta mb-2">
                                         <span class="badge bg-{{ if eq .Section "automotive" }}danger{{ else if eq .Section "economy" }}warning{{ else }}secondary{{ end }} me-2">{{ .Section | title }}</span>
                                         <small class="text-muted">{{ .Date.Format "2006.01.02" }}</small>
-                                    </div>
+                            </div>
                                     
                                     <h6 class="card-title text-dark mb-0" style="line-height: 1.4; font-size: 0.95rem;">{{ .Title | truncate 60 }}</h6>
                                 </div>

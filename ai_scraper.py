@@ -243,15 +243,19 @@ def create_manual_rewrite(original_content, title):
             else:
                 rewritten_paragraphs.append(paragraph)
         
-        # 35~60대 독자층을 위한 기본 구조로 재구성 (H1 제거, H2를 H5로 변경, 언론사 스타일 세로 막대기 추가)
+        # 35~60대 독자층을 위한 기본 구조로 재구성 (H1 제목 + H5 요약 + 썸네일 + 본문 + H2 소제목)
         rewritten_content = f"""
+# {title}
+
+##### | {title} 관련 주요 이슈를 간단히 요약한 내용
+
 {chr(10).join(rewritten_paragraphs[:3])}
 
-##### | **핵심 포인트**
+## 핵심 포인트
 
 {chr(10).join(rewritten_paragraphs[3:6]) if len(rewritten_paragraphs) > 3 else ''}
 
-##### | **상세 분석**
+## 상세 분석
 
 {chr(10).join(rewritten_paragraphs[6:]) if len(rewritten_paragraphs) > 6 else ''}
 
@@ -262,15 +266,19 @@ def create_manual_rewrite(original_content, title):
         
     except Exception as e:
         print(f"⚠️ Manual rewrite failed: {e}")
-        # 최소한의 기본 구조라도 생성 (H1 제거, H5 사용, 언론사 스타일 세로 막대기)
+        # 최소한의 기본 구조라도 생성 (H1 제목 + H5 요약 + H2 소제목)
         return f"""
+# {title}
+
+##### | 업계 주요 동향에 대한 핵심 내용을 다룬 기사
+
 본 기사는 현재 업계의 주요 동향을 다루고 있습니다.
 
-##### | **핵심 포인트**
+## 핵심 포인트
 
 관련 업계에서는 이번 사안에 대해 **높은 관심을 보이고 있으며**, 다양한 의견이 제기되고 있는 상황입니다.
 
-##### | **향후 전망**
+## 향후 전망
 
 이러한 변화는 시장에 중대한 영향을 미칠 것으로 예상되며, **관련 기업들의 대응 전략이 주목받고 있습니다**.
 
@@ -352,10 +360,10 @@ def rewrite_with_ai(original_content, title, api_key, api_type="openai"):
    - 복잡한 용어는 쉬운 표현으로 설명 추가
    - 핵심 포인트를 볼드(**텍스트**)로 강조
 10. **헤딩 구조 규칙**: 
-    - H1(#) 태그 절대 사용 금지 
-    - 소제목은 H5(##### | 제목) 형식으로 세로 막대기 포함
-    - 제목은 YAML frontmatter에서만 관리
-    - 예시: ##### | **핵심 내용**
+    - H1(#) 제목 사용 (기사 제목)
+    - H5(#####) 요약 (전체 기사 한 줄 요약)
+    - H2(##) 소제목 사용 (본문 소제목)
+    - 구조: H1 제목 > H5 요약 > 썸네일 이미지 > 본문 > H2 소제목
 
 마치 다른 기자가 같은 사건을 취재해서 완전히 다른 시각으로 쓴 것처럼 작성해주세요.
 """
@@ -578,7 +586,7 @@ def extract_content_from_url(url):
                     text = elem.get_text().strip()
                     if text and not text.startswith('(adsbygoogle'):
                         if elem.name in ['h2', 'h3', 'h4', 'h5']:
-                            paragraphs.append(f"\n##### | {text}\n")  # H2를 H5로 변경, 언론사 스타일 세로 막대기 추가
+                            paragraphs.append(f"\n## {text}\n")  # H2로 유지
                         else:
                             paragraphs.append(text)
         
@@ -652,71 +660,66 @@ alt 텍스트만 출력해주세요:
     
     return "기사 관련 이미지"
 
-def shuffle_images_in_content(content, cloudflare_images, title="", ai_api_key=None):
-    """콘텐츠 내에 이미지를 완전히 랜덤하게 재배치 (AI 생성 alt 텍스트 포함)"""
+def insert_images_with_structure(content, cloudflare_images, title="", ai_api_key=None):
+    """새로운 구조에 맞게 이미지 배치: H1 > H5 > 썸네일 > 본문 > H2 + 이미지"""
     if not cloudflare_images:
         return content
     
-    paragraphs = [p.strip() for p in content.split('\n\n') if p.strip()]
+    lines = content.split('\n')
+    result_lines = []
+    thumbnail_inserted = False
+    remaining_images = cloudflare_images.copy()
     
-    # 이미지를 완전히 랜덤하게 섞기
-    shuffled_images = cloudflare_images.copy()
-    random.shuffle(shuffled_images)
-    random.shuffle(shuffled_images)  # 한 번 더 섞어서 더 랜덤하게
+    # 썸네일 이미지 (첫 번째 이미지)
+    thumbnail_image = remaining_images.pop(0) if remaining_images else None
     
-    # 이미지 삽입 위치를 완전히 랜덤하게 결정
-    total_paragraphs = len(paragraphs)
-    available_positions = list(range(1, total_paragraphs))  # 첫 번째 문단 제외
-    random.shuffle(available_positions)
-    
-    # 이미지 개수만큼 랜덤 위치 선택
-    image_positions = available_positions[:len(shuffled_images)]
-    image_positions.sort()  # 순서대로 삽입하기 위해 정렬
-    
-    # 결과 문단 생성
-    result_paragraphs = []
-    image_index = 0
-    
-    for i, paragraph in enumerate(paragraphs):
-        result_paragraphs.append(paragraph)
+    for i, line in enumerate(lines):
+        result_lines.append(line)
         
-        # 현재 위치가 이미지 삽입 위치라면 이미지 추가
-        if i in image_positions and image_index < len(shuffled_images):
-            image_url = shuffled_images[image_index]
-            
-            # AI로 본문 내용 기반 alt 텍스트 생성
-            if ai_api_key and i < len(paragraphs):
-                context_paragraph = paragraphs[i] if i < len(paragraphs) else paragraphs[-1]
-                alt_text = generate_contextual_alt_text(context_paragraph, title, ai_api_key)
+        # H5 요약 뒤에 썸네일 이미지 삽입 (구글 디스커버 사이즈)
+        if line.startswith('##### ') and not thumbnail_inserted and thumbnail_image:
+            if ai_api_key:
+                alt_text = generate_contextual_alt_text(line, title, ai_api_key)
             else:
-                # 기본 alt 텍스트 (AI 실패 시)
-                alt_texts = [
-                    "관련 이미지",
-                    "기사 내용",
-                    "참고 이미지", 
-                    "뉴스 이미지",
-                    "상세 내용",
-                    "관련 사진"
-                ]
-                alt_text = random.choice(alt_texts)
+                alt_text = f"{title} 관련 이미지"
             
-            result_paragraphs.append(f"\n![{alt_text}]({image_url})\n")
-            image_index += 1
-    
-    # 혹시 남은 이미지가 있다면 마지막에 추가
-    while image_index < len(shuffled_images):
-        image_url = shuffled_images[image_index]
+            result_lines.append("")  # 빈 줄
+            result_lines.append(f"![{alt_text}]({thumbnail_image})")
+            result_lines.append("")  # 빈 줄
+            thumbnail_inserted = True
         
-        if ai_api_key and len(paragraphs) > 0:
-            # 마지막 문단 기반으로 alt 텍스트 생성
-            alt_text = generate_contextual_alt_text(paragraphs[-1], title, ai_api_key)
+        # H2 소제목 뒤에 이미지 삽입
+        elif line.startswith('## ') and remaining_images:
+            # 다음 몇 줄을 확인해서 본문이 있는지 체크
+            next_content = ""
+            for j in range(i+1, min(i+4, len(lines))):
+                if j < len(lines) and lines[j].strip():
+                    next_content += lines[j] + " "
+            
+            if next_content.strip():  # 본문이 있으면 이미지 추가
+                image_url = remaining_images.pop(0)
+                
+                if ai_api_key:
+                    alt_text = generate_contextual_alt_text(next_content[:200], title, ai_api_key)
+                else:
+                    alt_text = line.replace('## ', '').replace('**', '').strip()
+                
+                # H2 소제목 직후에 이미지 추가
+                result_lines.append("")  # 빈 줄
+                result_lines.append(f"![{alt_text}]({image_url})")
+                result_lines.append("")  # 빈 줄
+    
+    # 남은 이미지가 있다면 마지막에 추가
+    for image_url in remaining_images:
+        if ai_api_key:
+            alt_text = generate_contextual_alt_text("기사 관련", title, ai_api_key)
         else:
-            alt_text = random.choice(["추가 이미지", "관련 자료", "참고 사진"])
+            alt_text = "관련 이미지"
         
-        result_paragraphs.append(f"\n![{alt_text}]({image_url})\n")
-        image_index += 1
+        result_lines.append("")
+        result_lines.append(f"![{alt_text}]({image_url})")
     
-    return '\n\n'.join(result_paragraphs)
+    return '\n'.join(result_lines)
 
 def validate_yaml_string(text):
     """YAML에서 안전한 문자열로 변환 (따옴표 보존)"""
@@ -809,8 +812,8 @@ def create_markdown_file(article_data, output_dir, cloudflare_account_id=None, c
                 cloudflare_images.append(cf_url)
             time.sleep(1)  # API 제한 고려
     
-    # 이미지를 콘텐츠에 랜덤 재배치 (AI 생성 alt 텍스트 포함)
-    final_content = shuffle_images_in_content(rewritten_content, cloudflare_images, new_title, ai_api_key)
+    # 이미지를 새로운 구조에 맞게 배치 (H1 > H5 > 썸네일 > 본문 > H2 + 이미지)
+    final_content = insert_images_with_structure(rewritten_content, cloudflare_images, new_title, ai_api_key)
     
     # 카테고리 자동 분류 (새 제목 기반)
     category = categorize_article(new_title, article_data['content'], enhanced_tags)

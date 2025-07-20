@@ -11,6 +11,8 @@ document.addEventListener('DOMContentLoaded', function() {
     initializeEnhancedUpNext();
     // 접근성 향상
     initializeAccessibility();
+    // H5 세로 막대기 스타일링
+    initializeH5Styling();
 });
 
 // Reading Progress Bar
@@ -889,4 +891,23 @@ function debounce(func, wait) {
         clearTimeout(timeout);
         timeout = setTimeout(later, wait);
     };
+}
+
+// H5 세로 막대기 스타일링 초기화
+function initializeH5Styling() {
+    const h5Elements = document.querySelectorAll('.entry-content h5');
+    
+    h5Elements.forEach(h5 => {
+        const text = h5.textContent || h5.innerText;
+        
+        // 세로 막대기(|)가 포함된 H5에 특별 스타일 적용
+        if (text.includes('|')) {
+            h5.classList.add('has-pipe');
+            
+            // 세로 막대기 문자를 색상이 있는 span으로 감싸기
+            const htmlContent = h5.innerHTML;
+            const styledContent = htmlContent.replace(/\|/g, '<span style="color: var(--accent-color); font-weight: bold; margin-right: 8px;">|</span>');
+            h5.innerHTML = styledContent;
+        }
+    });
 }

@@ -2954,6 +2954,37 @@ img {
     margin-bottom: 1rem;
     color: var(--secondary-color);
     font-size: 1.3rem;
+    border-left: 4px solid var(--accent-color);
+    padding-left: 12px;
+    background: linear-gradient(to right, rgba(49, 130, 206, 0.05), transparent);
+    position: relative;
+}
+
+/* H5 앞에 세로 막대기가 있는 경우 (##### | 제목) 색상 강화 */
+.entry-content h5::first-line {
+    font-weight: 600;
+}
+
+/* 텍스트 내 세로 막대기(|)에 색상 적용 */
+.entry-content h5 {
+    line-height: 1.6;
+}
+
+/* JavaScript로 처리할 세로 막대기 스타일 클래스 */
+.entry-content h5.has-pipe {
+    background: linear-gradient(to right, rgba(49, 130, 206, 0.08), transparent);
+    border-left-color: var(--primary-color);
+}
+
+.entry-content h5.has-pipe::before {
+    content: "";
+    position: absolute;
+    left: -4px;
+    top: 0;
+    bottom: 0;
+    width: 4px;
+    background: linear-gradient(to bottom, var(--accent-color), var(--primary-color));
+    border-radius: 2px;
 }
 
 .entry-content p {
