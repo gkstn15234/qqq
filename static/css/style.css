@@ -2998,7 +2998,7 @@ img {
     margin: 1.5rem 0;
 }
 
-/* 모바일에서 기사 이미지 전체 너비 */
+/* 모바일에서 기사 이미지 전체 너비 및 30~60대 친화적 글자 크기 */
 @media (max-width: 767.98px) {
     .entry-content img {
         width: 100vw;
@@ -3006,6 +3006,33 @@ img {
         margin-left: 50%;
         transform: translateX(-50%);
         border-radius: 0;
+    }
+    
+    /* 30~60대 친화적 모바일 글자 크기 */
+    .article-content {
+        font-size: 1.3rem !important;
+        line-height: 1.9 !important;
+    }
+    
+    .article-content p {
+        font-size: 1.3rem !important;
+        line-height: 1.9 !important;
+    }
+    
+    .article-content h2 {
+        font-size: 2rem !important;
+        line-height: 1.4 !important;
+    }
+    
+    .article-content h5 {
+        font-size: 1.4rem !important;
+        line-height: 1.6 !important;
+    }
+    
+    /* H5 요약 섹션 모바일 최적화 */
+    .article-summary h5 {
+        font-size: 1.4rem !important;
+        line-height: 1.6 !important;
     }
 }
 

@@ -50,14 +50,16 @@ MODEL_CONFIGS = {
 }
 
 def get_scraping_statistics():
-    """AI 스크래퍼 실행 결과 통계 가져오기"""
+    """AI 스크래퍼 실행 결과 통계 가져오기 (사이트맵별 분류 포함)"""
     try:
         db_path = 'processed_articles.db'
         if not os.path.exists(db_path):
             return {
                 'total_processed': 0,
                 'today_processed': 0,
-                'last_run': 'N/A'
+                'last_run': 'N/A',
+                'news_sitemap': 0,
+                'general_sitemap': 0
             }
         
         conn = sqlite3.connect(db_path)
@@ -75,6 +77,21 @@ def get_scraping_statistics():
         """, (today,))
         today_processed = cursor.fetchone()[0]
         
+        # 사이트맵별 분류 (URL 패턴 기반 추정)
+        cursor.execute("""
+            SELECT COUNT(*) FROM processed_articles 
+            WHERE url LIKE '%/news/%' OR url LIKE '%/breaking/%'
+            AND DATE(processed_date) = ?
+        """, (today,))
+        news_sitemap = cursor.fetchone()[0]
+        
+        cursor.execute("""
+            SELECT COUNT(*) FROM processed_articles 
+            WHERE (url NOT LIKE '%/news/%' AND url NOT LIKE '%/breaking/%')
+            AND DATE(processed_date) = ?
+        """, (today,))
+        general_sitemap = cursor.fetchone()[0]
+        
         # 마지막 실행 시간
         cursor.execute("""
             SELECT MAX(processed_date) FROM processed_articles
@@ -87,7 +104,9 @@ def get_scraping_statistics():
         return {
             'total_processed': total_processed,
             'today_processed': today_processed,
-            'last_run': last_run
+            'last_run': last_run,
+            'news_sitemap': news_sitemap,
+            'general_sitemap': general_sitemap
         }
         
     except Exception as e:
@@ -95,7 +114,9 @@ def get_scraping_statistics():
         return {
             'total_processed': 0,
             'today_processed': 0,
-            'last_run': 'Error'
+            'last_run': 'Error',
+            'news_sitemap': 0,
+            'general_sitemap': 0
         }
 
 def count_articles_basic():
@@ -313,9 +334,13 @@ def create_report_email_content():
   • 누적 처리: {scraping_stats['total_processed']}개 기사
   • 마지막 실행: {scraping_stats['last_run']}
 
+🗺️ **사이트맵별 분류**:
+  • 📰 뉴스 사이트맵 (20%): {scraping_stats['news_sitemap']}개
+  • 📄 일반 사이트맵 (200개): {scraping_stats['general_sitemap']}개
+
 📰 **현재 발행된 기사 현황**:
-  • 🚗 자동차: {article_counts['automotive']}개
-  • 💰 경제: {article_counts['economy']}개
+      • 🚗 일반사이트맵(자동차): {article_counts['automotive']}개
+  • 💰 뉴스사이트맵(경제): {article_counts['economy']}개
   • 📈 전체: {article_counts['total']}개
 """
 

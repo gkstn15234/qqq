@@ -463,8 +463,26 @@ def rewrite_with_ai(original_content, title, api_key, api_type="openai"):
 - 자연스러운 명사형 또는 서술형으로 작성
 - 예시: "주요 변화 동향", "시장 반응과 전망", "업계 분석 결과"
 
+**기사 구조 (절대 준수):**
+1. H5 요약: ##### **첫 번째 줄**<br>**두 번째 줄**
+2. 도입 본문: 2-3개 문단 (H2 없이 바로 본문으로 시작)
+3. H2 소제목 + 본문 반복
+
 **H5 요약 필수 형식:**
 ##### **500마력 전기 SUV 국내 상륙 예고**<br>**럭셔리와 오프로드 능력 모두 갖춰**
+
+**기사 시작 구조 예시:**
+##### **핵심 내용 요약**<br>**부가 설명 요약**
+
+업계에서는 이번 발표가 시장에 큰 변화를 가져올 것으로 전망하고 있다. 
+
+관련 전문가들은 이러한 움직임이 향후 업계 전반에 미칠 파급효과를 주목하고 있으며, 다양한 분석이 제기되고 있는 상황이다.
+
+특히 이번 사안은 기존 시장 구조에 새로운 변수로 작용할 것으로 예상되며, 관련 기업들의 대응 전략에도 관심이 집중되고 있다.
+
+## 주요 변화 동향
+
+(이후 H2 + 본문 반복...)
 
 **최종 목표: 원본 작성자가 "이건 내 글이 아니야!"라고 할 정도로 완전히 다른 작품을 만들어주세요.**
 같은 사건을 다룬 전혀 다른 기자의 독립적인 취재 기사처럼 작성해주세요.
@@ -767,7 +785,7 @@ def analyze_image_text_content(image_url, api_key):
                         "content": [
                             {
                                 "type": "text",
-                                "text": "이 이미지를 분석해주세요:\n1. '연합뉴스', '뉴스 사진', 'NEWS' 등 뉴스 관련 텍스트가 있나요?\n2. 기타 한글, 영어, 숫자 텍스트가 포함되어 있나요?\n\n뉴스 관련 텍스트가 있으면 'NEWS_TEXT', 기타 텍스트가 있으면 'HAS_TEXT', 텍스트가 없으면 'NO_TEXT'로만 답변해주세요."
+                                "text": "이 이미지를 분석해주세요:\n1. 뉴스 관련: '연합뉴스', '뉴스1', 'YONHAP', 'NEWS', '기자', '제공', '출처' 등 뉴스 기관 관련 텍스트나 로고가 있나요?\n2. 기타 텍스트: 한글, 영어, 숫자 등 기타 텍스트가 포함되어 있나요?\n\n뉴스 관련이 있으면 'NEWS_TEXT', 기타 텍스트가 있으면 'HAS_TEXT', 텍스트가 없으면 'NO_TEXT'로만 답변해주세요."
                             },
                             {
                                 "type": "image_url",
@@ -854,7 +872,11 @@ def extract_h5_summary(content):
         if line.startswith('##### '):
             # H5 내용 추출 (##### 제거하고 저장)
             h5_content = line.replace('##### ', '').strip()
-            h5_summary = h5_content
+            # 특수문자 제거
+            special_chars = [':', '!', '?', '*', '#', '|', '&', '<', '>', '[', ']', '{', '}']
+            for char in special_chars:
+                h5_content = h5_content.replace(char, '')
+            h5_summary = h5_content.strip()
         else:
             # H5가 아닌 내용은 본문에 유지
             content_without_h5.append(line)
@@ -921,7 +943,7 @@ JSON 형식으로 응답:
             'content': "해당 분야의 최신 동향과 분석을 제공합니다."
         }
 
-def insert_images_with_structure(content, cloudflare_images, title="", ai_api_key=None):
+def insert_images_with_structure(content, cloudflare_images, title="", ai_api_key=None, category="economy"):
     """원본과 완전히 다른 위치에 이미지 배치: 우리만의 새로운 구조"""
     if not cloudflare_images:
         return content
@@ -942,28 +964,34 @@ def insert_images_with_structure(content, cloudflare_images, title="", ai_api_ke
     section_images = shuffled_images.copy()
     
     if shuffled_images:
-        print("🔍 AI Vision으로 썸네일 이미지 선택 중...")
-        
-        # AI Vision으로 텍스트 없는 이미지 찾기
-        text_free_images = []
-        text_images = []
-        
-        for img_url in section_images[:3]:  # 처음 3개만 분석 (API 비용 절약)
-            has_text = analyze_image_text_content(img_url, ai_api_key)
-            if has_text:
-                text_images.append(img_url)
-            else:
-                text_free_images.append(img_url)
-        
-        # 텍스트 없는 이미지 우선 선택
-        if text_free_images:
-            thumbnail_image = text_free_images[0]
-            section_images.remove(thumbnail_image)
-            print(f"✅ 텍스트 없는 이미지를 썸네일로 선택: {thumbnail_image[:50]}...")
-        else:
-            # 텍스트 없는 이미지가 없으면 첫 번째 사용
+        if category == "automotive":
+            print("🚗 자동차 카테고리: 모든 이미지 사용 (필터링 없음)")
+            # 자동차는 필터링 없이 첫 번째 이미지 사용
             thumbnail_image = section_images.pop(0)
-            print(f"⚠️ 텍스트 없는 이미지 없음, 첫 번째 이미지 사용: {thumbnail_image[:50]}...")
+            print(f"✅ 첫 번째 이미지를 썸네일로 선택: {thumbnail_image[:50]}...")
+        else:
+            print("🔍 AI Vision으로 썸네일 이미지 선택 중...")
+            
+            # AI Vision으로 텍스트 없는 이미지 찾기 (Economy 카테고리만)
+            text_free_images = []
+            text_images = []
+            
+            for img_url in section_images[:3]:  # 처음 3개만 분석 (API 비용 절약)
+                has_text = analyze_image_text_content(img_url, ai_api_key)
+                if has_text:
+                    text_images.append(img_url)
+                else:
+                    text_free_images.append(img_url)
+            
+            # 텍스트 없는 이미지 우선 선택
+            if text_free_images:
+                thumbnail_image = text_free_images[0]
+                section_images.remove(thumbnail_image)
+                print(f"✅ 텍스트 없는 이미지를 썸네일로 선택: {thumbnail_image[:50]}...")
+            else:
+                # 텍스트 없는 이미지가 없으면 첫 번째 사용
+                thumbnail_image = section_images.pop(0)
+                print(f"⚠️ 텍스트 없는 이미지 없음, 첫 번째 이미지 사용: {thumbnail_image[:50]}...")
     
     image_positions = {
         'thumbnail': thumbnail_image,
@@ -990,19 +1018,33 @@ def insert_images_with_structure(content, cloudflare_images, title="", ai_api_ke
         elif line.startswith('## '):
             h2_count += 1
             
-            # 모든 H2 소제목 뒤에 이미지 배치 (사용자 요청 구조)
-            if section_image_index < len(image_positions['section_images']):
+            # 모든 H2 소제목 뒤에 이미지 배치 (카테고리별 필터링)
+            while section_image_index < len(image_positions['section_images']):
                 image_url = image_positions['section_images'][section_image_index]
                 section_image_index += 1
                 
-                if ai_api_key:
-                    alt_text = generate_contextual_alt_text(line, title, ai_api_key)
-                else:
-                    alt_text = line.replace('## ', '').replace('**', '').strip()
+                # 카테고리별 이미지 필터링
+                use_image = True
+                if category == "economy" and ai_api_key:
+                    # Economy는 뉴스 텍스트 있는 이미지 제외
+                    has_text = analyze_image_text_content(image_url, ai_api_key)
+                    if has_text:
+                        print(f"🚫 Economy 카테고리: 뉴스 텍스트 이미지 제외 {image_url[:50]}...")
+                        use_image = False
+                        continue  # 다음 이미지 시도
+                # Automotive는 모든 이미지 사용 (use_image = True 유지)
                 
-                result_lines.append("")
-                result_lines.append(f"![{alt_text}]({image_url})")
-                result_lines.append("")
+                if use_image:
+                    if ai_api_key:
+                        alt_text = generate_contextual_alt_text(line, title, ai_api_key)
+                    else:
+                        alt_text = line.replace('## ', '').replace('**', '').strip()
+                    
+                    result_lines.append("")
+                    result_lines.append(f"![{alt_text}]({image_url})")
+                    result_lines.append("*출처: 온라인 커뮤니티*")
+                    result_lines.append("")
+                    break  # 이미지 사용했으므로 루프 종료
     
     # 남은 이미지들을 H2 소제목 + 이미지 + 본문 형태로 배치
     remaining_images = image_positions['section_images'][section_image_index:]
@@ -1013,6 +1055,16 @@ def insert_images_with_structure(content, cloudflare_images, title="", ai_api_ke
         existing_content = '\n'.join(result_lines)
         
         for idx, image_url in enumerate(remaining_images):
+            # 카테고리별 이미지 필터링
+            use_image = True
+            if category == "economy" and ai_api_key:
+                # Economy는 뉴스 텍스트 있는 이미지 제외
+                has_text = analyze_image_text_content(image_url, ai_api_key)
+                if has_text:
+                    print(f"🚫 Economy 카테고리: AI 섹션 이미지 제외 {image_url[:50]}...")
+                    continue  # 이 이미지는 건너뛰기
+            # Automotive는 모든 이미지 사용
+            
             # AI로 섹션 생성
             section_data = generate_section_for_image(image_url, title, existing_content, ai_api_key)
             
@@ -1028,6 +1080,7 @@ def insert_images_with_structure(content, cloudflare_images, title="", ai_api_ke
                 alt_text = section_data['heading']
             
             result_lines.append(f"![{alt_text}]({image_url})")
+            result_lines.append("*출처: 온라인 커뮤니티*")
             result_lines.append("")
             
             # 본문 추가
@@ -1039,13 +1092,22 @@ def insert_images_with_structure(content, cloudflare_images, title="", ai_api_ke
     return '\n'.join(result_lines)
 
 def validate_yaml_string(text):
-    """YAML에서 안전한 문자열로 변환 (따옴표 보존)"""
+    """YAML에서 안전한 문자열로 변환 (HTML 엔티티 제거, 특수문자 정리)"""
     if not text:
         return ""
     
-    # 기본 정리 (따옴표는 HTML 엔티티로 변환하여 보존)
-    safe_text = str(text).replace('"', '&quot;').replace('\n', ' ').replace('\r', ' ')
+    import html
+    # HTML 엔티티 디코딩 (&quot; → " 등)
+    safe_text = html.unescape(str(text))
+    
+    # 기본 정리 (HTML 구분자만 정리, 내용 따옴표는 보존)
+    safe_text = safe_text.replace('\n', ' ').replace('\r', ' ')
     safe_text = safe_text.replace('---', '—').replace('```', '')
+    
+    # 특수문자 제거 (H5용)
+    special_chars = [':', '!', '?', '*', '#', '|', '&', '<', '>', '[', ']', '{', '}']
+    for char in special_chars:
+        safe_text = safe_text.replace(char, '')
     
     # 연속된 공백 정리
     safe_text = re.sub(r'\s+', ' ', safe_text).strip()
@@ -1056,7 +1118,7 @@ def validate_yaml_string(text):
     
     return safe_text
 
-def create_markdown_file(article_data, output_dir, cloudflare_account_id=None, cloudflare_api_token=None, ai_api_key=None):
+def create_markdown_file(article_data, output_dir, article_index=0, general_count=0, total_count=0, cloudflare_account_id=None, cloudflare_api_token=None, ai_api_key=None):
     """마크다운 파일 생성 (AI 재작성 및 이미지 처리 포함)"""
     # 🛡️ 강화된 다단계 중복 체크
     article_hash = get_article_hash(article_data['title'], article_data['url'])
@@ -1136,11 +1198,16 @@ def create_markdown_file(article_data, output_dir, cloudflare_account_id=None, c
                 cloudflare_images.append(cf_url)
             time.sleep(1)  # API 제한 고려
     
-    # 이미지를 원본과 완전히 다른 위치에 배치 (H5 제거된 본문 사용)
-    final_content = insert_images_with_structure(content_without_h5, cloudflare_images, new_title, ai_api_key)
+    # 카테고리 분배: 처음 20%는 일반사이트맵(automotive), 나머지 80%는 뉴스사이트맵(economy)
+    if article_index < general_count:
+        category = 'automotive'  # 일반사이트맵으로 배치
+        print(f"📋 일반사이트맵 배치 ({article_index + 1}/{general_count})")
+    else:
+        category = 'economy'  # 뉴스사이트맵으로 배치
+        print(f"📰 뉴스사이트맵 배치 ({article_index + 1 - general_count}/{total_count - general_count})")
     
-    # 카테고리 자동 분류 (새 제목 기반)
-    category = categorize_article(new_title, article_data['content'], enhanced_tags)
+    # 이미지를 원본과 완전히 다른 위치에 배치 (H5 제거된 본문 사용, 카테고리별 필터링)
+    final_content = insert_images_with_structure(content_without_h5, cloudflare_images, new_title, ai_api_key, category)
     
     # URL 슬러그 생성 (새 제목 기반)
     title_slug = create_url_slug(new_title)
@@ -1180,8 +1247,12 @@ def create_markdown_file(article_data, output_dir, cloudflare_account_id=None, c
     # 카테고리 한글명
     category_korean = "Economy" if category == "economy" else "Automotive"
     
+    # YAML 안전한 제목 처리 (따옴표 이스케이프)
+    yaml_safe_title = new_title.replace('"', '\\"') if new_title else safe_title
+    yaml_safe_h5 = h5_summary.replace('"', '\\"') if h5_summary else ""
+    
     markdown_content = f"""---
-title: "{safe_title}"
+title: "{yaml_safe_title}"
 description: "{safe_description}"
 date: {current_date}
 author: "{safe_author}"
@@ -1190,7 +1261,7 @@ tags: {json.dumps(enhanced_tags, ensure_ascii=False)}
 hash: {article_hash}
 source_url: "{article_data['url']}"
 url: "/{category}/{title_slug}/"
-h5_summary: "{validate_yaml_string(h5_summary) if h5_summary else ''}"
+h5_summary: "{yaml_safe_h5}"
 """
     
     # Cloudflare Images만 사용 (원본 이미지 사용하지 않음)
@@ -1264,8 +1335,8 @@ def main():
         print(f"❌ Error downloading sitemap: {e}")
         sys.exit(1)
     
-    # URL 추출
-    urls = []
+    # URL 추출 (뉴스 사이트맵)
+    news_urls = []
     try:
         root = ET.fromstring(sitemap_content)
         # news sitemap 네임스페이스
@@ -1279,7 +1350,7 @@ def main():
             if loc_elem is not None:
                 url = loc_elem.text
                 if url and url.startswith('https://www.reportera.co.kr/'):
-                    urls.append(url)
+                    news_urls.append(url)
                     
     except Exception as e:
         print(f"⚠️ Error parsing XML: {e}")
@@ -1292,10 +1363,26 @@ def main():
                 if start > 4 and end > start:
                     url = line[start:end]
                     if url.startswith('https://www.reportera.co.kr/'):
-                        urls.append(url)
+                        news_urls.append(url)
     
-    # 🔥 모든 기사 처리 (제한 제거)
-    print(f"🔍 Found {len(urls)} URLs in sitemap - processing ALL articles")
+    # 원본 수집은 100% 뉴스 사이트맵에서만
+    urls = news_urls  # 뉴스 URL만 사용
+    import random
+    random.shuffle(urls)  # 순서 섞기
+    
+    # 내 사이트 배치 계획: 20% 일반사이트맵 + 80% 뉴스사이트맵
+    total_articles = len(urls)
+    general_count = min(200, int(total_articles * 0.2))  # 일반사이트맵 최대 200개
+    news_count = total_articles - general_count  # 나머지는 뉴스사이트맵
+    
+    print(f"📊 원본 수집 및 배치 계획:")
+    print(f"   🗞️ 뉴스 사이트맵에서 수집: {len(news_urls)}개")
+    print(f"   🎯 총 처리 대상: {len(urls)}개")
+    print(f"   📋 일반사이트맵 배치: {general_count}개 (20%)")
+    print(f"   📰 뉴스사이트맵 배치: {news_count}개 (80%)")
+    
+    # 🔥 분배된 기사 처리
+    print(f"🔍 스마트 사이트맵 분배 완료 - {len(urls)}개 URL 처리 시작")
     
     # 출력 디렉토리
     output_dir = 'content'
@@ -1348,6 +1435,9 @@ def main():
             if create_markdown_file(
                 article_data, 
                 output_dir,
+                i,  # article_index
+                general_count,  # general_count
+                len(urls),  # total_count
                 cloudflare_account_id,
                 cloudflare_api_token,
                 ai_api_key
