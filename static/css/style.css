@@ -2929,9 +2929,17 @@ img {
 
 /* Entry Content */
 .entry-content {
-    font-size: 1.1rem;
+    font-size: 1.25rem;
     line-height: 1.8;
     margin-bottom: 2rem;
+}
+
+/* 35~60대 독자를 위한 추가 가독성 개선 */
+@media (min-width: 768px) {
+    .entry-content {
+        font-size: 1.3rem;
+        line-height: 1.9;
+    }
 }
 
 .entry-content h2 {

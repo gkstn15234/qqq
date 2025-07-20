@@ -243,40 +243,36 @@ def create_manual_rewrite(original_content, title):
             else:
                 rewritten_paragraphs.append(paragraph)
         
-        # 기본 구조로 재구성
+        # 35~60대 독자층을 위한 기본 구조로 재구성 (H1 제거, H2를 H5로 변경, 언론사 스타일 세로 막대기 추가)
         rewritten_content = f"""
-## {title}
-
 {chr(10).join(rewritten_paragraphs[:3])}
 
-### 주요 내용
+##### | **핵심 포인트**
 
 {chr(10).join(rewritten_paragraphs[3:6]) if len(rewritten_paragraphs) > 3 else ''}
 
-### 상세 분석
+##### | **상세 분석**
 
 {chr(10).join(rewritten_paragraphs[6:]) if len(rewritten_paragraphs) > 6 else ''}
 
-이번 이슈는 업계에 중요한 시사점을 제공하고 있으며, 향후 동향에 대한 지속적인 관심이 필요해 보인다.
+**이번 이슈는 업계에 중요한 시사점을 제공하고 있으며**, 향후 동향에 대한 지속적인 관심이 필요해 보입니다.
 """
         
         return rewritten_content.strip()
         
     except Exception as e:
         print(f"⚠️ Manual rewrite failed: {e}")
-        # 최소한의 기본 구조라도 생성
+        # 최소한의 기본 구조라도 생성 (H1 제거, H5 사용, 언론사 스타일 세로 막대기)
         return f"""
-## {title}
-
 본 기사는 현재 업계의 주요 동향을 다루고 있습니다.
 
-### 핵심 포인트
+##### | **핵심 포인트**
 
-관련 업계에서는 이번 사안에 대해 높은 관심을 보이고 있으며, 다양한 의견이 제기되고 있는 상황입니다.
+관련 업계에서는 이번 사안에 대해 **높은 관심을 보이고 있으며**, 다양한 의견이 제기되고 있는 상황입니다.
 
-### 향후 전망
+##### | **향후 전망**
 
-이러한 변화는 시장에 중대한 영향을 미칠 것으로 예상되며, 관련 기업들의 대응 전략이 주목받고 있습니다.
+이러한 변화는 시장에 중대한 영향을 미칠 것으로 예상되며, **관련 기업들의 대응 전략이 주목받고 있습니다**.
 
 *본 기사는 신뢰할 수 있는 정보를 바탕으로 작성되었습니다.*
 """
@@ -348,8 +344,18 @@ def rewrite_with_ai(original_content, title, api_key, api_type="openai"):
 4. 표현 방식과 문체를 완전히 변경
 5. 핵심 사실과 수치는 정확히 유지
 6. SEO 친화적이고 독자의 관심을 끄는 문체
-7. 마크다운 형식으로 출력
+7. 마크다운 형식으로 출력 (H1 태그 사용 금지, H2는 H5로 변경)
 8. 감정적 몰입과 스토리텔링 요소 추가
+9. **35~60대 주 독자층을 위한 가독성 최적화**: 
+   - 문장을 적절한 길이로 구성 (15~25단어)
+   - 문단을 2~4문장으로 간결하게 구성
+   - 복잡한 용어는 쉬운 표현으로 설명 추가
+   - 핵심 포인트를 볼드(**텍스트**)로 강조
+10. **헤딩 구조 규칙**: 
+    - H1(#) 태그 절대 사용 금지 
+    - 소제목은 H5(##### | 제목) 형식으로 세로 막대기 포함
+    - 제목은 YAML frontmatter에서만 관리
+    - 예시: ##### | **핵심 내용**
 
 마치 다른 기자가 같은 사건을 취재해서 완전히 다른 시각으로 쓴 것처럼 작성해주세요.
 """
@@ -463,6 +469,10 @@ def rewrite_title_with_ai(original_title, content, api_key, api_type="openai"):
 4. SEO에 최적화된 키워드 포함
 5. 한국어 뉴스 제목 스타일 유지
 6. 따옴표나 특수문자 활용 가능
+7. **35~60대 독자층에게 매력적인 제목**: 
+   - 명확하고 직관적인 표현 사용
+   - 궁금증을 유발하는 요소 포함
+   - 숫자나 구체적 정보 활용
 
 새로운 제목만 출력해주세요:
 """
@@ -568,7 +578,7 @@ def extract_content_from_url(url):
                     text = elem.get_text().strip()
                     if text and not text.startswith('(adsbygoogle'):
                         if elem.name in ['h2', 'h3', 'h4', 'h5']:
-                            paragraphs.append(f"\n## {text}\n")
+                            paragraphs.append(f"\n##### | {text}\n")  # H2를 H5로 변경, 언론사 스타일 세로 막대기 추가
                         else:
                             paragraphs.append(text)
         
@@ -618,6 +628,7 @@ def generate_contextual_alt_text(paragraph_text, title, api_key):
 2. SEO에 도움이 되는 키워드 포함
 3. 10-15자 내외의 간결한 텍스트
 4. 자연스러운 한국어 표현
+5. **35~60대 독자층이 이해하기 쉬운 용어 사용**
 
 alt 텍스트만 출력해주세요:
 """
