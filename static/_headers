@@ -10,6 +10,7 @@
   Link: <https://cdn.jsdelivr.net>; rel=preconnect
   Link: <https://cdnjs.cloudflare.com>; rel=preconnect
 
+# 정적 자산 - 장기 캐시 (변경되지 않는 파일들)
 /*.css
   Cache-Control: public, max-age=31536000, immutable
 
@@ -46,56 +47,94 @@
   Cache-Control: public, max-age=31536000, immutable
   Access-Control-Allow-Origin: *
 
+# XML 파일들 - 짧은 캐시
 /sitemap.xml
-  Cache-Control: public, max-age=3600
+  Cache-Control: public, max-age=300, must-revalidate
 
 /robots.txt
   Cache-Control: public, max-age=3600
 
-# HTML 파일: 매번 재검증하여 항상 최신 상태 유지
+# HTML 파일들 - 배포 즉시 반영을 위한 No Cache 설정
 /*.html
-  Cache-Control: public, max-age=0, must-revalidate
+  Cache-Control: no-cache, no-store, must-revalidate
+  Pragma: no-cache
+  Expires: 0
   # Core Web Vitals 최적화
   Link: <https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&display=swap>; rel=preload; as=style
   Link: <https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css>; rel=preload; as=style
   Link: <https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css>; rel=preload; as=style
 
-# 내용이 절대 변하지 않는 파일들 (Immutable Assets)
-# CSS, JS 등 빌드 시 파일명에 해시값이 포함되는 파일들을 의미합니다.
-# 1년(31536000초) 동안 절대 서버에 물어보지 말고 저장된 버전을 사용하라고 명령합니다.
+# 빌드 에셋 - 불변 파일들 (해시 포함 파일명)
 /assets/*
   Cache-Control: public, max-age=31536000, immutable
 /build/*
   Cache-Control: public, max-age=31536000, immutable
 
-# 기타 정적 파일 (예: 폰트, 이미지)
-# 1주일 동안 캐시하도록 설정
+# 폰트 및 이미지 - 중간 캐시
 /fonts/*
   Cache-Control: public, max-age=604800
 /images/*
   Cache-Control: public, max-age=604800
 
-# HTML pages - shorter cache for real-time updates
+# 모든 HTML 페이지 - 즉시 반영을 위한 No Cache
 /
-  Cache-Control: public, max-age=300, must-revalidate
+  Cache-Control: no-cache, no-store, must-revalidate
+  Pragma: no-cache
+  Expires: 0
 
 /index.html
-  Cache-Control: public, max-age=300, must-revalidate
+  Cache-Control: no-cache, no-store, must-revalidate
+  Pragma: no-cache
+  Expires: 0
 
+# 카테고리 페이지들 - 즉시 반영
 /automotive/
-  Cache-Control: public, max-age=600, must-revalidate
+  Cache-Control: no-cache, no-store, must-revalidate
+  Pragma: no-cache
+  Expires: 0
 
 /economy/
-  Cache-Control: public, max-age=600, must-revalidate
+  Cache-Control: no-cache, no-store, must-revalidate
+  Pragma: no-cache
+  Expires: 0
 
+# 개별 기사 페이지들 - 즉시 반영
 /automotive/*
-  Cache-Control: public, max-age=1800, must-revalidate
+  Cache-Control: no-cache, no-store, must-revalidate
+  Pragma: no-cache
+  Expires: 0
 
 /economy/*
-  Cache-Control: public, max-age=1800, must-revalidate
+  Cache-Control: no-cache, no-store, must-revalidate
+  Pragma: no-cache
+  Expires: 0
 
+# 기자 페이지들 - 즉시 반영
 /authors/*
-  Cache-Control: public, max-age=3600, must-revalidate
+  Cache-Control: no-cache, no-store, must-revalidate
+  Pragma: no-cache
+  Expires: 0
+
+# 기타 콘텐츠 페이지들 - 즉시 반영
+/about/
+  Cache-Control: no-cache, no-store, must-revalidate
+  Pragma: no-cache
+  Expires: 0
+
+/contact/
+  Cache-Control: no-cache, no-store, must-revalidate
+  Pragma: no-cache
+  Expires: 0
+
+/privacy/
+  Cache-Control: no-cache, no-store, must-revalidate
+  Pragma: no-cache
+  Expires: 0
+
+/terms/
+  Cache-Control: no-cache, no-store, must-revalidate
+  Pragma: no-cache
+  Expires: 0
 
 # API endpoints - CORS and no caching
 /api/*

@@ -7,14 +7,14 @@
                 <div class="col-lg-3 mb-4 mb-lg-0">
                     <div class="author-profile-image text-center">
                         <div class="bg-primary text-white rounded-circle mx-auto d-flex align-items-center justify-content-center" style="width: 120px; height: 120px; font-size: 48px; font-weight: bold;">
-                            {{ substr .Title 0 1 }}
+                            {{ substr .Title 1 2 }}
                         </div>
                     </div>
                 </div>
                 <div class="col-lg-9">
                     <div class="author-info">
-                        <h1 class="author-name h2 mb-2">{{ .Title }} 기자</h1>
-                        <p class="author-title text-muted mb-3">{{ .Site.Title }} 전문 기자</p>
+                        <h1 class="author-name h2 mb-2">{{ substr .Title 1 }}{{ if eq .Title "윤신애" }} 발행인 겸 편집인{{ else }} 기자{{ end }}</h1>
+                        <p class="author-title text-muted mb-3">{{ .Site.Title }} {{ if eq .Title "윤신애" }}발행인 겸 편집인{{ else }}전문 기자{{ end }}</p>
                         
                         {{ if .Params.specialization }}
                         <div class="author-specialization mb-3">
@@ -22,14 +22,6 @@
                             {{ range .Params.specialization }}
                             <span class="badge bg-secondary me-2">{{ . }}</span>
                             {{ end }}
-                        </div>
-                        {{ end }}
-                        
-                        {{ if .Params.email }}
-                        <div class="author-contact">
-                            <a href="mailto:{{ .Params.email }}" class="btn btn-outline-primary">
-                                이메일 문의
-                            </a>
                         </div>
                         {{ end }}
                     </div>
@@ -43,7 +35,7 @@
             <div class="row">
                 <div class="col-lg-8">
                     <div class="author-bio-content">
-                        <h3 class="h4 mb-3">기자 소개</h3>
+                        <h3 class="h4 mb-3">{{ if eq .Title "윤신애" }}발행인 소개{{ else }}기자 소개{{ end }}</h3>
                         <div class="bio-text">
                             {{ .Content }}
                         </div>
@@ -66,46 +58,36 @@
         <!-- Author Articles -->
         <div class="author-articles-section">
             <div class="section-header mb-4">
-                <h3 class="section-title h4">{{ .Title }} 기자의 기사</h3>
+                <h3 class="section-title h4">{{ substr .Title 1 }}{{ if eq .Title "윤신애" }} 발행인{{ else }} 기자{{ end }}의 기사</h3>
                 <p class="text-muted">총 {{ len (where .Site.RegularPages ".Params.author" .Title) }}개 기사</p>
             </div>
 
             {{ $authorArticles := where .Site.RegularPages ".Params.author" .Title }}
             {{ if $authorArticles }}
             
-            <!-- Articles List -->
+            <!-- Articles List - 썸네일과 제목만 표시 -->
             <div class="row">
                 {{ range $authorArticles }}
-                <div class="col-lg-6 mb-4">
-                    <article class="card h-100">
-                        {{ if .Params.images }}
-                        <img src="{{ index .Params.images 0 }}" alt="{{ .Title }}" class="card-img-top" style="height: 200px; object-fit: cover;">
-                        {{ else }}
-                        <div class="card-img-top bg-light d-flex align-items-center justify-content-center" style="height: 200px;">
-                            <span class="text-muted h1">📰</span>
-                        </div>
-                        {{ end }}
-                        
-                        <div class="card-body d-flex flex-column">
-                            <div class="article-meta mb-2">
-                                <span class="badge bg-{{ if eq .Section "automotive" }}danger{{ else if eq .Section "economy" }}warning{{ else }}secondary{{ end }} me-2">{{ .Section | title }}</span>
-                                <small class="text-muted">{{ .Date.Format "2006년 01월 02일" }}</small>
-                            </div>
-                            
-                            <h5 class="card-title">
-                                <a href="{{ .Permalink }}" class="text-decoration-none text-dark">{{ .Title }}</a>
-                            </h5>
-                            
-                            <p class="card-text text-muted flex-grow-1">{{ .Summary | truncate 100 }}</p>
-                            
-                            {{ if .Params.tags }}
-                            <div class="article-tags mt-auto">
-                                {{ range first 3 .Params.tags }}
-                                <span class="badge bg-light text-dark me-1">#{{ . }}</span>
-                                {{ end }}
+                <div class="col-lg-4 col-md-6 mb-4">
+                    <article class="card h-100 border-0 shadow-sm">
+                        <a href="{{ .Permalink }}" class="text-decoration-none">
+                            {{ if .Params.images }}
+                            <img src="{{ index .Params.images 0 }}" alt="{{ .Title }}" class="card-img-top" style="height: 180px; object-fit: cover;">
+                            {{ else }}
+                            <div class="card-img-top bg-light d-flex align-items-center justify-content-center" style="height: 180px;">
+                                <span class="text-muted h1">📰</span>
                             </div>
                             {{ end }}
-                        </div>
+                            
+                            <div class="card-body p-3">
+                                <div class="article-meta mb-2">
+                                    <span class="badge bg-{{ if eq .Section "automotive" }}danger{{ else if eq .Section "economy" }}warning{{ else }}secondary{{ end }} me-2">{{ .Section | title }}</span>
+                                    <small class="text-muted">{{ .Date.Format "2006.01.02" }}</small>
+                                </div>
+                                
+                                <h6 class="card-title text-dark mb-0" style="line-height: 1.4; font-size: 0.95rem;">{{ .Title | truncate 60 }}</h6>
+                            </div>
+                        </a>
                     </article>
                 </div>
                 {{ end }}
@@ -115,7 +97,7 @@
             <div class="text-center py-5">
                 <span class="display-1">📝</span>
                 <h4 class="mt-3">작성된 기사가 없습니다</h4>
-                <p class="text-muted">아직 이 기자가 작성한 기사가 없습니다.</p>
+                <p class="text-muted">아직 이 {{ if eq .Title "윤신애" }}발행인이{{ else }}기자가{{ end }} 작성한 기사가 없습니다.</p>
             </div>
             {{ end }}
         </div>
