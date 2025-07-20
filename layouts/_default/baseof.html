@@ -182,11 +182,19 @@
     <link rel="dns-prefetch" href="//fonts.googleapis.com">
     <link rel="dns-prefetch" href="//fonts.gstatic.com">
     <link rel="dns-prefetch" href="//cdn.jsdelivr.net">
+    <link rel="dns-prefetch" href="//cdnjs.cloudflare.com">
+    <link rel="dns-prefetch" href="//imagedelivery.net">
     
-    <!-- Preconnect to external domains -->
+    <!-- Preconnect to critical external domains -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link rel="preconnect" href="https://cdn.jsdelivr.net">
+    <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+    <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
+    
+    <!-- Preload critical resources -->
+    {{ if .IsHome }}
+    <link rel="preload" as="fetch" href="/index.json" crossorigin>
+    {{ end }}
     
     <!-- Critical CSS (Inline for faster rendering) -->
     <style>
@@ -277,7 +285,21 @@
     <!-- Preload critical font -->
     <link rel="preload" href="https://fonts.gstatic.com/s/inter/v12/UcCO3FwrK3iLTeHuS_fvQtMwCp50KnMw2boKoduKmMEVuLyfAZ9hiA.woff2" as="font" type="font/woff2" crossorigin>
     
-    <!-- Load minimal Bootstrap CSS asynchronously -->
+    <!-- Load critical Bootstrap CSS inline (minimal) -->
+    <style>
+        /* Critical Bootstrap utilities only */
+        .container{width:100%;padding-right:15px;padding-left:15px;margin-right:auto;margin-left:auto}
+        .row{display:flex;flex-wrap:wrap;margin-right:-15px;margin-left:-15px}
+        .col,.col-1,.col-2,.col-3,.col-4,.col-5,.col-6,.col-7,.col-8,.col-9,.col-10,.col-11,.col-12{position:relative;width:100%;padding-right:15px;padding-left:15px}
+        .col-1{flex:0 0 8.333333%;max-width:8.333333%}.col-2{flex:0 0 16.666667%;max-width:16.666667%}
+        .col-3{flex:0 0 25%;max-width:25%}.col-4{flex:0 0 33.333333%;max-width:33.333333%}
+        .col-6{flex:0 0 50%;max-width:50%}.col-12{flex:0 0 100%;max-width:100%}
+        .d-flex{display:flex!important}.justify-content-center{justify-content:center!important}
+        .align-items-center{align-items:center!important}.text-center{text-align:center!important}
+        .mb-3{margin-bottom:1rem!important}.mb-4{margin-bottom:1.5rem!important}.py-4{padding-top:1.5rem!important;padding-bottom:1.5rem!important}
+    </style>
+    
+    <!-- Load full Bootstrap CSS asynchronously -->
     <link rel="preload" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
     <noscript><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"></noscript>
     

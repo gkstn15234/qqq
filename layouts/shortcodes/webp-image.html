@@ -3,53 +3,53 @@
   사용법: {{< webp-image src="image.jpg" alt="이미지 설명" width="1200" height="675" >}}
 */}}
 
-{{ $src := .Get "src" }}
-{{ $alt := .Get "alt" }}
-{{ $width := .Get "width" | default 1200 }}
-{{ $height := .Get "height" | default 675 }}
-{{ $class := .Get "class" | default "img-fluid" }}
-{{ $loading := .Get "loading" | default "lazy" }}
+{{- $original := .Page.Resources.GetMatch (.Get 0) -}}
+{{- $alt := .Get "alt" | default (.Get 1) -}}
+{{- $class := .Get "class" | default "" -}}
+{{- $loading := .Get "loading" | default "lazy" -}}
+{{- $fetchpriority := .Get "fetchpriority" | default "auto" -}}
 
-{{ if $src }}
-  {{ if hasPrefix $src "http" }}
-    <!-- 외부 이미지 (Cloudflare Images) -->
-    <img src="{{ $src }}" 
-         alt="{{ $alt }}" 
-         width="{{ $width }}"
-         height="{{ $height }}"
-         class="{{ $class }}"
-         loading="{{ $loading }}"
-         style="width: 100%; height: auto;">
-  {{ else }}
-    {{ $image := resources.Get $src }}
-    {{ if $image }}
-      <!-- 로컬 이미지 - WebP 최적화 -->
-      {{ $webp := $image.Resize (printf "%dx%d webp q85" $width $height) }}
-      {{ $jpeg := $image.Resize (printf "%dx%d jpeg q95" $width $height) }}
-      
-      <picture>
-        <source srcset="{{ $webp.RelPermalink }}" type="image/webp">
-        <img src="{{ $jpeg.RelPermalink }}" 
-             alt="{{ $alt }}" 
-             width="{{ $webp.Width }}"
-             height="{{ $webp.Height }}"
+{{- if $original -}}
+    {{- $webpLarge := $original.Resize "800x webp q85" -}}
+    {{- $jpegLarge := $original.Resize "800x jpeg q85" -}}
+    {{- $webpMedium := $original.Resize "400x webp q85" -}}
+    {{- $jpegMedium := $original.Resize "400x jpeg q85" -}}
+    {{- $webpSmall := $original.Resize "200x webp q85" -}}
+    {{- $jpegSmall := $original.Resize "200x jpeg q85" -}}
+
+    <picture>
+        <!-- Large screens -->
+        <source media="(min-width: 768px)" 
+                srcset="{{ $webpLarge.RelPermalink }}" 
+                type="image/webp">
+        <source media="(min-width: 768px)" 
+                srcset="{{ $jpegLarge.RelPermalink }}" 
+                type="image/jpeg">
+        
+        <!-- Medium screens -->
+        <source media="(min-width: 480px)" 
+                srcset="{{ $webpMedium.RelPermalink }}" 
+                type="image/webp">
+        <source media="(min-width: 480px)" 
+                srcset="{{ $jpegMedium.RelPermalink }}" 
+                type="image/jpeg">
+        
+        <!-- Small screens -->
+        <source srcset="{{ $webpSmall.RelPermalink }}" type="image/webp">
+        <source srcset="{{ $jpegSmall.RelPermalink }}" type="image/jpeg">
+        
+        <!-- Fallback -->
+        <img src="{{ $jpegMedium.RelPermalink }}"
+             alt="{{ $alt }}"
              class="{{ $class }}"
              loading="{{ $loading }}"
-             style="width: 100%; height: auto;">
-      </picture>
-    {{ else }}
-      <!-- 외부 이미지 - 기본 img 태그 -->
-      <img src="{{ $src }}" 
-           alt="{{ $alt }}" 
-           width="{{ $width }}"
-           height="{{ $height }}"
-           class="{{ $class }}"
-           loading="{{ $loading }}"
-           style="width: 100%; height: auto;">
-    {{ end }}
-  {{ end }}
-{{ else }}
-  <div class="image-error">
-    <p>이미지 경로가 지정되지 않았습니다.</p>
-  </div>
-{{ end }} 
+             decoding="async"
+             {{ if eq $fetchpriority "high" }}fetchpriority="high"{{ end }}
+             style="max-width: 100%; height: auto;">
+    </picture>
+{{- else -}}
+    <div class="image-placeholder bg-light d-flex align-items-center justify-content-center" 
+         style="min-height: 200px; border-radius: 8px;">
+        <i class="fas fa-image fa-3x text-muted"></i>
+    </div>
+{{- end -}} 
