@@ -61,7 +61,7 @@
             <div class="row g-4">
                 {{ range first 3 (after 1 $sortedArticles) }}
                 <div class="col-12 col-md-4">
-                    <article class="card h-100 shadow-sm border-0">
+                    <article class="card shadow-sm border-0">
                         <a href="{{ .RelPermalink }}" class="text-decoration-none">
                             <div class="card-img-top position-relative" style="height: 200px; overflow: hidden;">
                                 {{ if .Params.images }}
@@ -81,8 +81,8 @@
                                 </span>
                             </div>
                             <div class="card-body">
-                                <h3 class="h5 card-title text-dark">{{ .Title | truncate 60 }}</h3>
-                                <p class="card-text text-muted small">{{ .Summary | plainify | truncate 100 }}</p>
+                                <h3 class="h5 card-title text-dark mb-2">{{ .Title | truncate 60 }}</h3>
+                                <p class="card-text text-muted small mb-2">{{ .Summary | plainify | truncate 100 }}</p>
                                 <small class="text-muted">
                                     <i class="far fa-calendar me-1"></i>
                                     {{ .Date.Format "01월 02일" }}
