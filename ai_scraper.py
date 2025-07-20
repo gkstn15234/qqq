@@ -334,9 +334,8 @@ def create_manual_rewrite(original_content, title):
                         paragraph = paragraph.replace(original, random.choice(alternatives))
                 rewritten_paragraphs.append(paragraph)
         
-        # 35~60대 독자층을 위한 기본 구조로 재구성 (H5 두 줄 + 썸네일 + 본문 + H2 소제목)
-        rewritten_content = f"""##### | {title}의 핵심 내용을 간단히 요약한 최신 뉴스
-##### 업계 동향과 향후 전망에 대한 상세 분석 내용
+        # 35~60대 독자층을 위한 기본 구조로 재구성 (H5 하나에 <br> 두 줄 + 썸네일 + 본문 + H2 소제목)
+        rewritten_content = f"""##### **{title}의 핵심 내용 요약**<br>**업계 동향과 향후 전망 분석**
 
 {chr(10).join(rewritten_paragraphs[:3])}
 
@@ -355,9 +354,8 @@ def create_manual_rewrite(original_content, title):
         
     except Exception as e:
         print(f"⚠️ Manual rewrite failed: {e}")
-        # 최소한의 기본 구조라도 생성 (H5 두 줄 + H2 소제목)
-        return f"""##### | 업계 주요 동향에 대한 핵심 내용을 다룬 최신 기사
-##### {title}의 영향과 향후 시장 전망에 대한 상세 분석
+        # 최소한의 기본 구조라도 생성 (H5 하나에 <br> 두 줄 + H2 소제목)
+        return f"""##### **업계 주요 동향 핵심 분석**<br>**{title} 영향과 시장 전망**
 
 본 기사는 현재 업계의 주요 동향을 다루고 있습니다.
 
@@ -452,9 +450,21 @@ def rewrite_with_ai(original_content, title, api_key, api_type="openai"):
 - 원본: "증가했다" → 변형: "상승세를 보이고 있다", "늘어나는 추세다"
 - 원본: "문제가 있다" → 변형: "우려스러운 상황이 벌어지고 있다"
 
-**헤딩 구조 (반드시 준수):**
-##### | [핵심 내용을 완전히 새로운 표현으로 요약]
-##### [업계 영향을 독창적 관점에서 분석한 설명]
+**헤딩 구조 (절대 엄수):**
+##### [첫 번째 줄 요약]<br>[두 번째 줄 요약]
+
+**헤딩 사용 규칙:**
+- H5(#####): 하나의 태그 안에 <br>로 두 줄 작성 (| 작대기 사용하지 않음)
+- H2(##): 모든 소제목에 사용 (H3, H4, H6 절대 금지!)
+- H1(#): 사용 금지 (Hugo에서 자동 생성)
+
+**H2 소제목 작성 규칙:**
+- 콜론(:), 느낌표(!), 물음표(?) 등 특수기호 사용 금지
+- 자연스러운 명사형 또는 서술형으로 작성
+- 예시: "주요 변화 동향", "시장 반응과 전망", "업계 분석 결과"
+
+**H5 요약 필수 형식:**
+##### **500마력 전기 SUV 국내 상륙 예고**<br>**럭셔리와 오프로드 능력 모두 갖춰**
 
 **최종 목표: 원본 작성자가 "이건 내 글이 아니야!"라고 할 정도로 완전히 다른 작품을 만들어주세요.**
 같은 사건을 다룬 전혀 다른 기자의 독립적인 취재 기사처럼 작성해주세요.
@@ -711,7 +721,9 @@ def extract_content_from_url(url):
                     
                     if text and not text.startswith('(adsbygoogle'):
                         if elem.name in ['h2', 'h3', 'h4', 'h5']:
-                            paragraphs.append(f"\n## {text}\n")  # H2로 유지
+                            # 소제목에서 특수기호 제거
+                            clean_text = text.replace(':', '').replace('!', '').replace('?', '').replace('|', '').strip()
+                            paragraphs.append(f"\n## {clean_text}\n")  # H2로 변환
                         else:
                             paragraphs.append(text)
         
@@ -739,6 +751,48 @@ def extract_content_from_url(url):
     except Exception as e:
         print(f"❌ Error extracting content from {url}: {e}")
         return None
+
+def analyze_image_text_content(image_url, api_key):
+    """AI Vision으로 이미지에 텍스트가 있는지 분석"""
+    if not api_key:
+        return False  # API 키 없으면 텍스트 없다고 가정
+    
+    try:
+        if HAS_OPENAI:
+            client = OpenAI(api_key=api_key)
+            
+            response = client.chat.completions.create(
+                model="gpt-4o-mini",
+                messages=[
+                    {
+                        "role": "user",
+                        "content": [
+                            {
+                                "type": "text",
+                                "text": "이 이미지에 한글, 영어, 숫자 등의 텍스트가 포함되어 있나요? 텍스트가 있으면 'YES', 없으면 'NO'로만 답변해주세요."
+                            },
+                            {
+                                "type": "image_url",
+                                "image_url": {
+                                    "url": image_url
+                                }
+                            }
+                        ]
+                    }
+                ],
+                max_tokens=10
+            )
+            
+            result = response.choices[0].message.content.strip().upper()
+            has_text = "YES" in result
+            print(f"🔍 이미지 텍스트 분석: {image_url[:50]}... → {'텍스트 있음' if has_text else '텍스트 없음'}")
+            return has_text
+            
+    except Exception as e:
+        print(f"⚠️ 이미지 분석 실패: {e}")
+        return False  # 분석 실패 시 텍스트 없다고 가정
+    
+    return False
 
 def generate_contextual_alt_text(paragraph_text, title, api_key):
     """문맥에 맞는 alt 텍스트 AI 생성"""
@@ -785,6 +839,62 @@ alt 텍스트만 출력해주세요:
     
     return "기사 관련 이미지"
 
+def generate_section_for_image(image_url, title, existing_content, api_key):
+    """남은 이미지를 위한 H2 소제목 + 본문 생성"""
+    if not api_key:
+        return {
+            'heading': "관련 정보",
+            'content': "해당 분야의 추가적인 동향과 분석 내용입니다."
+        }
+    
+    try:
+        if HAS_OPENAI:
+            client = OpenAI(api_key=api_key)
+            
+            prompt = f"""
+기사 제목: {title}
+기사 내용 요약: {existing_content[:500]}...
+
+위 기사와 관련된 추가 섹션을 만들어주세요.
+
+요구사항:
+1. H2 소제목 1개 (특수기호 없이, 자연스럽게)
+2. 본문 2-3문장 (기사와 연관성 있게)
+3. 35-60대 독자층에게 유익한 내용
+
+JSON 형식으로 응답:
+{{"heading": "소제목", "content": "본문 내용"}}
+"""
+            
+            response = client.chat.completions.create(
+                model="gpt-4o-mini",
+                messages=[
+                    {"role": "system", "content": "당신은 기사 작성 전문가입니다. 주어진 기사와 연관성 있는 추가 섹션을 만드는 전문가입니다."},
+                    {"role": "user", "content": prompt}
+                ],
+                max_tokens=200,
+                temperature=0.7
+            )
+            
+            result = response.choices[0].message.content.strip()
+            try:
+                import json
+                section_data = json.loads(result)
+                return section_data
+            except:
+                # JSON 파싱 실패 시 기본값
+                return {
+                    'heading': "추가 분석",
+                    'content': "관련 업계의 동향과 전망에 대한 추가 정보입니다."
+                }
+                
+    except Exception as e:
+        print(f"⚠️ 추가 섹션 생성 실패: {e}")
+        return {
+            'heading': "관련 동향",
+            'content': "해당 분야의 최신 동향과 분석을 제공합니다."
+        }
+
 def insert_images_with_structure(content, cloudflare_images, title="", ai_api_key=None):
     """원본과 완전히 다른 위치에 이미지 배치: 우리만의 새로운 구조"""
     if not cloudflare_images:
@@ -801,10 +911,37 @@ def insert_images_with_structure(content, cloudflare_images, title="", ai_api_ke
     shuffled_images = cloudflare_images.copy()
     random.shuffle(shuffled_images)  # 원본 순서와 완전히 다르게
     
-    # 우리만의 이미지 배치 전략
+    # 우리만의 이미지 배치 전략 (썸네일은 텍스트 없는 이미지 우선 선택)
+    thumbnail_image = None
+    section_images = shuffled_images.copy()
+    
+    if shuffled_images:
+        print("🔍 AI Vision으로 썸네일 이미지 선택 중...")
+        
+        # AI Vision으로 텍스트 없는 이미지 찾기
+        text_free_images = []
+        text_images = []
+        
+        for img_url in section_images[:3]:  # 처음 3개만 분석 (API 비용 절약)
+            has_text = analyze_image_text_content(img_url, ai_api_key)
+            if has_text:
+                text_images.append(img_url)
+            else:
+                text_free_images.append(img_url)
+        
+        # 텍스트 없는 이미지 우선 선택
+        if text_free_images:
+            thumbnail_image = text_free_images[0]
+            section_images.remove(thumbnail_image)
+            print(f"✅ 텍스트 없는 이미지를 썸네일로 선택: {thumbnail_image[:50]}...")
+        else:
+            # 텍스트 없는 이미지가 없으면 첫 번째 사용
+            thumbnail_image = section_images.pop(0)
+            print(f"⚠️ 텍스트 없는 이미지 없음, 첫 번째 이미지 사용: {thumbnail_image[:50]}...")
+    
     image_positions = {
-        'thumbnail': shuffled_images[0] if len(shuffled_images) > 0 else None,
-        'section_images': shuffled_images[1:] if len(shuffled_images) > 1 else []
+        'thumbnail': thumbnail_image,
+        'section_images': section_images
     }
     
     thumbnail_inserted = False
@@ -813,21 +950,17 @@ def insert_images_with_structure(content, cloudflare_images, title="", ai_api_ke
     for i, line in enumerate(lines):
         result_lines.append(line)
         
-        # H5 줄 카운트
-        if line.startswith('##### '):
-            h5_count += 1
+        # H5 줄 감지 (하나의 H5 태그 뒤에 이미지 삽입)
+        if line.startswith('##### ') and not thumbnail_inserted and image_positions['thumbnail']:
+            if ai_api_key:
+                alt_text = generate_contextual_alt_text(line, title, ai_api_key)
+            else:
+                alt_text = f"{title} 관련 메인 이미지"
             
-            # 두 번째 H5 줄 뒤에 썸네일 이미지 삽입 (무조건 첫 번째 위치)
-            if h5_count == 2 and not thumbnail_inserted and image_positions['thumbnail']:
-                if ai_api_key:
-                    alt_text = generate_contextual_alt_text(line, title, ai_api_key)
-                else:
-                    alt_text = f"{title} 관련 메인 이미지"
-                
-                result_lines.append("")
-                result_lines.append(f"![{alt_text}]({image_positions['thumbnail']})")
-                result_lines.append("")
-                thumbnail_inserted = True
+            result_lines.append("")
+            result_lines.append(f"![{alt_text}]({image_positions['thumbnail']})")
+            result_lines.append("")
+            thumbnail_inserted = True
         
         # 문단 카운트 (일반 텍스트)
         elif line.strip() and not line.startswith('#') and not line.startswith('!'):
@@ -872,21 +1005,37 @@ def insert_images_with_structure(content, cloudflare_images, title="", ai_api_ke
                 result_lines.append(f"![{alt_text}]({image_url})")
                 result_lines.append("")
     
-    # 남은 이미지들은 마지막에 한꺼번에 배치 (원본과 다른 패턴)
+    # 남은 이미지들을 H2 소제목 + 이미지 + 본문 형태로 배치
     remaining_images = image_positions['section_images'][section_image_index:]
     if remaining_images:
-        result_lines.append("")
-        result_lines.append("## 관련 이미지")
-        result_lines.append("")
+        print(f"📝 남은 이미지 {len(remaining_images)}개를 추가 섹션으로 생성 중...")
+        
+        # 기존 콘텐츠 요약 (AI 섹션 생성용)
+        existing_content = '\n'.join(result_lines)
         
         for idx, image_url in enumerate(remaining_images):
+            # AI로 섹션 생성
+            section_data = generate_section_for_image(image_url, title, existing_content, ai_api_key)
+            
+            # H2 소제목 추가
+            result_lines.append("")
+            result_lines.append(f"## {section_data['heading']}")
+            result_lines.append("")
+            
+            # 이미지 추가
             if ai_api_key:
-                alt_text = generate_contextual_alt_text("추가 관련 내용", title, ai_api_key)
+                alt_text = generate_contextual_alt_text(section_data['content'], title, ai_api_key)
             else:
-                alt_text = f"추가 관련 이미지 {idx + 1}"
+                alt_text = section_data['heading']
             
             result_lines.append(f"![{alt_text}]({image_url})")
             result_lines.append("")
+            
+            # 본문 추가
+            result_lines.append(section_data['content'])
+            result_lines.append("")
+            
+            print(f"✅ 추가 섹션 생성: {section_data['heading']}")
     
     return '\n'.join(result_lines)
 
@@ -1059,13 +1208,6 @@ url: "/{category}/{title_slug}/"
     
     markdown_content += f"""draft: false
 ---
-
-# {safe_title}
-
-**{safe_author} 기자**  
-{formatted_date}  
-{category_korean}  
-**공유하기:**
 
 {final_content}
 """
