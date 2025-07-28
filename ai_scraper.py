@@ -701,8 +701,8 @@ def extract_content_from_url(url):
             return None
         title = title_elem.get_text().strip()
         
-        # 메타 정보 추출 - 항상 윤신애로 설정 (UTF-8 안전)
-        author = "윤신애"
+        # 메타 정보 추출 - 항상 김한수로 설정 (UTF-8 안전)
+        author = "김한수"
         
         # 태그 추출
         tags = ["뉴스", "이슈"]  # 기본 태그
@@ -1243,7 +1243,7 @@ def create_markdown_file(article_data, output_dir, article_index=0, general_coun
     safe_title = validate_yaml_string(new_title)
     
     # 마크다운 생성 (UTF-8 안전한 author 필드)
-    safe_author = "윤신애"  # 하드코딩으로 인코딩 문제 방지
+    safe_author = "김한수"  # 하드코딩으로 인코딩 문제 방지
     
     # 날짜 포맷팅 (한국 시간대)
     kst_date = datetime.now(kst)

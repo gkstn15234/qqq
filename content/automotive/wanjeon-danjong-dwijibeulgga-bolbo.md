@@ -2,7 +2,7 @@
 title: "“완전 단종 뒤집을까?” … 볼보, 3세대 XC90 개발 선언, PHEV 주행거리 2배 이상 개선"
 description: "볼보, XC90 3세대 개발 공식화 PHEV 주행거리 대폭 향상 ..."
 date: 2025-07-25T10:02:12+09:00
-author: "윤신애"
+author: "김한수"
 categories: ["automotive"]
 tags: ["뉴스", "이슈", "리턴클래식SUV", "하이브리드재도약"]
 hash: 0a083302

@@ -2,7 +2,7 @@
 title: "“배터리 내구성 이 정도면…” 16만km 달려도 배터리 성능 91% 유지, 폭스바겐 ID.3 테스트에 ‘합격’"
 description: "폭스바겐 ID.3, ADAC 내구성 테스트 16만km 주행 후 배터리 성능 91% 유지 ..."
 date: 2025-07-24T10:01:55+09:00
-author: "윤신애"
+author: "김한수"
 categories: ["automotive"]
 tags: ["뉴스", "이슈", "장수전기차시대", "배터리가치보증"]
 hash: 4ffed004

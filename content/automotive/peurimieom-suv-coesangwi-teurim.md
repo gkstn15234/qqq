@@ -2,7 +2,7 @@
 title: "“프리미엄 SUV 최상위 트림 드디어 공개된다” … GMC, 아카디아 최상위 트림, ‘드날리 얼티밋’ 공개"
 description: "GMC 아카디아 드날리 얼티밋 공개 ..."
 date: 2025-07-23T16:02:42+09:00
-author: "윤신애"
+author: "김한수"
 categories: ["automotive"]
 tags: ["뉴스", "이슈", "GMC", "드날리 얼티민", "아카디아", "럭셔리SUV격전지", "하이엔드운전자경험"]
 hash: 34cf7032

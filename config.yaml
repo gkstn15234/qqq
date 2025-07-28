@@ -1,6 +1,6 @@
 baseURL: 'https://okonomis.com'
 languageCode: 'ko-kr'
-title: '오코리믹 - 자동차 경제 전문매체'
+title: '트린픽토 - 자동차 경제 전문매체'
 defaultContentLanguage: 'ko'
 hasCJKLanguage: true
 timeZone: 'Asia/Seoul'
@@ -11,16 +11,16 @@ relativeURLs: false
 canonifyURLs: true
 
 params:
-  description: '오코리믹은 자동차, 전기차, 모빌리티 정보와 경제 분석을 전문적으로 다루는 자동차 경제 전문매체입니다.'
-  keywords: '자동차, 전기차, 모빌리티, 자동차뉴스, 신차정보, 자동차리뷰, 자동차산업, 자동차경제, 오코리믹'
-  author: '오코리믹'
-  company: '오코리믹'
+  description: '트린픽토는 자동차, 전기차, 모빌리티 정보와 경제 분석을 전문적으로 다루는 자동차 경제 전문매체입니다.'
+  keywords: '자동차, 전기차, 모빌리티, 자동차뉴스, 신차정보, 자동차리뷰, 자동차산업, 자동차경제, 트린픽토'
+  author: '트린픽토'
+  company: '트린픽토'
   address: '경상북도 경산시 진량읍 일연로 747'
   phone: '010-7539-8504'
   email: 'hangil9910@gmail.com'
-  publisher: '윤신애'
-  editor: '윤신애'
-  youthProtectionOfficer: '윤신애'
+  publisher: '김한수'
+  editor: '김한수'
+  youthProtectionOfficer: '김한수'
   
   # 언론사 등록 정보
   mediaRegistration: '경북,아55580'

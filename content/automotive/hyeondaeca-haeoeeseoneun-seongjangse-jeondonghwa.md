@@ -2,7 +2,7 @@
 title: "“현대차, 해외에서는 성장세” … 전동화 SUV 아이오닉 9, 3개월 만에 수출량 ‘3배 증가’"
 description: "현대차, 전동화 SUV ‘아이오닉 9’ 해외 수출 급증 ..."
 date: 2025-07-25T10:01:37+09:00
-author: "윤신애"
+author: "김한수"
 categories: ["automotive"]
 tags: ["뉴스", "이슈", "글로벌전기SUV굴기", "수출가속전략"]
 hash: f510529e

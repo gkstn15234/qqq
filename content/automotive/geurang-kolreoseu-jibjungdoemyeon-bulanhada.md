@@ -2,7 +2,7 @@
 title: "“그랑 콜레오스 집중되면 불안하다” … ‘중견3사’ 르노·KGM, ‘세닉 vs 액티언’ 하반기 신차 격돌 예고"
 description: "르노·KGM, 3위 놓고 하반기 SUV 신차 경쟁 ..."
 date: 2025-07-25T10:01:06+09:00
-author: "윤신애"
+author: "김한수"
 categories: ["automotive"]
 tags: ["뉴스", "이슈", "SUV파워게임", "생존전략진단"]
 hash: 8296fad3

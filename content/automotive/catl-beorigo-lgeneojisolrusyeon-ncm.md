@@ -2,7 +2,7 @@
 title: "CATL 버리고 LG에너지솔루션 NCM 끌어안은 테슬라, 신형 모델 3+ 배터리에 ‘롱레인지 RWD 부활’"
 description: "LFP 대신 LG NCM 배터리 탑재 중국 판매 부진 반전 노리는 전략 최대 항속거리, 기존 기록 넘을 듯 ..."
 date: 2025-07-23T16:01:13+09:00
-author: "윤신애"
+author: "김한수"
 categories: ["automotive"]
 tags: ["뉴스", "이슈", "LG 배터리", "NCM 배터리", "모델3", "모델3 플러스", "테슬라", "배터리판도재편", "중국전기차반격"]
 hash: 9bef716d

@@ -2,7 +2,7 @@
 title: "“테슬라 모델 Y도 제쳤다” … BMW, 수입차 판매 3년 연속 1위, 7시리즈 ‘압도적’"
 description: "BMW 3년 연속 수입차 판매 1위 모델 Y 앞세운 테슬라 3위 유지 ..."
 date: 2025-07-23T19:01:11+09:00
-author: "윤신애"
+author: "김한수"
 categories: ["automotive"]
 tags: ["뉴스", "이슈", "프리미엄수입차격전", "럭셔리전기세단전성시대"]
 hash: 2581abc3

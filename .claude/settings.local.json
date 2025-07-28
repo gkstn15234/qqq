@@ -1,0 +1,12 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(find:*)",
+      "Bash(for file in *.md)",
+      "Bash(do sed -i 's/윤신애/김한수/g' \"$file\")",
+      "Bash(done)",
+      "Bash(grep:*)"
+    ],
+    "deny": []
+  }
+}

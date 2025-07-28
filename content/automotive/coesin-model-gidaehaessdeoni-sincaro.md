@@ -2,7 +2,7 @@
 title: "“최신 모델 기대했더니” … 신차로 국내 출시한 BYD 씰, 알고 보니 구형 모델이었다"
 description: "국내 첫 출시 BYD ‘씰’, 실상은 구형 ..."
 date: 2025-07-27T01:01:21+09:00
-author: "윤신애"
+author: "김한수"
 categories: ["automotive"]
 tags: ["뉴스", "이슈", "BYD", "세단", "전기차", "리버스프리미엄논란", "글로벌차별화전략"]
 hash: bc4512f3

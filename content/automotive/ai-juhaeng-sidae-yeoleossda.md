@@ -2,7 +2,7 @@
 title: "“AI 주행 시대 열었다” … 폴스타4, 인공지능 기반 ADAS 전면 도입, 이달 국내 적용​"
 description: "폴스타4, 인공지능 기반 ADAS 전면 도입 ..."
 date: 2025-07-28T10:01:06+09:00
-author: "윤신애"
+author: "김한수"
 categories: ["automotive"]
 tags: ["뉴스", "이슈", "ADAS", "신차소식", "전기차", "중형SUV", "폴스타4", "프리미엄", "AI핸들링혁신", "주행감각진화"]
 hash: 78bc5a5d
