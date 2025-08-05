@@ -48,11 +48,16 @@ taxonomies:
   author: authors
 
 outputs:
-  home: ['HTML', 'RSS', 'JSON', 'SitemapGeneral', 'SitemapNews', 'SitemapAuthors', 'SitemapPages', 'SitemapLocal', 'SitemapVideo', 'PostSitemap']
+  home: ['HTML', 'RSS', 'PinterestRSS', 'JSON', 'SitemapGeneral', 'SitemapNews', 'SitemapAuthors', 'SitemapPages', 'SitemapLocal', 'SitemapVideo', 'PostSitemap']
   page: ['HTML']
-  section: ['HTML', 'RSS']
+  section: ['HTML', 'RSS', 'PinterestRSS']
 
 outputFormats:
+  PinterestRSS:
+    mediaType: 'application/rss+xml'
+    baseName: 'pinterest-rss'
+    isPlainText: true
+    notAlternative: true
   SitemapGeneral:
     mediaType: 'application/xml'
     baseName: 'sitemap-general'

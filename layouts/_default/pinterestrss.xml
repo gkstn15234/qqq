@@ -1,0 +1,112 @@
+{{- $pctx := . -}}
+{{- if .IsHome -}}{{ $pctx = .Site }}{{- end -}}
+{{- $pages := slice -}}
+{{- if or $.IsHome $.IsSection -}}
+{{- $filteredPages := where $pctx.RegularPages "Section" "in" (slice "automotive" "economy") -}}
+{{- $pages = $filteredPages -}}
+{{- else -}}
+{{- $pages = $pctx.Pages -}}
+{{- end -}}
+{{- $limit := .Site.Config.Services.RSS.Limit -}}
+{{- if ge $limit 1 -}}
+{{- $pages = $pages | first $limit -}}
+{{- end -}}
+{{- printf "<?xml version=\"1.0\" encoding=\"utf-8\" standalone=\"yes\"?>" | safeHTML }}
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:media="http://search.yahoo.com/mrss/" xmlns:dc="http://purl.org/dc/elements/1.1/">
+  <channel>
+    <title>{{ if eq  .Title  .Site.Title }}{{ .Site.Title }} - Pinterest Feed{{ else }}{{ with .Title }}{{.}} - {{ end }}{{ .Site.Title }} - Pinterest Feed{{ end }}</title>
+    <link>{{ .Permalink }}</link>
+    <description>{{ .Site.Params.description }} - 핀터레스트 자동 배포용 피드</description>
+    <generator>Hugo - Pinterest Optimized RSS Feed</generator>{{ with .Site.LanguageCode }}
+    <language>{{.}}</language>{{end}}{{ with .Site.Author.email }}
+    <managingEditor>{{.}}{{ with $.Site.Author.name }} ({{.}}){{end}}</managingEditor>{{end}}{{ with .Site.Author.email }}
+    <webMaster>{{.}}{{ with $.Site.Author.name }} ({{.}}){{end}}</webMaster>{{end}}{{ with .Site.Copyright }}
+    <copyright>{{.}}</copyright>{{end}}{{ if not .Date.IsZero }}
+    <lastBuildDate>{{ .Date.Format "Mon, 02 Jan 2006 15:04:05 -0700" | safeHTML }}</lastBuildDate>{{ end }}
+    <ttl>30</ttl>
+    <docs>https://cyber.harvard.edu/rss/rss.html</docs>
+    <image>
+      <url>{{ "/images/logo.svg" | absURL }}</url>
+      <title>{{ .Site.Title }}</title>
+      <link>{{ .Site.BaseURL }}</link>
+      <width>144</width>
+      <height>144</height>
+      <description>{{ .Site.Title }} 로고</description>
+    </image>
+    {{- with .OutputFormats.Get "RSS" -}}
+    {{ printf "<atom:link href=%q rel=\"self\" type=%q />" .Permalink .MediaType | safeHTML }}
+    {{- end -}}
+    {{ range $pages }}
+    {{- $image := "" -}}
+    {{- if .Params.thumbnail -}}
+        {{- $image = .Params.thumbnail -}}
+    {{- else if .Params.image -}}
+        {{- $image = .Params.image -}}
+    {{- else if .Params.featured_image -}}
+        {{- $image = .Params.featured_image -}}
+    {{- else if .Params.images -}}
+        {{- $image = index .Params.images 0 -}}
+    {{- end -}}
+    {{- if $image -}}
+    <item>
+      <title><![CDATA[{{ .Title }}]]></title>
+      <link>{{ .Permalink }}</link>
+      <pubDate>{{ .Date.Format "Mon, 02 Jan 2006 15:04:05 -0700" | safeHTML }}</pubDate>
+      {{ with .Site.Author.email }}<author>{{.}}{{ with $.Site.Author.name }} ({{.}}){{end}}</author>{{end}}
+      <guid isPermaLink="true">{{ .Permalink }}</guid>
+      <description><![CDATA[{{ with .Description }}{{ . }}{{ else }}{{ .Summary | plainify | truncate 300 }}{{ end }}]]></description>
+      
+      <!-- Pinterest 최적화 이미지 정보 -->
+      <enclosure url="{{ $image | absURL }}" type="image/jpeg" />
+      <media:content url="{{ $image | absURL }}" type="image/jpeg" medium="image" width="1200" height="630">
+        <media:title><![CDATA[{{ .Title }}]]></media:title>
+        <media:description><![CDATA[{{ with .Description }}{{ . }}{{ else }}{{ .Summary | plainify | truncate 200 }}{{ end }}]]></media:description>
+        <media:credit>{{ .Site.Title }}</media:credit>
+        <media:copyright>© {{ .Site.Title }}</media:copyright>
+      </media:content>
+      <media:thumbnail url="{{ $image | absURL }}" width="300" height="157" />
+      
+      <!-- 카테고리 및 태그 -->
+      {{ if .Params.categories }}
+      {{ range .Params.categories }}
+      <category><![CDATA[{{ . }}]]></category>
+      {{ end }}
+      {{ end }}
+      {{ if .Params.tags }}
+      {{ range .Params.tags }}
+      <category><![CDATA[{{ . }}]]></category>
+      {{ end }}
+      {{ end }}
+      
+      <!-- DC 메타데이터 -->
+      <dc:creator>{{ .Site.Title }}</dc:creator>
+      <dc:date>{{ .Date.Format "2006-01-02T15:04:05-07:00" }}</dc:date>
+      <dc:format>text/html</dc:format>
+      <dc:language>{{ .Site.LanguageCode | default "ko" }}</dc:language>
+      <dc:rights>© {{ .Site.Title }}</dc:rights>
+      <dc:source>{{ .Permalink }}</dc:source>
+      
+      <!-- 풍부한 콘텐츠 -->
+      <content:encoded><![CDATA[
+        <div style="margin-bottom: 20px;">
+          <img src="{{ $image | absURL }}" alt="{{ .Title }}" style="width: 100%; max-width: 800px; height: auto; border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.1);" />
+        </div>
+        <div style="font-family: 'Noto Sans KR', sans-serif; line-height: 1.6; color: #333;">
+          {{ .Content }}
+        </div>
+        <div style="margin-top: 30px; padding: 20px; background: #f8f9fa; border-radius: 8px; text-align: center;">
+          <p style="margin: 0; font-size: 16px; font-weight: bold;">
+            <a href="{{ .Permalink }}" target="_blank" style="color: #007bff; text-decoration: none;">
+              📖 {{ .Site.Title }}에서 전체 기사 읽기
+            </a>
+          </p>
+          <p style="margin: 10px 0 0 0; font-size: 14px; color: #666;">
+            {{ .Date.Format "2006년 1월 2일" }} 발행
+          </p>
+        </div>
+      ]]></content:encoded>
+    </item>
+    {{- end -}}
+    {{ end }}
+  </channel>
+</rss>
