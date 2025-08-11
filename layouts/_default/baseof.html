@@ -5,6 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     
+    <!-- Pinterest Domain Verification - Must be in head section -->
+    <meta name="p:domain_verify" content="175d357d55ed4ecb50c6b6b98b83866e"/>
+    
     <!-- Cache Control -->
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <meta http-equiv="Pragma" content="no-cache">
@@ -15,9 +18,6 @@
     <meta name="description" content="{{ if .Description }}{{ .Description }}{{ else }}{{ .Site.Params.description }}{{ end }}">
     <meta name="keywords" content="{{ if .Params.tags }}{{ delimit .Params.tags ", " }}{{ else }}{{ .Site.Params.keywords }}{{ end }}">
     <meta name="author" content="{{ if .Params.author }}{{ .Params.author }}{{ else }}{{ .Site.Params.author }}{{ end }}">
-    
-    <!-- Pinterest Domain Verification -->
-    <meta name="p:domain_verify" content="175d357d55ed4ecb50c6b6b98b83866e"/>
     
     <!-- Open Graph -->
     <meta property="og:title" content="{{ if .IsHome }}{{ .Site.Title }}{{ else }}{{ .Title }}{{ end }}">
