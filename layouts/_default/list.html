@@ -39,7 +39,7 @@
                                 <p class="article-excerpt text-muted mb-1 mb-md-2 d-none d-sm-block">{{ .Summary | plainify | truncate 150 }}</p>
                                 <small class="text-muted">
                                     <i class="far fa-calendar me-1"></i>
-                                    {{ .Date.Format "2006년 01월 02일" }}
+                                    {{ .Date.In (time.LoadLocation "Asia/Seoul") | time.Format "2006년 01월 02일" }}
                                 </small>
                             </div>
                         </div>
