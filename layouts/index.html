@@ -4,13 +4,14 @@
         {{ $articles := where .Site.RegularPages "Section" "in" (slice "automotive" "economy") }}
         {{ $sortedArticles := $articles.ByDate.Reverse }}
         
-        <!-- 최신 기사 20개를 가져와서 랜덤으로 섞기 -->
-        {{ $recentArticles := first 20 $sortedArticles }}
+        <!-- 최신 기사를 우선 표시하고 나머지는 랜덤 배치 -->
+        {{ $latestArticle := first 1 $sortedArticles }}
+        {{ $recentArticles := first 20 (after 1 $sortedArticles) }}
         {{ $shuffledArticles := $recentArticles | shuffle }}
         
         <!-- 나머지 기사들도 랜덤으로 섞어서 추가 -->
-        {{ $remainingArticles := after 20 $sortedArticles | shuffle }}
-        {{ $allShuffledArticles := $shuffledArticles | append $remainingArticles }}
+        {{ $remainingArticles := after 21 $sortedArticles | shuffle }}
+        {{ $allShuffledArticles := $latestArticle | append $shuffledArticles | append $remainingArticles }}
         
         <!-- 메인 헤드라인 -->
         {{ if gt (len $allShuffledArticles) 0 }}

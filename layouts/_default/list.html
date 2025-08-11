@@ -11,7 +11,7 @@
 
         <!-- Articles List -->
         <div class="articles-grid">
-            {{ range .Pages }}
+            {{ range .Pages.ByDate.Reverse }}
             <article class="article-item mb-4">
                 <a href="{{ .RelPermalink }}" class="text-decoration-none">
                     <div class="row align-items-center">
