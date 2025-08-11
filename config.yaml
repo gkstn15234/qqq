@@ -150,7 +150,7 @@ enableGitInfo: true
 
 # 빌드 최적화
 buildDrafts: false
-buildFuture: false
+buildFuture: true
 buildExpired: false
 
 # 성능 최적화
