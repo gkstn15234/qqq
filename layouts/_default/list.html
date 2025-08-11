@@ -37,7 +37,10 @@
                             <div class="article-content ps-2 ps-md-3">
                                 <h3 class="article-title h6 h5-md mb-1 mb-md-2 text-dark">{{ .Title }}</h3>
                                 <p class="article-excerpt text-muted mb-1 mb-md-2 d-none d-sm-block">{{ .Summary | plainify | truncate 150 }}</p>
-                                <small class="text-muted">{{ .Date.Format "2006.01.02" }}</small>
+                                <small class="text-muted">
+                                    <i class="far fa-calendar me-1"></i>
+                                    {{ .Date.Format "2006년 01월 02일" }}
+                                </small>
                             </div>
                         </div>
                     </div>
