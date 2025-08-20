@@ -1,0 +1,340 @@
+{{ define "main" }}
+<main class="main-content py-4">
+    <div class="container">
+        <!-- 페이지 헤더 -->
+        <div class="page-header mb-5">
+            <h1 class="h2 mb-3">{{ .Title }}</h1>
+            <p class="text-muted">{{ .Description }}</p>
+        </div>
+
+        <!-- 통계 요약 -->
+        <div class="stats-summary mb-5">
+            {{ $articles := where .Site.RegularPages "Section" "in" (slice "automotive" "economy") }}
+            {{ $totalArticles := len $articles }}
+            {{ $thisMonthArticles := where $articles "Date.Format" "2006-01" (now.Format "2006-01") }}
+            {{ $thisYearArticles := where $articles "Date.Format" "2006" (now.Format "2006") }}
+            
+            <div class="row g-4">
+                <div class="col-md-3">
+                    <div class="stat-card text-center p-4 bg-primary text-white rounded">
+                        <i class="fas fa-newspaper fa-2x mb-3"></i>
+                        <h3 class="h4">{{ $totalArticles }}</h3>
+                        <p class="mb-0">전체 기사</p>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="stat-card text-center p-4 bg-success text-white rounded">
+                        <i class="fas fa-calendar-month fa-2x mb-3"></i>
+                        <h3 class="h4">{{ len $thisMonthArticles }}</h3>
+                        <p class="mb-0">이번 달 기사</p>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="stat-card text-center p-4 bg-info text-white rounded">
+                        <i class="fas fa-calendar-year fa-2x mb-3"></i>
+                        <h3 class="h4">{{ len $thisYearArticles }}</h3>
+                        <p class="mb-0">올해 기사</p>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="stat-card text-center p-4 bg-warning text-white rounded">
+                        <i class="fas fa-car fa-2x mb-3"></i>
+                        {{ $automotiveArticles := where $articles "Section" "automotive" }}
+                        <h3 class="h4">{{ len $automotiveArticles }}</h3>
+                        <p class="mb-0">자동차 기사</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 필터 및 검색 -->
+        <div class="filters-section mb-4">
+            <div class="row align-items-center">
+                <div class="col-md-6">
+                    <div class="input-group">
+                        <input type="text" id="searchInput" class="form-control" placeholder="기사 제목 검색...">
+                        <button class="btn btn-outline-secondary" type="button" onclick="searchArticles()">
+                            <i class="fas fa-search"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="d-flex gap-2 flex-wrap">
+                        <button class="btn btn-sm btn-outline-primary filter-btn active" data-category="all">전체</button>
+                        <button class="btn btn-sm btn-outline-danger filter-btn" data-category="automotive">자동차</button>
+                        <button class="btn btn-sm btn-outline-warning filter-btn" data-category="economy">경제</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 발행 내역 목록 -->
+        <div class="publication-list">
+            {{ $sortedArticles := $articles.ByDate.Reverse }}
+            {{ range $index, $article := $sortedArticles }}
+            {{ $prevDate := "" }}
+            {{ if gt $index 0 }}
+                {{ $prevArticle := index $sortedArticles (sub $index 1) }}
+                {{ $prevDate = $prevArticle.Date.Format "2006-01-02" }}
+            {{ end }}
+            {{ $currentDate := $article.Date.Format "2006-01-02" }}
+            
+            <!-- 날짜 구분선 -->
+            {{ if ne $currentDate $prevDate }}
+            <div class="date-separator">
+                <div class="row align-items-center">
+                    <div class="col">
+                        <hr class="my-4">
+                    </div>
+                    <div class="col-auto">
+                        <h4 class="h5 text-primary mb-0 px-3">{{ $article.Date.Format "2006년 01월 02일" }}</h4>
+                    </div>
+                    <div class="col">
+                        <hr class="my-4">
+                    </div>
+                </div>
+            </div>
+            {{ end }}
+
+            <!-- 기사 항목 -->
+            <div class="article-item mb-3 p-3 border rounded publication-item" data-category="{{ $article.Section }}" data-title="{{ lower $article.Title }}">
+                <div class="row align-items-center">
+                    <div class="col-md-2 text-center">
+                        <span class="badge bg-{{ if eq $article.Section "automotive" }}danger{{ else }}warning{{ end }} fs-6">
+                            {{ if eq $article.Section "automotive" }}자동차{{ else }}경제{{ end }}
+                        </span>
+                    </div>
+                    <div class="col-md-8">
+                        <h5 class="mb-1">
+                            <a href="{{ $article.RelPermalink }}" class="text-decoration-none text-dark">
+                                {{ $article.Title }}
+                            </a>
+                        </h5>
+                        <p class="text-muted mb-1 small">{{ $article.Summary | plainify | truncate 100 }}</p>
+                        <div class="d-flex align-items-center gap-3">
+                            <small class="text-muted">
+                                <i class="far fa-clock me-1"></i>
+                                {{ $article.Date.Format "15:04" }}
+                            </small>
+                            {{ if $article.Params.author }}
+                            <small class="text-muted">
+                                <i class="fas fa-user me-1"></i>
+                                {{ $article.Params.author }}
+                            </small>
+                            {{ end }}
+                            {{ if $article.Params.tags }}
+                            <div class="tags">
+                                {{ range first 3 $article.Params.tags }}
+                                <span class="badge bg-light text-dark me-1">#{{ . }}</span>
+                                {{ end }}
+                            </div>
+                            {{ end }}
+                        </div>
+                    </div>
+                    <div class="col-md-2 text-center">
+                        {{ if $article.Params.images }}
+                        <img src="{{ index $article.Params.images 0 }}" alt="{{ $article.Title }}" 
+                             class="img-thumbnail" style="width: 80px; height: 60px; object-fit: cover;">
+                        {{ else }}
+                        <div class="no-image-placeholder bg-light d-flex align-items-center justify-content-center rounded" 
+                             style="width: 80px; height: 60px;">
+                            <i class="fas fa-image text-muted"></i>
+                        </div>
+                        {{ end }}
+                    </div>
+                </div>
+            </div>
+            {{ end }}
+        </div>
+
+        <!-- 페이지네이션 또는 더보기 버튼 (필요한 경우) -->
+        <div class="text-center mt-5">
+            <button id="loadMoreBtn" class="btn btn-outline-primary" onclick="loadMoreArticles()" style="display: none;">
+                더 많은 기사 보기
+            </button>
+        </div>
+
+        <!-- 검색 결과 없음 -->
+        <div id="noResults" class="text-center py-5" style="display: none;">
+            <i class="fas fa-search fa-5x text-muted mb-4"></i>
+            <h3 class="h4 text-muted">검색 결과가 없습니다</h3>
+            <p class="text-muted">다른 검색어를 사용해보세요.</p>
+        </div>
+    </div>
+</main>
+
+<script>
+// 필터링 기능
+document.querySelectorAll('.filter-btn').forEach(btn => {
+    btn.addEventListener('click', function() {
+        // 활성 버튼 변경
+        document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+        this.classList.add('active');
+        
+        const category = this.dataset.category;
+        filterArticles(category);
+    });
+});
+
+// 검색 기능
+document.getElementById('searchInput').addEventListener('input', function() {
+    searchArticles();
+});
+
+// Enter 키 검색
+document.getElementById('searchInput').addEventListener('keypress', function(e) {
+    if (e.key === 'Enter') {
+        searchArticles();
+    }
+});
+
+function filterArticles(category) {
+    const items = document.querySelectorAll('.publication-item');
+    const dateSeparators = document.querySelectorAll('.date-separator');
+    let visibleItems = 0;
+    
+    items.forEach(item => {
+        if (category === 'all' || item.dataset.category === category) {
+            item.style.display = 'block';
+            visibleItems++;
+        } else {
+            item.style.display = 'none';
+        }
+    });
+    
+    // 날짜 구분선 표시/숨김 처리
+    dateSeparators.forEach(separator => {
+        let hasVisibleItems = false;
+        let nextElement = separator.nextElementSibling;
+        
+        while (nextElement && !nextElement.classList.contains('date-separator')) {
+            if (nextElement.classList.contains('publication-item') && nextElement.style.display !== 'none') {
+                hasVisibleItems = true;
+                break;
+            }
+            nextElement = nextElement.nextElementSibling;
+        }
+        
+        separator.style.display = hasVisibleItems ? 'block' : 'none';
+    });
+    
+    toggleNoResults(visibleItems === 0);
+}
+
+function searchArticles() {
+    const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+    const activeCategory = document.querySelector('.filter-btn.active').dataset.category;
+    const items = document.querySelectorAll('.publication-item');
+    let visibleItems = 0;
+    
+    items.forEach(item => {
+        const title = item.dataset.title;
+        const category = item.dataset.category;
+        
+        const matchesSearch = !searchTerm || title.includes(searchTerm);
+        const matchesCategory = activeCategory === 'all' || category === activeCategory;
+        
+        if (matchesSearch && matchesCategory) {
+            item.style.display = 'block';
+            visibleItems++;
+        } else {
+            item.style.display = 'none';
+        }
+    });
+    
+    // 날짜 구분선 표시/숨김 처리
+    const dateSeparators = document.querySelectorAll('.date-separator');
+    dateSeparators.forEach(separator => {
+        let hasVisibleItems = false;
+        let nextElement = separator.nextElementSibling;
+        
+        while (nextElement && !nextElement.classList.contains('date-separator')) {
+            if (nextElement.classList.contains('publication-item') && nextElement.style.display !== 'none') {
+                hasVisibleItems = true;
+                break;
+            }
+            nextElement = nextElement.nextElementSibling;
+        }
+        
+        separator.style.display = hasVisibleItems ? 'block' : 'none';
+    });
+    
+    toggleNoResults(visibleItems === 0);
+}
+
+function toggleNoResults(show) {
+    const noResults = document.getElementById('noResults');
+    const publicationList = document.querySelector('.publication-list');
+    
+    if (show) {
+        noResults.style.display = 'block';
+        publicationList.style.display = 'none';
+    } else {
+        noResults.style.display = 'none';
+        publicationList.style.display = 'block';
+    }
+}
+
+// 초기 로드 시 모든 기사 표시
+document.addEventListener('DOMContentLoaded', function() {
+    filterArticles('all');
+});
+</script>
+
+<style>
+.stat-card {
+    transition: transform 0.2s ease-in-out;
+}
+
+.stat-card:hover {
+    transform: translateY(-2px);
+}
+
+.article-item {
+    transition: box-shadow 0.2s ease-in-out;
+}
+
+.article-item:hover {
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+}
+
+.filter-btn {
+    transition: all 0.2s ease-in-out;
+}
+
+.filter-btn.active {
+    transform: translateY(-1px);
+}
+
+.date-separator hr {
+    border-color: #dee2e6;
+    opacity: 0.5;
+}
+
+.tags .badge {
+    font-size: 0.7rem;
+}
+
+.img-thumbnail {
+    border: 1px solid #dee2e6;
+}
+
+.no-image-placeholder {
+    border: 1px solid #dee2e6;
+}
+
+@media (max-width: 768px) {
+    .filters-section .row > div {
+        margin-bottom: 1rem;
+    }
+    
+    .article-item .row > div {
+        margin-bottom: 0.5rem;
+    }
+    
+    .stat-card {
+        margin-bottom: 1rem;
+    }
+}
+</style>
+{{ end }}
