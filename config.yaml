@@ -41,9 +41,6 @@ menu:
     - name: '자동차'
       url: '/automotive/'
       weight: 10
-    - name: '발행 내역'
-      url: '/publication-history/'
-      weight: 20
 
 taxonomies:
   tag: tags
