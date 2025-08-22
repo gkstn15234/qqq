@@ -20,7 +20,7 @@ type: "post"
 layout: "single"
 news_keywords: "뉴스, 이슈, 경제 공동체, 경제 둔화, 경제 성장"
 robots: "index, follow"
-draft: false
+draft: true
 ---
 
 고요한 변화의 물결이 동아시아 경제를 감싸고 있다. 익숙한 경쟁 구도, 낡은 성장 공식이 더는 해답이 되지 않는 시대. 바로 이때, 한 기업인이 정면을 돌파하는 새로운 제안으로 주목받고 있다.

@@ -20,7 +20,7 @@ type: "post"
 layout: "single"
 news_keywords: "뉴스, 이슈, K2, K3, 방산"
 robots: "index, follow"
-draft: false
+draft: true
 ---
 
 끓는 엔진 소리 대신 전기 모터의 조용한 숨결이 대지를 가른다. 한밤중, 적진을 스치듯 지나가는 새로운 전차. 누가 조종하는지도 모를 그 쇳덩이는, 어쩌면 인간이 아니라 알고리즘이 전장을 바라보고 있는지도 모른다.

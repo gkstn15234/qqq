@@ -20,7 +20,7 @@ type: "post"
 layout: "single"
 news_keywords: "뉴스, 이슈, 관세, 수입, 수출"
 robots: "index, follow"
-draft: false
+draft: true
 ---
 
 철강판 한 장이 만든 파장은 생각보다 깊었다. 한때 세계 시장을 누비던 중국산 철강이, 각국의 견고한 장벽을 만나자 새로운 출구를 찾아 움직이기 시작했다. 그 방향이 뜻밖에도 **한국**을 향한다는 점에서 긴장감이 감돈다.

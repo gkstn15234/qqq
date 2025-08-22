@@ -20,7 +20,7 @@ type: "post"
 layout: "single"
 news_keywords: "뉴스, 이슈, 한정판컬렉터심리, 고배기량프리미엄부활"
 robots: "index, follow"
-draft: false
+draft: true
 ---
 
 자동차 시장이 친환경 흐름을 타고 부드럽게 곡선을 그리고 있을 때, 한 브랜드가 거침없이 직선을 내달렸다. 바로 렉서스 이야기다.  
