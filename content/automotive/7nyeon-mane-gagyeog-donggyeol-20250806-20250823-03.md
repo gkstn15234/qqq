@@ -20,7 +20,7 @@ type: "post"
 layout: "single"
 news_keywords: "뉴스, 이슈, 팰리세이드, 팰리세이드 판매량, 현대자동차"
 robots: "index, follow"
-draft: true
+draft: false
 ---
 
 커다란 차체에 가족의 이야기가 담기던 ‘아빠의 자동차’가 이제는 미국 거리 곳곳에서 새로운 아이콘이 되고 있다. 한때 국내에서만 익숙하던 현대차의 대형 SUV **팰리세이드**가, 이제는 북미 시장의 주목받는 주인공으로 떠올랐다.

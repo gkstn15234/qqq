@@ -20,7 +20,7 @@ type: "post"
 layout: "single"
 news_keywords: "뉴스, 이슈, oecd, 관세, 금융자산"
 robots: "index, follow"
-draft: true
+draft: false
 ---
 
 해외 경제전문가들도 놀랄만한 소식이 들려왔다. 그동안 ‘자산 불평등’과 경기 정체에 대한 우려가 짙었던 한국에서, 국민 각자의 주머니 사정이 주요 선진국들과 어깨를 나란히 하거나 앞서는 결과가 나타난 것이다.

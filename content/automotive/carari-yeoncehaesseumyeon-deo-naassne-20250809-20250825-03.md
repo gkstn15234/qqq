@@ -20,7 +20,7 @@ type: "post"
 layout: "single"
 news_keywords: "뉴스, 이슈, 금융위원회, 대출, 빚"
 robots: "index, follow"
-draft: true
+draft: false
 ---
 
 ‘빚을 갚는 게 바보 짓이었을까?’ 이런 의문이, 예전엔 남의 이야기 같았을지 모른다. 하지만 최근 몇 주 정부의 새로운 부실채권 청산 정책이 수면 위로 떠오르면서, 오랫동안 대출금 상환에 힘써온 시민들의 씁쓸한 목소리가 곳곳에서 들려온다.

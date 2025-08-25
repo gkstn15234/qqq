@@ -20,7 +20,7 @@ type: "post"
 layout: "single"
 news_keywords: "뉴스, 이슈, 프리미엄수입차격전, 럭셔리전기세단전성시대"
 robots: "index, follow"
-draft: true
+draft: false
 ---
 
 "수입차는 벤츠 아니면 아우디?"라는 질문이 이제 무색해졌다. 국내 자동차 시장의 판이 바뀌는 소리가 여기저기서 들린다. 전기 SUV부터 대형 세단까지, 각 브랜드의 전략과 소비자 취향이 맞물리며 상반기 판매 기록이 새롭게 쓰였다.
